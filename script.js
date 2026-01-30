@@ -149,3 +149,57 @@ async function talkToSideAI(userInput) {
     // โดยที่ไม่ให้ข้อความนี้โผล่ในแชทหลัก
 }
 
+// --- World & Character State Logic ---
+
+let worldData = {
+    locations: [], // บันทึก { place: "", description: "", time: "", link: "" }
+    inventory: [], // บันทึก { item: "", owner: "", description: "" }
+    currentStatus: {
+        date: "12 Oct 2077",
+        time: "20:45",
+        weather: "Rainy/Neon Fog",
+        temp: "18°C",
+        feeling: "Chilly"
+    }
+};
+
+// ฟังก์ชันดึงข้อมูลสถานะตัวละครจาก Context
+function updateCharacterDisplay() {
+    const context = Cypress.getContext();
+    const char = context.characters[context.character_id];
+    
+    // จำลองการดึงค่าจาก Attributes (ถ้ามี) หรือคำบรรยาย
+    const charState = {
+        name: char.name,
+        health: "Healthy", // สามารถเขียน Logic ตรวจคำว่า "บาดเจ็บ" ในข้อความล่าสุดได้
+        clothes: "Cyber-jacket, LED Sneakers",
+        mood: "Calm",
+        recentAction: "Just arrived at Afterlife club"
+    };
+
+    document.getElementById('char-stat-view').innerHTML = `
+        <div class="stat-grid">
+            <div class="stat-box">NAME: ${charState.name}</div>
+            <div class="stat-box">STATUS: ${charState.health}</div>
+            <div class="stat-box">MOOD: ${charState.mood}</div>
+            <div class="stat-box">LOCATION: ${worldData.locations.slice(-1)[0]?.place || 'Unknown'}</div>
+        </div>
+        <p class="stat-detail">ACT: ${charState.recentAction}</p>
+    `;
+}
+
+// ระบบช่วยเหลือ (Helper) - สรุปสถานการณ์
+async function askForHelper(type) {
+    const context = Cypress.getContext();
+    let prompt = "";
+    
+    if(type === 'summary') {
+        prompt = "ช่วยสรุปสถานการณ์ปัจจุบันสั้นๆ ใน 3 ประโยค แบบภาษา Cyberpunk";
+    } else if(type === 'suggest') {
+        prompt = "ในสถานการณ์นี้ ตัวละครของฉันควรทำอย่างไรต่อไปดี? ขอ 2 ทางเลือก";
+    }
+
+    // ส่งคำสั่งไปที่ AI (ไม่แสดงในแชทหลัก)
+    const response = await callSillyTavernAPI(prompt);
+    document.getElementById('helper-display').innerText = response;
+}
