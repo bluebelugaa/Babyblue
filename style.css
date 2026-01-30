@@ -1,190 +1,111 @@
-/* style.css */
+ฝ/* --- Core Cyberpunk Theme --- */
 :root {
-    --cyber-pink: #ff00ff;
-    --cyber-blue: #00ffff;
-    --cyber-bg: rgba(10, 10, 15, 0.95);
-    --glow-shadow: 0 0 10px var(--cyber-pink), 0 0 20px var(--cyber-blue);
+    --neon-pink: #ff00ff;
+    --neon-blue: #00ffff;
+    --cyber-black: #050505;
+    --cyber-grid: rgba(0, 255, 255, 0.1);
+    --flicker-anim: cyber-flicker 2s infinite;
 }
 
-/* ปุ่ม X เรืองแสง */
-#cyber-extension-launcher {
+/* ปุ่ม X Launcher */
+#cyber-launcher {
     position: fixed;
-    top: 20px;
+    bottom: 80px;
     right: 20px;
-    width: 50px;
-    height: 50px;
-    background: var(--cyber-bg);
-    border: 2px solid var(--cyber-blue);
-    color: var(--cyber-pink);
+    width: 60px;
+    height: 60px;
+    background: var(--cyber-black);
+    border: 3px solid var(--neon-blue);
+    color: var(--neon-pink);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 24px;
+    font-size: 30px;
+    font-weight: bold;
     cursor: pointer;
     z-index: 9999;
-    box-shadow: var(--glow-shadow);
-    clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%);
-    transition: all 0.3s ease;
-    user-select: none;
+    clip-path: polygon(0% 20%, 20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%);
+    box-shadow: 0 0 15px var(--neon-blue);
+    transition: 0.2s;
 }
 
-#cyber-extension-launcher:hover {
-    animation: flicker 0.15s infinite;
-    transform: scale(1.1);
-}
-
-@keyframes flicker {
-    0% { opacity: 0.9; text-shadow: 2px 2px var(--cyber-blue); }
-    50% { opacity: 1; text-shadow: -2px -2px var(--cyber-pink); }
-    100% { opacity: 0.8; text-shadow: 2px -2px var(--cyber-blue); }
+#cyber-launcher:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 25px var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
 }
 
 /* หน้าต่างหลัก */
 .cyber-window {
     position: fixed;
-    top: 100px;
-    left: 100px;
-    width: 600px;
-    height: 800px;
-    background: var(--cyber-bg);
-    border: 1px solid var(--cyber-pink);
+    top: 50px;
+    left: 50px;
+    width: 750px;
+    height: 600px;
+    background: rgba(10, 10, 15, 0.98);
+    border: 2px solid var(--neon-blue);
     display: none;
     flex-direction: column;
     z-index: 10000;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 15px var(--cyber-blue);
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.9);
 }
 
 .cyber-header {
+    background: linear-gradient(90deg, var(--neon-blue), transparent);
     padding: 10px;
-    background: linear-gradient(90deg, var(--cyber-blue), transparent);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: default; /* จะเปลี่ยนเป็น grab เมื่อกางปุ่ม lock */
+    color: #000;
+    font-weight: bold;
+    letter-spacing: 2px;
 }
 
-.cyber-control-panel {
-    display: flex;
-    gap: 10px;
-    padding: 5px;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.lock-btn {
-    font-size: 12px;
-    padding: 2px 8px;
-    border: 1px solid var(--cyber-blue);
-    cursor: pointer;
-}
-
-.lock-btn.active {
-    background: var(--cyber-pink);
-    color: white;
-}
-
-/* คั่นหน้า (Tabs) แบบ Cyberpunk */
-.tab-sidebar {
-    width: 60px;
-    border-right: 1px solid var(--cyber-blue);
+/* ระบบแถบด้านข้าง (ที่คั่นหนังสือ) */
+.cyber-tabs {
+    width: 80px;
+    background: rgba(0,0,0,0.5);
+    border-right: 1px solid var(--neon-blue);
     display: flex;
     flex-direction: column;
 }
 
-.tab-icon {
-    padding: 15px 5px;
-    cursor: pointer;
+.tab-btn {
+    padding: 20px 5px;
+    color: var(--neon-blue);
+    writing-mode: vertical-rl;
     text-align: center;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-    writing-mode: vertical-rl; /* ตัวหนังสือแนวตั้งเหมือนที่คั่น */
-    text-orientation: mixed;
-    color: var(--cyber-blue);
+    cursor: pointer;
+    border-bottom: 1px solid var(--cyber-grid);
+    font-size: 12px;
     transition: 0.3s;
 }
 
-.tab-icon:hover, .tab-icon.active {
-    background: var(--cyber-pink);
-    color: #000;
-    box-shadow: -5px 0 10px var(--cyber-pink);
+.tab-btn.active {
+    background: var(--neon-pink);
+    color: white;
+    box-shadow: -5px 0 15px var(--neon-pink);
 }
 
-/* ปุ่มตัวเลขสำหรับตรวจสอบข้อความ */
-.numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    margin-top: 10px;
-}
-
-.num-btn {
-    background: #111;
-    border: 1px solid var(--cyber-blue);
-    color: var(--cyber-blue);
-    padding: 10px;
-    cursor: pointer;
-}
-
-.num-btn:hover {
-    background: var(--cyber-blue);
-    color: #000;
-}
-
-/* อนิเมชั่นหน้าต่างพลิก (Page Flip Effect) */
-.page-container {
-    perspective: 1000px;
-}
-
-.page-content {
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-}
-
-/* สถานะตัวละคร Grid */
-.stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.stat-box {
-    background: rgba(0, 255, 255, 0.1);
-    border-left: 3px solid var(--cyber-blue);
-    padding: 8px;
-    font-size: 0.9em;
-    text-transform: uppercase;
-}
-
-/* ช่องแสดงข้อมูลสภาพอากาศ */
-.weather-monitor {
+/* หน้าจอแสดงผลแบบ Monitor */
+.monitor-screen {
     background: #000;
-    border: 1px dashed var(--cyber-pink);
-    padding: 10px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    border: 1px solid var(--neon-pink);
+    padding: 15px;
+    height: 100%;
+    overflow-y: auto;
+    background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                      linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 3px 100%;
 }
 
-/* ปุ่มระบบช่วยเหลือ */
-.helper-btn-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.helper-btn {
-    background: linear-gradient(45deg, #111, #222);
-    border: 1px solid var(--cyber-pink);
-    color: var(--cyber-pink);
-    padding: 10px 15px;
-    cursor: pointer;
-    flex: 1;
-    min-width: 120px;
-}
-
-.helper-btn:hover {
-    background: var(--cyber-pink);
-    color: #000;
-    box-shadow: 0 0 15px var(--cyber-pink);
+/* อนิเมชั่นซ่าๆ (Glitch) */
+@keyframes cyber-flicker {
+    0% { opacity: 1; }
+    5% { opacity: 0.8; }
+    10% { opacity: 1; }
+    15% { opacity: 0.9; }
+    100% { opacity: 1; }
 }
