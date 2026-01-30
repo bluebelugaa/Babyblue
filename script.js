@@ -60,3 +60,50 @@
     makeDraggable(windowEl, document.querySelector('.cyber-header'), () => isWindowDraggable);
 })();
 
+// เพิ่มเข้าไปในไฟล์ script.js ต่อจาก Part 1
+
+async function updateLorebookInfo() {
+    const context = Cypress.getContext(); // ดึง context จาก SillyTavern
+    const lastMessage = context.chat[context.chat.length - 1]?.mes || "";
+    const lorebookEntries = context.lorebook?.entries || {};
+    
+    let activeEntries = [];
+
+    // ตรวจสอบว่าคำไหนใน Lorebook ทริกเกอร์บ้าง
+    for (let key in lorebookEntries) {
+        const entry = lorebookEntries[key];
+        const keywords = entry.keywords || [];
+        
+        keywords.forEach(kw => {
+            if (lastMessage.toLowerCase().includes(kw.toLowerCase())) {
+                activeEntries.push({
+                    name: entry.name || key,
+                    triggeredBy: kw
+                });
+            }
+        });
+    }
+
+    const loreListContainer = document.getElementById('lore-list');
+    loreListContainer.innerHTML = activeEntries.map(e => `
+        <div class="lore-item">
+            <span class="lore-name">${e.name}</span>
+            <span class="lore-tag">Triggered: "${e.triggeredBy}"</span>
+        </div>
+    `).join('') || "ไม่มี Lorebook ทริกเกอร์ในข้อความล่าสุด";
+}
+
+// ระบบตรวจสอบข้อความเก่าด้วยตัวเลข
+function inspectMessageByIndex() {
+    const inputNum = document.getElementById('inspect-number-input').value;
+    const context = Cypress.getContext();
+    const msg = context.chat[inputNum];
+
+    const displayArea = document.getElementById('inspect-display');
+    if (msg) {
+        displayArea.innerText = `[Message #${inputNum} - ${msg.name}]: \n${msg.mes}`;
+        displayArea.style.display = 'block';
+    } else {
+        displayArea.innerText = "ไม่พบข้อความที่ระบุ";
+    }
+}
