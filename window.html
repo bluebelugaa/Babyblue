@@ -41,3 +41,31 @@
     </div>
 </div>
 
+<div id="page-world" class="page-content" style="display:none">
+    <h3 class="neon-text">SYSTEM MONITOR</h3>
+    
+    <div class="weather-monitor">
+        <div>📅 <span id="current-date">31 JAN 2026</span></div>
+        <div>🕒 <span id="current-time">01:15</span></div>
+        <div>🌡️ <span id="current-temp">24°C</span></div>
+    </div>
+
+    <div id="char-stat-view">
+        </div>
+
+    <h4 style="color:var(--cyber-blue)">TRAVEL LOG</h4>
+    <div id="location-history" style="height: 150px; overflow-y: auto;">
+        </div>
+</div>
+
+<div id="page-help" class="page-content" style="display:none">
+    <h3 class="neon-text">TACTICAL ASSISTANT</h3>
+    <div id="helper-display" class="monitor-screen" style="height:100px; margin-bottom:20px;">
+        พร้อมให้ความช่วยเหลือ...
+    </div>
+    <div class="helper-btn-group">
+        <button class="helper-btn" onclick="askForHelper('summary')">สรุปสถานการณ์</button>
+        <button class="helper-btn" onclick="askForHelper('suggest')">ขอคำแนะนำ</button>
+        <button class="helper-btn" onclick="askForHelper('roll')">ให้ AI โรลแทน</button>
+    </div>
+</div>
