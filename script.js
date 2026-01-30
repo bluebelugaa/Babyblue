@@ -203,3 +203,39 @@ async function askForHelper(type) {
     const response = await callSillyTavernAPI(prompt);
     document.getElementById('helper-display').innerText = response;
 }
+
+// script.js (ส่วนขยายข้อ 1)
+export async function updateLorebookInfo() {
+    const context = getContext();
+    const chat = context.chat;
+    const lastMsg = chat[chat.length - 1];
+    
+    if (!lastMsg) return;
+
+    // ดึงรายการ Lorebook ที่ทำงานอยู่ (Active Entries)
+    // SillyTavern เก็บข้อมูลนี้ไว้ใน context.ordered_lore_items
+    const activeLore = context.ordered_lore_items || [];
+    
+    let reportHtml = "";
+
+    activeLore.forEach(item => {
+        // หาคำที่ทำให้ Lorebook นี้ติด (Trigger Keywords)
+        const foundKeywords = item.keywords.filter(kw => 
+            lastMsg.mes.toLowerCase().includes(kw.toLowerCase())
+        );
+
+        if (foundKeywords.length > 0) {
+            reportHtml += `
+                <div class="lore-card">
+                    <div class="lore-header">${item.name || 'Unnamed Entry'}</div>
+                    <div class="lore-body">
+                        <p><strong>Trigger Keywords:</strong> ${foundKeywords.join(', ')}</p>
+                        <p class="lore-desc-preview">${item.content.substring(0, 50)}...</p>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    document.getElementById('lore-list').innerHTML = reportHtml || "ไม่มี Lorebook ทำงานในข้อความนี้";
+}
