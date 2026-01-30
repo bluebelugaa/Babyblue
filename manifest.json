@@ -2,12 +2,11 @@
     "name": "Cyber-Companion-X",
     "display_name": "Cyberpunk Companion X",
     "version": "1.0.0",
-    "description": "Cyberpunk UI with Lorebook Tracker, Side-Chat, and World State Monitor",
-    "author": "Gemini AI & You",
+    "description": "Full Cyberpunk Interface with Lorebook Tracking, Side-Chat, and World State Monitor",
+    "author": "AI Collaborator",
     "entrypoint": "index.js",
     "js": ["script.js"],
     "css": ["style.css"],
     "requires": [],
     "optional": []
 }
-
