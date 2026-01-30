@@ -107,3 +107,45 @@ function inspectMessageByIndex() {
         displayArea.innerText = "ไม่พบข้อความที่ระบุ";
     }
 }
+
+// ตัวแปรเก็บข้อมูลแชทคุยเล่น
+let sideChatLogs = JSON.parse(localStorage.getItem('cyber_sidechat_logs') || '{}');
+let currentCharacterName = "";
+
+// ฟังก์ชันดึงชื่อรูท (ชื่อตัวละครที่กำลังคุย)
+function getChatRoot() {
+    const context = Cypress.getContext();
+    return context.character_tag || "default_root";
+}
+
+// ระบบบันทึกแชทคุยเล่นแบบแยกรูท
+function saveSideChat(message, isAI = false) {
+    const root = getChatRoot();
+    if (!sideChatLogs[root]) sideChatLogs[root] = [];
+    
+    sideChatLogs[root].push({
+        sender: isAI ? "AI-Buddy" : "User",
+        text: message,
+        timestamp: new Date().toLocaleTimeString()
+    });
+    
+    localStorage.setItem('cyber_sidechat_logs', JSON.stringify(sideChatLogs));
+    renderSideChat();
+}
+
+// คำสั่งพิเศษส่งให้ AI (Hidden Prompt)
+const SIDE_CHAT_PROMPT = `
+[System Note: ต่อไปนี้คุณคือ "เพื่อนสนิท" ที่กำลังแอบดูการโรลเพลย์นี้อยู่ 
+หน้าที่ของคุณคือชวนผู้ใช้เม้าท์เกี่ยวกับเหตุการณ์ที่เพิ่งเกิดขึ้น 
+ห้ามใช้คำพูดเป็นทางการ ห้ามสวมบทตัวละครในโรล 
+ให้คุยแบบเพื่อนซี้ที่ขี้นินทาและคอยเชียร์อยู่ข้างๆ แยกขาดจากเนื้อเรื่องหลัก]
+`;
+
+async function talkToSideAI(userInput) {
+    const context = Cypress.getContext();
+    const lastHistory = context.chat.slice(-3); // ดึง 3 ข้อความล่าสุดมาให้ AI เพื่อนวิเคราะห์
+    
+    // ตรงนี้จะใช้ API ของ SillyTavern ส่ง prompt ลับไปถาม AI
+    // โดยที่ไม่ให้ข้อความนี้โผล่ในแชทหลัก
+}
+
