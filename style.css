@@ -1,40 +1,61 @@
+:root {
+    --neon-pink: #ff00ff;
+    --neon-blue: #00ffff;
+}
 
-/* style.css */
 #cyber-trigger-btn {
-    /* บังคับให้อยู่กลางหน้าจอเป๊ะๆ */
     position: fixed;
-    top: 50%;
+    top: 10%; /* ปรับให้อยู่ด้านบนตามที่ปรากฏในมือถือคุณ */
     left: 50%;
-    transform: translate(-50%, -50%);
-
-    /* ขนาดและสี */
-    width: 80px;
-    height: 80px;
-    background-color: black;
-    border: 3px solid #00ffff; /* สีฟ้า */
-    color: #ff00ff; /* สีชมพู */
+    transform: translateX(-50%);
     
-    /* จัดตัวอักษร X กึ่งกลาง */
+    width: 70px;
+    height: 70px;
+    
+    /* ลบพื้นหลังและกรอบออก */
+    background: none;
+    border: none;
+    outline: none;
+    
     display: flex;
     justify-content: center;
     align-items: center;
-    
-    /* Font และขนาด */
-    font-family: monospace;
-    font-size: 40px;
-    font-weight: bold;
-    
-    /* Layer สูงสุด ทะลุทุกอย่าง */
-    z-index: 999999;
     cursor: pointer;
-
-    /* เอฟเฟกต์แสงวิบวับ (Glow) */
-    box-shadow: 0 0 15px #00ffff;
-    animation: pulse-glow 1.5s infinite alternate;
+    z-index: 999999;
 }
 
-/* อนิเมชั่นกระพริบ */
-@keyframes pulse-glow {
-    from { box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff; }
-    to { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff; transform: translate(-50%, -50%) scale(1.1); }
+/* ตัวสัญลักษณ์ SVG */
+.cyber-cross {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 5px var(--neon-pink)) drop-shadow(0 0 10px var(--neon-blue));
+    animation: glitch-animation 2s infinite linear;
+}
+
+/* เอฟเฟกต์ซ่าๆ และวิบวับแบบ Cyberpunk */
+@keyframes glitch-animation {
+    0% { transform: scale(1); opacity: 1; filter: hue-rotate(0deg) blur(0px); }
+    10% { transform: scale(1.1) skew(2deg); opacity: 0.8; filter: blur(1px); }
+    15% { transform: scale(0.9); opacity: 1; filter: blur(0px); }
+    20% { filter: drop-shadow(0 0 15px var(--neon-pink)); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* เพิ่มเส้น Scanline วิ่งผ่านสัญลักษณ์ */
+#cyber-trigger-btn::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: var(--neon-blue);
+    opacity: 0.5;
+    box-shadow: 0 0 10px var(--neon-blue);
+    animation: scanline 3s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes scanline {
+    0% { top: 0%; opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { top: 100%; opacity: 0; }
 }
