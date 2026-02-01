@@ -1,61 +1,106 @@
 :root {
-    --neon-pink: #ff00ff;
-    --neon-blue: #00ffff;
+    --frost-gray: #2d2d2d;
+    --ice-blue: #a0e9ff; /* ฟ้าจางๆ เย็นๆ */
+    --deep-steel: #1a1a1a;
+    --glow-shadow: 0 0 15px rgba(160, 233, 255, 0.4);
 }
 
+/* สัญลักษณ์ปุ่มเปิด (The Core) */
 #cyber-trigger-btn {
     position: fixed;
-    top: 10%; /* ตำแหน่งด้านบนตามที่โชว์ในมือถือ */
-    left: 50%;
+    top: 10%; left: 50%;
     transform: translateX(-50%);
-    
-    /* ย่อขนาดลงเหลือประมาณครึ่งนึง (จาก 70-80px เหลือ 40px) */
-    width: 40px;
-    height: 40px;
-    
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 50%; /* ทรงวงกลม */
-    border: 2px solid var(--neon-blue);
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 999999;
-    
-    /* ขอบเรืองแสง */
-    box-shadow: 0 0 10px var(--neon-blue), inset 0 0 5px var(--neon-pink);
-    overflow: hidden;
+    width: 45px; height: 45px;
+    background: radial-gradient(circle, var(--frost-gray), var(--deep-steel));
+    border: 1.5px solid var(--ice-blue);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; z-index: 999999;
+    box-shadow: var(--glow-shadow);
+    transition: all 0.3s ease;
 }
 
-/* ตั้งค่าตัวอิโมจิ 🌀 */
-.cyber-spiral {
-    font-size: 20px; /* ขนาดเล็กลงตามปุ่ม */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: rotate-spiral 2s linear infinite; /* ทำให้หมุน */
+.frost-spiral {
+    font-size: 20px;
+    animation: rotate-frost 4s linear infinite;
+    filter: drop-shadow(0 0 5px var(--ice-blue));
 }
 
-/* อนิเมชั่นการหมุน */
-@keyframes rotate-spiral {
+@keyframes rotate-frost {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
-/* เอฟเฟกต์ไฟกะพริบซ่าๆ รอบวงกลม */
-#cyber-trigger-btn::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    box-shadow: 0 0 15px var(--neon-pink);
-    animation: flicker-glow 1.5s infinite alternate;
-    pointer-events: none;
+/* หน้าต่างหลัก (Main Window) */
+#wasteland-window {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw; max-width: 600px;
+    height: 80vh;
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid var(--ice-blue);
+    display: none; /* เริ่มต้นซ่อนไว้ */
+    flex-direction: column;
+    z-index: 1000000;
+    box-shadow: 0 0 30px rgba(0,0,0,1), 0 0 10px var(--ice-blue);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    color: #ccc;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
-@keyframes flicker-glow {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; scale: 1.05; }
+/* Header & Controls */
+.window-header {
+    background: rgba(160, 233, 255, 0.1);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(160, 233, 255, 0.3);
+}
+
+.header-title {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--ice-blue);
+    text-transform: uppercase;
+}
+
+.controls { display: flex; gap: 8px; }
+
+.btn-ctrl {
+    background: #333;
+    border: 1px solid var(--ice-blue);
+    color: var(--ice-blue);
+    padding: 2px 8px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.btn-ctrl.active {
+    background: var(--ice-blue);
+    color: #000;
+    box-shadow: 0 0 10px var(--ice-blue);
+}
+
+/* สไตล์สวิตช์หน้า (Tabs) */
+.nav-bar {
+    display: flex;
+    overflow-x: auto;
+    background: #111;
+}
+
+.tab-link {
+    padding: 12px 20px;
+    font-size: 12px;
+    cursor: pointer;
+    border-right: 1px solid #222;
+    white-space: nowrap;
+}
+
+.tab-link.active {
+    background: var(--frost-gray);
+    color: var(--ice-blue);
+    border-bottom: 2px solid var(--ice-blue);
 }
