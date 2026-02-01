@@ -1,35 +1,30 @@
-// index.js - Force Load Version
-
-console.log(">>> Neon Cyberpunk: Script Loaded");
+// index.js
+console.log("!!! NEON SYSTEM: STARTING LOAD !!!"); // เช็คว่าไฟล์โหลดไหม
 
 (function() {
-    // ฟังก์ชันสร้างปุ่ม
-    function createTriggerButton() {
-        // ถ้ามีปุ่มอยู่แล้ว ไม่ต้องทำอะไร
+    function injectButton() {
+        // 1. เช็คว่ามีปุ่มหรือยัง ถ้ามีแล้วให้หยุด
         if (document.getElementById('cyber-trigger-btn')) return;
 
-        console.log(">>> Neon Cyberpunk: Creating Button...");
+        console.log("!!! NEON SYSTEM: Injecting Button !!!");
 
-        // สร้าง Element ปุ่ม
+        // 2. สร้างปุ่ม
         const btn = document.createElement('div');
         btn.id = 'cyber-trigger-btn';
         btn.innerHTML = 'X';
-        btn.title = 'Open Cyberpunk System';
+        
+        // 3. ใส่ Event คลิก (ทดสอบ)
+        btn.addEventListener('click', () => {
+            alert("Cyberpunk System: Active!");
+        });
 
-        // Event คลิก (ใส่ไว้เทสว่ากดติดไหม)
-        btn.onclick = function() {
-            alert('SYSTEM ONLINE: ยินดีต้อนรับสู่ Cyberpunk Interface');
-            // เดี๋ยวเราค่อยใส่โค้ดเปิดหน้าต่างตรงนี้
-        };
-
-        // ยัดใส่ Body โดยตรง
+        // 4. ยัดใส่หน้าเว็บ
         document.body.appendChild(btn);
     }
 
-    // เทคนิค: ST เป็น Single Page App บางทีโหลดเสร็จแล้ว Elements เปลี่ยน
-    // เราจะเช็คทุกๆ 1 วินาที ว่าปุ่มยังอยู่ไหม (ถ้าไม่อยู่ก็สร้างใหม่)
-    setInterval(createTriggerButton, 1000);
-
-    // รันครั้งแรกทันที
-    setTimeout(createTriggerButton, 500);
+    // สั่งให้เช็คทุกๆ 1 วินาที (เผื่อ ST โหลดช้า)
+    setInterval(injectButton, 1000);
+    
+    // ลองยัดทันทีด้วย
+    setTimeout(injectButton, 500);
 })();
