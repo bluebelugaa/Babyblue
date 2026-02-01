@@ -1,30 +1,30 @@
-// index.js
-console.log("!!! NEON SYSTEM: STARTING LOAD !!!"); // เช็คว่าไฟล์โหลดไหม
-
 (function() {
-    function injectButton() {
-        // 1. เช็คว่ามีปุ่มหรือยัง ถ้ามีแล้วให้หยุด
+    function injectCyberButton() {
         if (document.getElementById('cyber-trigger-btn')) return;
 
-        console.log("!!! NEON SYSTEM: Injecting Button !!!");
-
-        // 2. สร้างปุ่ม
         const btn = document.createElement('div');
         btn.id = 'cyber-trigger-btn';
-        btn.innerHTML = 'X';
-        
-        // 3. ใส่ Event คลิก (ทดสอบ)
+
+        // สร้างสัญลักษณ์ X แบบกราฟิก SVG
+        btn.innerHTML = `
+            <svg class="cyber-cross" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <line x1="20" y1="20" x2="80" y2="80" stroke="#ff00ff" stroke-width="8" stroke-linecap="square" />
+                <line x1="80" y1="20" x2="20" y2="80" stroke="#00ffff" stroke-width="8" stroke-linecap="square" />
+                
+                <circle cx="20" cy="20" r="3" fill="#00ffff" />
+                <circle cx="80" cy="80" r="3" fill="#ff00ff" />
+                <circle cx="80" cy="20" r="3" fill="#00ffff" />
+                <circle cx="20" cy="80" r="3" fill="#ff00ff" />
+            </svg>
+        `;
+
         btn.addEventListener('click', () => {
-            alert("Cyberpunk System: Active!");
+            console.log("Cyber System Opening...");
+            // เดี๋ยวจะเขียนโค้ดเปิดหน้าต่างที่มีปุ่ม Settings และเมนูหน้าถัดไปในพาร์ทหน้าครับ
         });
 
-        // 4. ยัดใส่หน้าเว็บ
         document.body.appendChild(btn);
     }
 
-    // สั่งให้เช็คทุกๆ 1 วินาที (เผื่อ ST โหลดช้า)
-    setInterval(injectButton, 1000);
-    
-    // ลองยัดทันทีด้วย
-    setTimeout(injectButton, 500);
+    setInterval(injectCyberButton, 1000);
 })();
