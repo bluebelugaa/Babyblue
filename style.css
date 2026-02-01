@@ -1,106 +1,82 @@
 :root {
-    --frost-gray: #2d2d2d;
-    --ice-blue: #a0e9ff; /* ฟ้าจางๆ เย็นๆ */
-    --deep-steel: #1a1a1a;
-    --glow-shadow: 0 0 15px rgba(160, 233, 255, 0.4);
+    --gray-metal: #3a3a3a;
+    --dark-scrap: #121212;
+    --ice-glow: #87cefa; /* ฟ้าไอเย็น */
+    --rust-dust: rgba(255, 255, 255, 0.05);
 }
 
-/* สัญลักษณ์ปุ่มเปิด (The Core) */
+/* ปุ่มกดสัญลักษณ์ 🌀 แบบดิบๆ */
 #cyber-trigger-btn {
     position: fixed;
-    top: 10%; left: 50%;
+    top: 5%; left: 50%;
     transform: translateX(-50%);
-    width: 45px; height: 45px;
-    background: radial-gradient(circle, var(--frost-gray), var(--deep-steel));
-    border: 1.5px solid var(--ice-blue);
+    width: 42px; height: 42px;
+    
+    /* ตกแต่งให้เหมือนเศษเหล็กวงกลม */
+    background: var(--dark-scrap);
+    border: 2px solid #555;
     border-radius: 50%;
+    box-shadow: 
+        inset 0 0 10px #000,
+        0 0 5px var(--ice-glow);
+    
     display: flex; justify-content: center; align-items: center;
     cursor: pointer; z-index: 999999;
-    box-shadow: var(--glow-shadow);
-    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* เอฟเฟกต์ซ่าๆ (เม็ดฝุ่น) บนปุ่ม */
+#cyber-trigger-btn::before {
+    content: "";
+    position: absolute;
+    width: 200%; height: 200%;
+    background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.3;
+    animation: grain-move 1s steps(5) infinite;
+}
+
+@keyframes grain-move {
+    0% { transform: translate(0,0); }
+    100% { transform: translate(-5%, -5%); }
 }
 
 .frost-spiral {
-    font-size: 20px;
-    animation: rotate-frost 4s linear infinite;
-    filter: drop-shadow(0 0 5px var(--ice-blue));
+    font-size: 18px;
+    color: var(--ice-glow);
+    text-shadow: 0 0 8px var(--ice-glow);
+    animation: spin-decay 5s linear infinite;
+    z-index: 2;
 }
 
-@keyframes rotate-frost {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+@keyframes spin-decay {
+    0% { transform: rotate(0deg); opacity: 1; }
+    50% { opacity: 0.5; } /* กะพริบเหมือนไฟจะดับ */
+    100% { transform: rotate(360deg); opacity: 1; }
 }
 
-/* หน้าต่างหลัก (Main Window) */
+/* หน้าต่างหลักสไตล์ Terminal เก่า */
 #wasteland-window {
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 90vw; max-width: 600px;
-    height: 80vh;
-    background: rgba(20, 20, 20, 0.95);
-    border: 1px solid var(--ice-blue);
-    display: none; /* เริ่มต้นซ่อนไว้ */
+    width: 95vw; height: 85vh;
+    background: rgba(15, 15, 15, 0.98);
+    border: 1px solid #444;
+    color: #a0a0a0;
+    display: none;
     flex-direction: column;
     z-index: 1000000;
-    box-shadow: 0 0 30px rgba(0,0,0,1), 0 0 10px var(--ice-blue);
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    color: #ccc;
-    border-radius: 5px;
-    overflow: hidden;
+    box-shadow: 0 0 40px #000;
+    font-family: 'Courier New', Courier, monospace; /* Font แบบพิมพ์ดีด */
 }
 
-/* Header & Controls */
-.window-header {
-    background: rgba(160, 233, 255, 0.1);
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(160, 233, 255, 0.3);
-}
-
-.header-title {
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-    color: var(--ice-blue);
-    text-transform: uppercase;
-}
-
-.controls { display: flex; gap: 8px; }
-
-.btn-ctrl {
-    background: #333;
-    border: 1px solid var(--ice-blue);
-    color: var(--ice-blue);
-    padding: 2px 8px;
-    font-size: 10px;
+/* ปุ่มปิดหน้าต่าง X ที่มุมขวา */
+.close-corner {
+    position: absolute;
+    top: 10px; right: 10px;
+    color: #666;
     cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
 }
-
-.btn-ctrl.active {
-    background: var(--ice-blue);
-    color: #000;
-    box-shadow: 0 0 10px var(--ice-blue);
-}
-
-/* สไตล์สวิตช์หน้า (Tabs) */
-.nav-bar {
-    display: flex;
-    overflow-x: auto;
-    background: #111;
-}
-
-.tab-link {
-    padding: 12px 20px;
-    font-size: 12px;
-    cursor: pointer;
-    border-right: 1px solid #222;
-    white-space: nowrap;
-}
-
-.tab-link.active {
-    background: var(--frost-gray);
-    color: var(--ice-blue);
-    border-bottom: 2px solid var(--ice-blue);
-}
+.close-corner:hover { color: var(--ice-glow); }
