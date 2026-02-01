@@ -1,12 +1,8 @@
 {
-    "name": "Cyber-Companion-X",
-    "display_name": "Cyberpunk Companion X",
+    "name": "Neon Cyberpunk System",
     "version": "1.0.0",
-    "description": "Full Cyberpunk Interface with Lorebook Tracking, Side-Chat, and World State Monitor",
-    "author": "AI Collaborator",
-    "entrypoint": "index.js",
-    "js": ["script.js"],
-    "css": ["style.css"],
-    "requires": [],
-    "optional": []
+    "author": "You",
+    "description": "Advanced Cyberpunk UI with Lorebook tracker, OOC Chat, and World Status integration.",
+    "css": "style.css",
+    "js": "index.js"
 }
