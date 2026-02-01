@@ -1,51 +1,61 @@
-
 :root {
-    --dust-gray: #4a4a4a;
-    --old-steel: #8e8e8e;
-    --rust-amber: #cd7f32;
-    --terminal-dim: rgba(20, 20, 20, 0.85);
+    --neon-pink: #ff00ff;
+    --neon-blue: #00ffff;
 }
 
 #cyber-trigger-btn {
     position: fixed;
-    top: 10%;
+    top: 10%; /* ตำแหน่งด้านบนตามที่โชว์ในมือถือ */
     left: 50%;
     transform: translateX(-50%);
     
-    width: 75px;
-    height: 75px;
-    background: none;
-    border: none;
+    /* ย่อขนาดลงเหลือประมาณครึ่งนึง (จาก 70-80px เหลือ 40px) */
+    width: 40px;
+    height: 40px;
+    
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 50%; /* ทรงวงกลม */
+    border: 2px solid var(--neon-blue);
+    
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     z-index: 999999;
+    
+    /* ขอบเรืองแสง */
+    box-shadow: 0 0 10px var(--neon-blue), inset 0 0 5px var(--neon-pink);
+    overflow: hidden;
 }
 
-/* วงกลมเหล็กเก่าๆ */
-.wasteland-circle {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 5px #000);
-    animation: grit-flicker 4s infinite;
+/* ตั้งค่าตัวอิโมจิ 🌀 */
+.cyber-spiral {
+    font-size: 20px; /* ขนาดเล็กลงตามปุ่ม */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: rotate-spiral 2s linear infinite; /* ทำให้หมุน */
 }
 
-/* เอฟเฟกต์ความเก่าและฝุ่นควัน */
-@keyframes grit-flicker {
-    0%, 100% { opacity: 1; filter: grayscale(0.5) contrast(1.2); }
-    50% { opacity: 0.7; filter: grayscale(0.8) contrast(0.9) sepia(0.3); }
-    90% { transform: scale(1); }
-    91% { transform: scale(1.02) translateX(1px); } /* อาการภาพสั่นแบบเครื่องจักรเก่า */
+/* อนิเมชั่นการหมุน */
+@keyframes rotate-spiral {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* เพิ่มคราบเขม่ารอบๆ */
-#cyber-trigger-btn::before {
+/* เอฟเฟกต์ไฟกะพริบซ่าๆ รอบวงกลม */
+#cyber-trigger-btn::after {
     content: "";
     position: absolute;
-    width: 110%;
-    height: 110%;
-    background: radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(50,50,50,0.4) 70%);
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
+    box-shadow: 0 0 15px var(--neon-pink);
+    animation: flicker-glow 1.5s infinite alternate;
     pointer-events: none;
+}
+
+@keyframes flicker-glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; scale: 1.05; }
 }
