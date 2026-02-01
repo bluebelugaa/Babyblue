@@ -1,8 +1,9 @@
 {
-    "name": "Neon Cyberpunk System",
-    "version": "1.0.0",
-    "author": "You",
-    "description": "Advanced Cyberpunk UI with Lorebook tracker, OOC Chat, and World Status integration.",
+    "name": "NeonCyberpunkSystem",
+    "version": "2.0.0",
+    "author": "NCS-Project",
+    "description": "Cyberpunk UI Extension for SillyTavern",
     "css": "style.css",
     "js": "index.js"
 }
+ 
