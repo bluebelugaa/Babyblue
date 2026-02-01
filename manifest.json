@@ -1,9 +1,9 @@
+
 {
-    "name": "NeonCyberpunkSystem",
-    "version": "2.0.0",
-    "author": "NCS-Project",
-    "description": "Cyberpunk UI Extension for SillyTavern",
+    "name": "Neon Cyberpunk System",
+    "version": "1.0.0",
+    "author": "You",
+    "description": "Cyberpunk UI Trigger",
     "css": "style.css",
     "js": "index.js"
 }
- 
