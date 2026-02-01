@@ -1,60 +1,40 @@
-:root {
-    --cp-pink: #ff0055;
-    --cp-blue: #00e5ff;
-    --cp-bg: rgba(10, 10, 15, 0.9);
-}
 
-/* เอฟเฟกต์กระพริบแบบไฟนีออนเสีย (Glitch/Flicker) */
-@keyframes neon-flicker {
-    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-        box-shadow: 0 0 5px var(--cp-blue), 0 0 10px var(--cp-blue), 0 0 20px var(--cp-blue);
-        text-shadow: 0 0 2px var(--cp-pink);
-        opacity: 1;
-    }
-    20%, 24%, 55% {
-        box-shadow: none;
-        text-shadow: none;
-        opacity: 0.5;
-    }
-}
-
+/* style.css */
 #cyber-trigger-btn {
-    /* บังคับตำแหน่งให้อยู่ขวาล่างแน่นอน */
+    /* บังคับให้อยู่กลางหน้าจอเป๊ะๆ */
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    /* ขนาดและสี */
+    width: 80px;
+    height: 80px;
+    background-color: black;
+    border: 3px solid #00ffff; /* สีฟ้า */
+    color: #ff00ff; /* สีชมพู */
     
-    width: 60px;
-    height: 60px;
+    /* จัดตัวอักษร X กึ่งกลาง */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     
-    /* สไตล์ Cyberpunk */
-    background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(20,20,20,0.9));
-    border: 2px solid var(--cp-blue);
-    border-radius: 8px; /* เหลี่ยมๆ หน่อย */
-    color: var(--cp-pink);
-    
-    /* Font */
-    font-family: 'Courier New', monospace;
-    font-size: 32px;
+    /* Font และขนาด */
+    font-family: monospace;
+    font-size: 40px;
     font-weight: bold;
     
-    /* จัดกึ่งกลาง */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
     /* Layer สูงสุด ทะลุทุกอย่าง */
-    z-index: 2147483647; 
+    z-index: 999999;
     cursor: pointer;
-    
-    /* Animation */
-    animation: neon-flicker 3s infinite alternate;
-    transition: all 0.3s ease;
+
+    /* เอฟเฟกต์แสงวิบวับ (Glow) */
+    box-shadow: 0 0 15px #00ffff;
+    animation: pulse-glow 1.5s infinite alternate;
 }
 
-#cyber-trigger-btn:hover {
-    transform: scale(1.1);
-    border-color: var(--cp-pink);
-    color: var(--cp-blue);
-    box-shadow: 0 0 15px var(--cp-pink), 0 0 30px var(--cp-pink);
+/* อนิเมชั่นกระพริบ */
+@keyframes pulse-glow {
+    from { box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff; }
+    to { box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff; transform: translate(-50%, -50%) scale(1.1); }
 }
