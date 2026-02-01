@@ -1,109 +1,125 @@
 (function() {
-    let tLocked = true; // เริ่มต้นที่ล็อคไว้เสมอ
-    let wLocked = true;
+    let moveT = false, moveW = false;
+    let dropletInterval; // สำหรับเก็บ interval ของหยดน้ำ
 
-    function createPremiumUI() {
+    function buildSystem() {
         if (document.getElementById('cyber-trigger-btn')) return;
 
-        // สร้างปุ่ม (Trigger)
+        // 1. สร้างปุ่มกลม (The Droplet Orb)
         const btn = document.createElement('div');
         btn.id = 'cyber-trigger-btn';
-        btn.innerHTML = `<span class="frost-spiral">🌀</span>`;
         document.body.appendChild(btn);
 
-        // สร้างหน้าต่าง (Main Window)
-        const win = document.createElement('div');
-        win.id = 'wasteland-window';
-        win.innerHTML = `
-            <div class="win-header" id="win-drag-handle">
-                <span class="win-title">Wasteland_Core_OS</span>
-                <div style="display:flex; gap:10px;">
-                    <div id="btn-t-lock" class="mini-tag">T_LOCK</div>
-                    <div id="btn-w-lock" class="mini-tag">W_LOCK</div>
-                    <div id="btn-close" class="mini-tag" style="color:#ff6b6b;">[X]</div>
+        // เริ่มสร้างหยดน้ำทุก 0.5-1.5 วินาที
+        dropletInterval = setInterval(() => {
+            const drop = document.createElement('div');
+            drop.classList.add('water-drop');
+            // สุ่มตำแหน่ง X
+            drop.style.left = (Math.random() * 80 + 10) + '%'; 
+            // สุ่ม delay เพื่อให้ดูเป็นธรรมชาติ
+            drop.style.animationDelay = (Math.random() * 0.5) + 's';
+            btn.appendChild(drop);
+
+            // ลบหยดน้ำเมื่อ Animation จบ
+            drop.addEventListener('animationend', () => {
+                drop.remove();
+            });
+        }, 800); // ทุก 0.8 วินาที
+
+        // 2. สร้างหน้าต่าง Panel
+        const panel = document.createElement('div');
+        panel.id = 'wasteland-panel';
+        panel.innerHTML = `
+            <div id="panel-header" style="padding:15px; background:#111; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(137,212,255,0.1);">
+                <span style="font-size:10px; color:#555; letter-spacing:2px;">WASTELAND_UI_v2.1</span>
+                <div style="display:flex; gap:8px;">
+                    <div id="m-t-btn" class="ctrl-tag">MOVE_T</div>
+                    <div id="m-w-btn" class="ctrl-tag">MOVE_W</div>
+                    <div id="close-p" class="ctrl-tag" style="color:#ff6b6b;">[X]</div>
                 </div>
             </div>
-            
-            <div id="content-container" style="flex:1; overflow-y:auto; padding:20px;">
-                <div id="page-lore">ระบบกำลังเตรียมการ...</div>
+            <div class="nav-container">
+                <div class="nav-tab active" onclick="loadTab('lore')">LOREBOOK</div>
+                <div class="nav-tab" onclick="loadTab('inspect')">INSPECTOR</div>
+                <div class="nav-tab" onclick="loadTab('chat')">OOC_CHAT</div>
+                <div class="nav-tab" onclick="loadTab('world')">WORLD_STATE</div>
+                <div class="nav-tab" onclick="loadTab('help')">ASSIST</div>
             </div>
-
-            <div class="footer-nav">
-                <div class="nav-btn active" onclick="navTo('lore')">LORE</div>
-                <div class="nav-btn" onclick="navTo('inspect')">INSPECT</div>
-                <div class="nav-btn" onclick="navTo('ooc')">OOC</div>
-                <div class="nav-btn" onclick="navTo('world')">WORLD</div>
-            </div>
+            <div id="panel-body" style="flex:1; padding:20px; overflow-y:auto; color:#999; font-size:13px;">
+                <p>ระบบพร้อมใช้งาน. โปรดเลือกฟังก์ชันจากเมนูด้านบน.</p>
+                </div>
         `;
-        document.body.appendChild(win);
+        document.body.appendChild(panel);
 
-        // ใส่สไตล์เสริม
         const s = document.createElement('style');
         s.innerHTML = `
-            .mini-tag { font-size: 9px; border: 1px solid #444; padding: 2px 6px; cursor: pointer; color: #888; border-radius: 3px; }
-            .mini-tag.unlocked { color: var(--ice-blue); border-color: var(--ice-blue); box-shadow: 0 0 5px var(--ice-blue); }
-            .footer-nav { display: flex; height: 60px; background: #111; border-top: 1px solid #222; }
-            .nav-btn { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; color: #555; transition: 0.3s; }
-            .nav-btn.active { color: var(--ice-blue); background: rgba(176,234,255,0.05); }
+            .ctrl-tag { font-size: 8px; border: 1px solid #333; padding: 2px 6px; cursor: pointer; border-radius: 2px; }
+            .ctrl-tag.on { border-color: var(--soft-ice-blue); color: var(--soft-ice-blue); }
+            .nav-container::-webkit-scrollbar { display: none; }
         `;
         document.head.appendChild(s);
 
-        initEvents();
+        attachEvents();
     }
 
-    function initEvents() {
+    function attachEvents() {
         const btn = document.getElementById('cyber-trigger-btn');
-        const win = document.getElementById('wasteland-window');
-        const lockT = document.getElementById('btn-t-lock');
-        const lockW = document.getElementById('btn-w-lock');
+        const panel = document.getElementById('wasteland-panel');
+        const mt = document.getElementById('m-t-btn');
+        const mw = document.getElementById('m-w-btn');
 
-        // เปิดหน้าต่าง
-        btn.onclick = () => {
-            if (!tLocked) return; // ถ้าไม่ได้ล็อคปุ่มไว้ (กำลังเลื่อน) ห้ามเปิด
-            win.style.display = 'flex';
+        btn.onclick = () => { if (!moveT) panel.style.display = 'flex'; };
+
+        document.getElementById('close-p').onclick = () => {
+            panel.style.display = 'none';
+            moveT = false; moveW = false;
+            mt.classList.remove('on'); mw.classList.remove('on');
+            toggleDrag(btn, false);
+            toggleDrag(panel, false);
         };
 
-        // ปิดหน้าต่าง + รีเซ็ตโหมดการเลื่อนทันที (กันลืมปิดแล้วใช้งานไม่ได้)
-        document.getElementById('btn-close').onclick = () => {
-            win.style.display = 'none';
-            tLocked = true; wLocked = true;
-            lockT.classList.remove('unlocked');
-            lockW.classList.remove('unlocked');
-            stopDrag(btn);
-            stopDrag(win);
+        mt.onclick = () => {
+            moveT = !moveT;
+            mt.classList.toggle('on');
+            toggleDrag(btn, moveT);
         };
 
-        // ตั้งค่าการเลื่อนปุ่ม X
-        lockT.onclick = () => {
-            tLocked = !tLocked;
-            lockT.classList.toggle('unlocked');
-            lockT.innerText = tLocked ? "T_LOCKED" : "T_FREE";
-            if (!tLocked) startDrag(btn); else stopDrag(btn);
-        };
-
-        // ตั้งค่าการเลื่อนหน้าต่าง
-        lockW.onclick = () => {
-            wLocked = !wLocked;
-            lockW.classList.toggle('unlocked');
-            lockW.innerText = wLocked ? "W_LOCKED" : "W_FREE";
-            if (!wLocked) startDrag(win, document.getElementById('win-drag-handle')); else stopDrag(win);
+        mw.onclick = () => {
+            moveW = !moveW;
+            mw.classList.toggle('on');
+            toggleDrag(panel, moveW, document.getElementById('panel-header'));
         };
     }
 
-    function startDrag(el, handle) {
+    function toggleDrag(el, enable, handle) {
         const target = handle || el;
+        if (!enable) { target.ontouchmove = null; return; }
         target.ontouchmove = (e) => {
             e.preventDefault();
-            let t = e.touches[0];
-            el.style.left = t.clientX + 'px';
-            el.style.top = t.clientY + 'px';
-            el.style.transform = handle ? 'translate(-50%, -50%)' : 'translate(-50%, -50%)';
+            let touch = e.touches[0];
+            el.style.left = touch.clientX + 'px';
+            el.style.top = touch.clientY + 'px';
+            el.style.transform = 'translate(-50%, -50%)';
         };
     }
+    
+    // Global function for tab switching (จะใช้ในส่วนถัดไป)
+    window.loadTab = function(tabName) {
+        document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelector(`.nav-tab[onclick="loadTab('${tabName}')"]`).classList.add('active');
+        
+        const panelBody = document.getElementById('panel-body');
+        panelBody.innerHTML = `<p>Loading ${tabName.toUpperCase()} data...</p>`;
+        
+        // Placeholder สำหรับเนื้อหาจริงของแต่ละ Tab
+        switch(tabName) {
+            case 'lore': panelBody.innerHTML = '<h3>> LOREBOOK_SCANNER</h3><p>ระบบตรวจสอบ Lorebook ยังไม่ได้ติดตั้ง.</p>'; break;
+            case 'inspect': panelBody.innerHTML = '<h3>> MESSAGE_INSPECTOR</h3><p>ระบบตรวจสอบข้อความยังไม่ได้ติดตั้ง.</p>'; break;
+            case 'chat': panelBody.innerHTML = '<h3>> OOC_CHANNEL</h3><p>ระบบ OOC Chat ยังไม่ได้ติดตั้ง.</p>'; break;
+            case 'world': panelBody.innerHTML = '<h3>> WORLD_STATE</h3><p>ระบบสถานะโลกยังไม่ได้ติดตั้ง.</p>'; break;
+            case 'help': panelBody.innerHTML = '<h3>> AI_ASSIST</h3><p>ระบบช่วยเหลือ AI ยังไม่ได้ติดตั้ง.</p>'; break;
+        }
+    };
 
-    function stopDrag(el) {
-        el.ontouchmove = null;
-    }
-
-    setInterval(createPremiumUI, 1000);
+    setInterval(buildSystem, 1000); // เช็คและสร้างปุ่ม/หน้าต่างทุกวินาที
 })();
