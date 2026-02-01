@@ -1,9 +1,9 @@
 
 {
-    "name": "Neon Cyberpunk System",
+    "name": "Neon System Test",
     "version": "1.0.0",
-    "author": "You",
-    "description": "Cyberpunk UI Trigger",
+    "author": "User",
+    "description": "Test UI",
     "css": "style.css",
     "js": "index.js"
 }
