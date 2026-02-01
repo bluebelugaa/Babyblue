@@ -1,288 +1,90 @@
-
-/* =========================================
-   NEON CYBERPUNK THEME - CORE VARIABLES
-   ========================================= */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap');
-
 :root {
     --neon-pink: #ff0055;
     --neon-blue: #00e5ff;
-    --neon-purple: #bd00ff;
-    --cyber-bg: rgba(5, 5, 10, 0.92);
-    --cyber-panel: rgba(20, 20, 30, 0.8);
-    --cyber-glass: rgba(0, 229, 255, 0.05);
-    --tech-font: 'Share Tech Mono', monospace;
-    --header-font: 'Orbitron', sans-serif;
-    --scan-line: rgba(0, 255, 255, 0.1);
+    --cyber-bg: rgba(5, 5, 10, 0.95);
 }
 
-/* =========================================
-   TRIGGER BUTTON (THE "X")
-   ========================================= */
+/* ปุ่มตัว X เปิดระบบ */
 #ncs-trigger-btn {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 40px;
+    right: 40px;
     width: 60px;
     height: 60px;
-    background: black;
+    background: #000;
     border: 2px solid var(--neon-pink);
     color: var(--neon-blue);
-    font-family: var(--header-font);
-    font-size: 28px;
-    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 20000;
-    box-shadow: 0 0 15px var(--neon-pink), inset 0 0 10px var(--neon-pink);
-    transition: all 0.3s ease;
+    z-index: 999999;
+    box-shadow: 0 0 15px var(--neon-pink);
     clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
-    animation: pulse-glow 2s infinite alternate;
 }
 
-#ncs-trigger-btn:hover {
-    transform: scale(1.1);
-    text-shadow: 0 0 10px var(--neon-blue);
-    box-shadow: 0 0 25px var(--neon-pink), inset 0 0 15px var(--neon-pink);
-}
-
-#ncs-trigger-btn.dragging {
-    opacity: 0.8;
-    cursor: move;
-    border-color: var(--neon-blue);
-}
-
-/* =========================================
-   MAIN WINDOW FRAME
-   ========================================= */
+/* หน้าต่างหลัก */
 #ncs-window {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 900px;
-    height: 700px;
+    width: 850px;
+    height: 650px;
     background: var(--cyber-bg);
-    border: 1px solid var(--neon-blue);
-    z-index: 20001;
-    display: none; /* Hidden by default */
+    border: 2px solid var(--neon-blue);
+    z-index: 1000000;
+    display: none;
     flex-direction: column;
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.2);
-    font-family: var(--tech-font);
     color: white;
-    backdrop-filter: blur(5px);
-    overflow: hidden;
+    font-family: monospace;
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
 }
 
-/* Scanline Effect Overlay */
-#ncs-window::before {
-    content: " ";
-    display: block;
-    position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    z-index: -1;
-    background-size: 100% 2px, 3px 100%;
-    pointer-events: none;
-}
-
-/* =========================================
-   HEADER & CONTROLS
-   ========================================= */
 .ncs-header {
-    height: 60px;
-    background: linear-gradient(90deg, rgba(0,229,255,0.1), transparent);
-    border-bottom: 2px solid var(--neon-pink);
+    padding: 15px;
+    background: rgba(0, 229, 255, 0.1);
+    border-bottom: 1px solid var(--neon-pink);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    user-select: none;
 }
 
-.ncs-title {
-    font-family: var(--header-font);
-    font-size: 20px;
-    color: var(--neon-blue);
-    text-shadow: 0 0 5px var(--neon-blue);
-    letter-spacing: 2px;
-}
-
-.ncs-controls {
-    display: flex;
-    gap: 10px;
-}
-
-.ncs-btn-icon {
-    width: 35px;
-    height: 35px;
-    background: transparent;
-    border: 1px solid var(--neon-blue);
-    color: var(--neon-blue);
-    cursor: pointer;
-    font-family: var(--header-font);
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ncs-btn-icon:hover { background: var(--neon-blue); color: black; }
-.ncs-btn-icon.active { background: var(--neon-pink); border-color: var(--neon-pink); color: white; box-shadow: 0 0 10px var(--neon-pink); }
-.ncs-close { border-color: var(--neon-pink); color: var(--neon-pink); }
-.ncs-close:hover { background: var(--neon-pink); color: white; }
-
-/* =========================================
-   NAVIGATION TABS
-   ========================================= */
 .ncs-nav {
     display: flex;
-    background: rgba(0,0,0,0.5);
-    border-bottom: 1px solid var(--neon-blue);
+    background: #000;
 }
 
 .ncs-tab {
     flex: 1;
-    padding: 15px;
+    padding: 10px;
     text-align: center;
     cursor: pointer;
-    color: #888;
-    border-right: 1px solid rgba(0, 229, 255, 0.2);
-    transition: 0.3s;
-    font-weight: bold;
-    position: relative;
-    overflow: hidden;
+    border: 1px solid #222;
 }
 
-.ncs-tab:hover { color: white; background: rgba(0, 229, 255, 0.05); }
 .ncs-tab.active {
-    color: var(--neon-blue);
-    background: rgba(0, 229, 255, 0.1);
-    text-shadow: 0 0 8px var(--neon-blue);
-}
-.ncs-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; width: 100%; height: 2px;
     background: var(--neon-blue);
-    box-shadow: 0 0 10px var(--neon-blue);
+    color: black;
+    font-weight: bold;
 }
 
-/* =========================================
-   CONTENT AREA
-   ========================================= */
-.ncs-content-area {
+.ncs-content {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    position: relative;
 }
 
-/* Scrollbar Customization */
-.ncs-content-area::-webkit-scrollbar { width: 8px; }
-.ncs-content-area::-webkit-scrollbar-track { background: black; }
-.ncs-content-area::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
+.ncs-page { display: none; }
+.ncs-page.active { display: block; }
 
-.ncs-page { display: none; height: 100%; flex-direction: column; gap: 15px; }
-.ncs-page.active { display: flex; animation: fade-in-up 0.3s ease-out; }
+.status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.status-box { border: 1px solid #444; padding: 10px; background: rgba(255,255,255,0.05); }
 
-/* =========================================
-   MODULE: LOREBOOK & INSPECTOR
-   ========================================= */
-.lore-card {
-    border: 1px solid var(--neon-purple);
-    background: rgba(189, 0, 255, 0.05);
-    padding: 10px;
-    margin-bottom: 10px;
-    border-left: 4px solid var(--neon-purple);
-}
+.ooc-history { height: 250px; border: 1px solid #333; overflow-y: auto; margin-bottom: 10px; padding: 10px; }
+.ooc-input { background: #000; border: 1px solid var(--neon-blue); color: white; padding: 5px; }
 
-.lore-trigger { color: var(--neon-pink); font-weight: bold; }
-
-.msg-display {
-    background: rgba(0,0,0,0.5);
-    border: 1px solid #333;
-    padding: 15px;
-    height: 300px;
-    overflow-y: auto;
-    font-family: sans-serif; /* Readable for chat */
-    color: #ddd;
-    margin-top: 10px;
-}
-
-/* =========================================
-   MODULE: OOC CHAT
-   ========================================= */
-.ooc-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.ooc-history {
-    flex: 1;
-    border: 1px solid #444;
-    background: rgba(0,0,0,0.3);
-    padding: 10px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-
-.ooc-msg { margin-bottom: 8px; padding: 5px; border-radius: 4px; background: rgba(255,255,255,0.05); }
-.ooc-input-group { display: flex; gap: 5px; height: 40px; }
-.ooc-input {
-    flex: 1;
-    background: black;
-    border: 1px solid var(--neon-blue);
-    color: white;
-    padding: 0 10px;
-    font-family: var(--tech-font);
-}
-
-/* =========================================
-   MODULE: STATUS GRID
-   ========================================= */
-.status-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto auto;
-    gap: 15px;
-    height: 100%;
-}
-
-.status-box {
-    border: 1px solid var(--neon-blue);
-    background: rgba(0, 229, 255, 0.02);
-    padding: 10px;
-    position: relative;
-}
-
-.status-box h4 {
-    margin: 0 0 10px 0;
-    color: var(--neon-pink);
-    border-bottom: 1px solid #333;
-    padding-bottom: 5px;
-    font-size: 14px;
-    text-transform: uppercase;
-}
-
-.status-data {
-    font-size: 13px;
-    line-height: 1.4;
-    white-space: pre-wrap;
-}
-
-/* =========================================
-   ANIMATIONS
-   ========================================= */
-@keyframes pulse-glow {
-    0% { box-shadow: 0 0 5px var(--neon-pink); }
-    100% { box-shadow: 0 0 20px var(--neon-pink), 0 0 10px var(--neon-blue); }
-}
-
-@keyframes fade-in-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.ncs-btn-icon { background: #111; color: var(--neon-blue); border: 1px solid var(--neon-blue); cursor: pointer; padding: 5px 10px; }
+.ncs-btn-icon.active { background: var(--neon-pink); color: white; }
