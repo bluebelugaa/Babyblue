@@ -1,115 +1,107 @@
 
-import { extension_settings, getContext } from "../../../extensions.js";
+// index.js - Part 1: Structure & Setup
 
-// ลงทะเบียนปุ่มและหน้าต่างเข้าสู่หน้าจอ SillyTavern
-(function() {
-    async function initExtension() {
-        const html = await fetch('/extensions/cyber-companion/window.html'); // โหลดโครงสร้าง HTML
-        const content = await html.text();
-        $('body').append(content);
-        
-        console.log("Cyberpunk Companion Extension Loaded!");
-    }
+const extensionName = "NeonCyberpunkSystem";
+const extensionPath = `scripts/extensions/third-party/${extensionName}`;
 
-    $(document).ready(initExtension);
-})();
-import { extension_settings, getContext, addChatGameObjectListener } from "../../../extensions.js";
-import { updateLorebookInfo, updateCharacterDisplay } from "./script.js";
+// Global State
+let isDraggableWindow = false;
+let isDraggableTrigger = false;
+let oocCharacters = []; // { name: "GM", color: "#ff00ff" }
+let currentRoute = "default";
 
-(function() {
-    async function initExtension() {
-        // 1. โหลดโครงสร้างหน้าต่าง
-        const response = await fetch('/extensions/cyber-companion/window.html');
-        const html = await response.text();
-        $('body').append(html);
-        
-        // 2. ตั้งค่าเริ่มต้นให้ UI
-        console.log("Cyber-Companion: System Initialized");
+jQuery(async () => {
+    // รอให้หน้าเว็บโหลดเสร็จ
+    const buildUI = () => {
+        const uiHTML = `
+        <div id="cyber-trigger-btn" title="Open System">X</div>
 
-        // 3. สำคัญ: ดักจับเหตุการณ์เมื่อมีการรับ/ส่งข้อความ (Event Listener)
-        // เพื่อให้ Lorebook และ Status อัปเดตอัตโนมัติ
-        addChatGameObjectListener(() => {
-            updateLorebookInfo(); // ตรวจสอบ Lorebook ทันทีที่แชทขยับ
-            updateCharacterDisplay(); // อัปเดตสถานะตัวละคร
-        });
-    }
+        <div id="cyber-main-window">
+            <div class="cyber-header">
+                <div style="font-weight:bold; color:var(--cp-blue)">SYSTEM_V.1.0</div>
+                <div class="cyber-controls">
+                    <button id="btn-move-trigger" class="cyber-btn-icon" title="Allow Move Trigger">T</button>
+                    <button id="btn-move-window" class="cyber-btn-icon" title="Allow Move Window">W</button>
+                    <button id="btn-close-window" class="cyber-btn-icon cyber-btn-close" title="Close">X</button>
+                </div>
+            </div>
 
-    $(document).ready(initExtension);
-})();
-// script.js (ส่วนขยายข้อ 1)
-export async function updateLorebookInfo() {
-    const context = getContext();
-    const chat = context.chat;
-    const lastMsg = chat[chat.length - 1];
-    
-    if (!lastMsg) return;
+            <div class="cyber-nav-container">
+                <div class="cyber-nav-tab active" data-target="page-lore">Lorebook</div>
+                <div class="cyber-nav-tab" data-target="page-inspector">Inspect</div>
+                <div class="cyber-nav-tab" data-target="page-ooc">OOC Chat</div>
+                <div class="cyber-nav-tab" data-target="page-status">Status</div>
+                <div class="cyber-nav-tab" data-target="page-help">Helper</div>
+            </div>
 
-    // ดึงรายการ Lorebook ที่ทำงานอยู่ (Active Entries)
-    // SillyTavern เก็บข้อมูลนี้ไว้ใน context.ordered_lore_items
-    const activeLore = context.ordered_lore_items || [];
-    
-    let reportHtml = "";
+            <div class="cyber-content">
+                
+                <div id="page-lore" class="cyber-page active">
+                    <h3>> LORE_SCANNER</h3>
+                    <div id="lore-content-list">Waiting for interaction...</div>
+                </div>
 
-    activeLore.forEach(item => {
-        // หาคำที่ทำให้ Lorebook นี้ติด (Trigger Keywords)
-        const foundKeywords = item.keywords.filter(kw => 
-            lastMsg.mes.toLowerCase().includes(kw.toLowerCase())
-        );
+                <div id="page-inspector" class="cyber-page">
+                    <h3>> MSG_INSPECTOR</h3>
+                    <div>
+                        <input type="number" id="inspector-index" class="msg-inspector-input" placeholder="#">
+                        <button class="cyber-btn-icon" id="inspector-go">GO</button>
+                        <button class="cyber-btn-icon cyber-btn-close" id="inspector-clear">CLR</button>
+                    </div>
+                    <div id="inspector-display" class="msg-display-area"></div>
+                </div>
 
-        if (foundKeywords.length > 0) {
-            reportHtml += `
-                <div class="lore-card">
-                    <div class="lore-header">${item.name || 'Unnamed Entry'}</div>
-                    <div class="lore-body">
-                        <p><strong>Trigger Keywords:</strong> ${foundKeywords.join(', ')}</p>
-                        <p class="lore-desc-preview">${item.content.substring(0, 50)}...</p>
+                <div id="page-ooc" class="cyber-page">
+                    <h3>> OOC_CHANNEL</h3>
+                    <div id="ooc-history" class="ooc-history"></div>
+                    <div class="ooc-input-area">
+                        <select id="ooc-char-select" class="ooc-char-select"></select>
+                        <input type="color" id="ooc-color-picker" value="#00ffff" style="width:30px; border:none;">
+                        <input type="text" id="ooc-input" style="flex:1; background:black; color:white; border:1px solid var(--cp-blue);" placeholder="Commentary...">
+                        <button id="ooc-send" class="cyber-btn-icon">></button>
+                        <button id="ooc-add-char" class="cyber-btn-icon" title="Add/Save Character">+</button>
                     </div>
                 </div>
-            `;
-        }
-    });
 
-    document.getElementById('lore-list').innerHTML = reportHtml || "ไม่มี Lorebook ทำงานในข้อความนี้";
-}
+                <div id="page-status" class="cyber-page">
+                    <h3>> WORLD_STATE</h3>
+                    <div class="status-grid">
+                        <div class="status-box">
+                            <h4>LOCATION</h4>
+                            <div id="status-location">Scanning...</div>
+                        </div>
+                        <div class="status-box">
+                            <h4>TIME/ENV</h4>
+                            <div id="status-env">Scanning...</div>
+                        </div>
+                        <div class="status-box">
+                            <h4>CHAR_STATUS</h4>
+                            <div id="status-char">Scanning...</div>
+                        </div>
+                        <div class="status-box">
+                            <h4>INVENTORY</h4>
+                            <div id="status-inv">Scanning...</div>
+                        </div>
+                    </div>
+                </div>
 
+                <div id="page-help" class="cyber-page">
+                    <h3>> AI_ASSIST</h3>
+                    <textarea id="helper-prompt" style="width:100%; height:100px; background:black; color:white;" placeholder="Request summary or action..."></textarea>
+                    <button id="helper-run" class="cyber-btn-icon" style="width:100%; margin-top:10px;">EXECUTE_QUERY</button>
+                    <div id="helper-output" style="margin-top:10px; border-top:1px solid var(--cp-pink); padding-top:10px;"></div>
+                </div>
 
-// script.js (ส่วนขยายข้อ 2)
-function createNumpad() {
-    const container = document.getElementById('numpad-container');
-    // สร้างปุ่ม 0-9 และปุ่มล้างตัวเลข
-    for (let i = 1; i <= 9; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'num-btn';
-        btn.innerText = i;
-        btn.onclick = () => {
-            const input = document.getElementById('inspect-number-input');
-            input.value += i;
-            inspectMessage(input.value);
-        };
-        container.appendChild(btn);
-    }
-    // เพิ่มปุ่มล้าง (C) และปุ่มปิด (X)
-    const clearBtn = document.createElement('button');
-    clearBtn.className = 'num-btn clear';
-    clearBtn.innerText = 'C';
-    clearBtn.onclick = () => { document.getElementById('inspect-number-input').value = ''; };
-    container.appendChild(clearBtn);
-}
-
-function inspectMessage(index) {
-    const context = getContext();
-    const msg = context.chat[index];
-    const display = document.getElementById('inspect-display');
-    const screen = document.getElementById('inspect-screen-wrapper');
-
-    if (msg) {
-        screen.style.display = 'block'; // เปิดหน้าต่างแสดงข้อความ
-        display.innerHTML = `
-            <div class="msg-header">MESSAGE #${index} - SENT BY: ${msg.name}</div>
-            <div class="msg-content">${msg.mes}</div>
-            <button class="close-inspect" onclick="this.parentElement.parentElement.style.display='none'">[ CLOSE X ]</button>
+            </div>
+        </div>
         `;
-    }
-}
+        
+        $('body').append(uiHTML);
+        
+        // Load settings if any
+        loadSettings();
+    };
 
-
+    // Delay init to ensure ST core is ready
+    setTimeout(buildUI, 2000);
+});
