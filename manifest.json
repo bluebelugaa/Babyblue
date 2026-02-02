@@ -1,8 +1,10 @@
 {
-    "name": "Luxury Void UI",
-    "version": "1.0.0",
+    "display_name": "FrostGlass HUD",
+    "is_module": true,
+    "loading_order": 2,
     "author": "YourName",
-    "description": "Luxury UI for Mobile",
-    "js": "index.js",
-    "css": ["style.css"]
+    "version": "1.0.0",
+    "description": "Advanced HUD with Black-Ice aesthetics. Features Lorebook inspection, OOC Chat, World Tracking, and dynamic status updates via hidden prompt injection.",
+    "css": "style.css",
+    "js": "index.js"
 }
