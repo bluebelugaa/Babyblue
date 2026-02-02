@@ -403,4 +403,28 @@ function renderTab(tabName) {
     });
 }
 
+// index.js - PART F: System Instruction Injection
+
+const STATUS_PROMPT = `
+[SYSTEM COMMAND: FROST_PROTOCOL_ACTIVE]
+1. ALWAYS end your response with a hidden JSON block inside [STATUS]...[/STATUS] tags.
+   Structure: {"world_time": "...", "weather": "...", "location": "...", "health": "...", "mood": "...", "items": ["..."]}
+2. IF using Chain of Thought, ALWAYS wrap your thought process in <think>...</think> tags.
+3. Keep the "think" section separate from the spoken response.
+`;
+
+/**
+ * Hook เข้ากับระบบสร้าง Prompt ของ SillyTavern
+ * จะทำงานก่อนส่งข้อความไปหา AI
+ */
+eventSource.on(event_types.EXTENSION_PROMPT_ROLES, (data) => {
+    // ตรวจสอบว่ามี System Prompt เดิมไหม ถ้ามีให้ต่อท้าย
+    if (data.system_prompt) {
+        data.system_prompt += "\n" + STATUS_PROMPT;
+    } else {
+        // กรณีไม่มี (เช่นโมเดลบางตัว) ให้ยัดใส่ต้นบทสนทนา
+        data.system_prompt = STATUS_PROMPT;
+    }
+    console.log("❄️ Frost Protocol: Instructions Injected.");
+});
 
