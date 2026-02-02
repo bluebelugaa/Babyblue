@@ -1,9 +1,8 @@
-
 {
-    "name": "Neon System Test",
+    "name": "Luxury Void UI",
     "version": "1.0.0",
-    "author": "User",
-    "description": "Test UI",
-    "css": "style.css",
-    "js": "index.js"
+    "author": "You",
+    "description": "Cold & Luxury UI overlay with OOC and Lorebook tools.",
+    "js": "index.js",
+    "css": []
 }
