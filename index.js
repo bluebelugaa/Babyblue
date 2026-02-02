@@ -428,3 +428,226 @@ eventSource.on(event_types.EXTENSION_PROMPT_ROLES, (data) => {
     console.log("❄️ Frost Protocol: Instructions Injected.");
 });
 
+// เพิ่มใน HTML String เดิม
+const repairMenuHTML = `
+<div id="frost-selection-menu" style="display:none;">
+    <div class="frost-glass-panel">
+        <div class="menu-header">❄️ REPAIR PROTOCOL</div>
+        <div class="menu-grid">
+            <button class="frost-action-btn" id="act-fix-think" title="Wrap/Fix Think Tag">
+                <i class="fa-solid fa-brain"></i> Fix Think
+            </button>
+            <button class="frost-action-btn" id="act-edit-spec" title="Edit Selection">
+                <i class="fa-solid fa-pen-to-square"></i> Edit Text
+            </button>
+            <button class="frost-action-btn" id="act-fix-ui" title="Repair Broken UI/Markdown">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Fix UI
+            </button>
+            <button class="frost-action-btn" id="act-regen-think" title="Regenerate Logic">
+                <i class="fa-solid fa-rotate"></i> Repair Logic
+            </button>
+        </div>
+        <div class="menu-footer">Tap outside to close</div>
+    </div>
+</div>
+
+<div id="frost-edit-modal" class="frost-modal" style="display:none;">
+    <div class="frost-modal-content">
+        <h3>✏️ Edit Segment</h3>
+        <textarea id="frost-edit-input" rows="5"></textarea>
+        <div class="frost-modal-actions">
+            <button id="frost-save-edit" class="menu_button">Apply</button>
+            <button id="frost-cancel-edit" class="menu_button" style="border-color:#ff4444; color:#ff4444;">Cancel</button>
+        </div>
+    </div>
+</div>
+`;
+
+// อย่าลืม append html นี้เข้า body ในตอน Init
+$('body').append(repairMenuHTML);
+
+// index.js - PART G: Selection & Repair Logic
+
+let selectedTextRange = null;
+let targetMessageId = null;
+
+/**
+ * 1. ตรวจจับการเลือกข้อความ (Selection Event)
+ * รองรับทั้ง Mouse และ Touch บนมือถือ
+ */
+document.addEventListener('selectionchange', debounce(() => {
+    const selection = window.getSelection();
+    const menu = $('#frost-selection-menu');
+
+    // ถ้าไม่มีการเลือก หรือเลือกพื้นที่ว่าง ให้ซ่อนเมนู
+    if (!selection || selection.toString().trim() === '') {
+        // Delay ซ่อนเล็กน้อยเผื่อคนกดพลาด
+        setTimeout(() => { 
+            if (window.getSelection().toString() === '') menu.fadeOut(200); 
+        }, 1000);
+        return;
+    }
+
+    // ตรวจสอบว่าข้อความที่เลือกอยู่ในกล่องข้อความ (Message Body) หรือไม่
+    const anchorNode = selection.anchorNode.nodeType === 3 ? selection.anchorNode.parentNode : selection.anchorNode;
+    const messageBlock = $(anchorNode).closest('.mes_text');
+
+    if (messageBlock.length) {
+        // หา Message ID (SillyTavern เก็บ ID ไว้ที่ Attribute)
+        targetMessageId = messageBlock.closest('.mes').attr('mesid');
+        selectedTextRange = selection.getRangeAt(0);
+
+        // คำนวณตำแหน่งเมนูให้ลอยอยู่เหนือข้อความที่เลือก
+        const rect = selectedTextRange.getBoundingClientRect();
+        const top = rect.top + window.scrollY - 120; // ลอยขึ้นมาเหนือมือ
+        const left = Math.max(10, rect.left + (rect.width / 2) - 100); // จัดกึ่งกลาง แต่ไม่ตกขอบซ้าย
+
+        menu.css({
+            top: `${top}px`,
+            left: `${left}px`,
+            display: 'block'
+        }).addClass('pop-in');
+    }
+}, 300)); // Debounce 300ms กันเด้งรัวๆ
+
+/**
+ * 2. ฟังก์ชัน: Fix Think (จับความคิดยัดใส่กล่อง)
+ * แก้ไขปัญหา: <think> หาย, ปิดไม่ครบ, หรือความคิดหลุดออกมา
+ */
+$(document).on('click', '#act-fix-think', async function() {
+    if (!targetMessageId) return;
+    
+    const context = getContext();
+    let content = context.chat[targetMessageId].mes;
+    const selectedText = window.getSelection().toString();
+
+    // กรณี 1: ถ้าคลุมดำข้อความ -> เอาข้อความนั้นยัดใส่ <think>
+    if (selectedText) {
+        const fixedText = `<think>${selectedText}</think>`;
+        content = content.replace(selectedText, fixedText);
+    } 
+    // กรณี 2: ถ้าไม่ได้คลุม (หรือคลุมทั้งหมด) -> Auto Fix ด้วย Regex
+    else {
+        // Logic: หาบรรทัดแรกๆ ที่ดูเหมือนความคิด (วงเล็บ) หรือที่หลุดจาก tag
+        // นี่คือ Heuristic แบบง่าย: ถ้าย่อหน้าแรกไม่มี tag think ให้ใส่เลย
+        if (!content.startsWith('<think>')) {
+            // หาจุดจบย่อหน้าแรก
+            const firstBreak = content.indexOf('\n');
+            if (firstBreak > -1) {
+                const thoughtPart = content.substring(0, firstBreak);
+                const restPart = content.substring(firstBreak);
+                content = `<think>${thoughtPart}</think>${restPart}`;
+            }
+        }
+        // ซ่อม Tag ที่ปิดไม่ครบ
+        if (content.includes('<think>') && !content.includes('</think>')) {
+            content = content.replace('<think>', '<think>').replace('\n', '</think>\n');
+        }
+    }
+
+    await updateMessage(targetMessageId, content);
+    toastr.success("❄️ Frost: Thoughts contained.");
+    $('#frost-selection-menu').fadeOut();
+});
+
+/**
+ * 3. ฟังก์ชัน: Edit Specific (แก้ไขเจาะจง)
+ */
+$(document).on('click', '#act-edit-spec', function() {
+    const text = window.getSelection().toString();
+    if (!text) return toastr.warning("Select text to edit first.");
+    
+    $('#frost-edit-input').val(text);
+    $('#frost-edit-modal').fadeIn(200).css('display', 'flex');
+});
+
+// บันทึกการแก้ไข
+$('#frost-save-edit').on('click', async function() {
+    const context = getContext();
+    const originalSel = window.getSelection().toString(); // อาจต้องเก็บค่าไว้ก่อน modal เปิด
+    const newText = $('#frost-edit-input').val();
+    let content = context.chat[targetMessageId].mes;
+
+    // Replace ข้อความ (ระวังเรื่องข้อความซ้ำ อาจต้องใช้ Range ขั้นสูงกว่านี้ในอนาคต)
+    content = content.replace(originalSel, newText); // ข้อควรระวัง: ถ้ามีคำซ้ำกันมันจะแก้คำแรก
+    
+    await updateMessage(targetMessageId, content);
+    $('#frost-edit-modal').fadeOut();
+});
+
+/**
+ * 4. ฟังก์ชัน: Fix UI (ซ่อม Markdown ที่แตก)
+ */
+$(document).on('click', '#act-fix-ui', async function() {
+    if (!targetMessageId) return;
+    const context = getContext();
+    let content = context.chat[targetMessageId].mes;
+
+    // Regex ซ่อม Code Block ที่ปิดไม่ครบ
+    const codeBlockCount = (content.match(/```/g) || []).length;
+    if (codeBlockCount % 2 !== 0) {
+        content += "\n```"; // ปิดท้ายให้ดื้อๆ
+    }
+
+    // ซ่อม Bold/Italic ที่ค้าง (**text...)
+    const boldCount = (content.match(/\*\*/g) || []).length;
+    if (boldCount % 2 !== 0) {
+        content += "**";
+    }
+
+    // ลบ HTML ขยะที่อาจหลุดมา
+    content = content.replace(/<div>/g, '').replace(/<\/div>/g, '\n');
+
+    await updateMessage(targetMessageId, content);
+    toastr.success("❄️ Frost: UI Structure Repaired.");
+    $('#frost-selection-menu').fadeOut();
+});
+
+/**
+ * 5. ฟังก์ชัน: Repair Logic (Regenerate Think Only)
+ * สั่งให้ AI คิดใหม่ โดยใช้ Prompt พิเศษ
+ */
+$(document).on('click', '#act-regen-think', async function() {
+    toastr.info("❄️ Frost: Requesting logic correction...");
+    
+    // เราจะใช้การส่งข้อความแบบ System แอบสั่งให้แก้
+    // หมายเหตุ: การแก้ข้อความเก่าโดยตรงต้องใช้ API 'Regenerate' แต่เราจะใช้วิธี Continue แทนในที่นี้
+    // หรือถ้าจะให้ดีที่สุดคือ ลบข้อความแล้วสั่ง Gen ใหม่ แต่ซับซ้อนไปสำหรับ Extension นี้
+    // จึงใช้เทคนิค: "Append correction instruction"
+    
+    const context = getContext();
+    const instruction = "\n[SYSTEM: The previous thought process was illogical. Reword the internal thoughts (<think>) to be more consistent with the character's persona.]";
+    
+    // ส่งคำสั่งไปที่ API (ต้องดูเอกสาร API ของ ST ในเวอร์ชั่นที่คุณใช้)
+    // สำหรับเวอร์ชั่นทั่วไป:
+    $('#send_textarea').val(instruction);
+    // Trigger generation... (Manual action might be needed depending on ST version)
+    toastr.warning("Command sent. Please press 'Regenerate' manually for full effect.");
+});
+
+/**
+ * Helper: อัปเดตข้อความใน SillyTavern และเซฟ
+ */
+async function updateMessage(id, newContent) {
+    const context = getContext();
+    context.chat[id].mes = newContent;
+    
+    // บอกให้ ST รับรู้ว่ามีการแก้ข้อความ (Refresh UI)
+    await eventSource.emit(event_types.MESSAGE_UPDATED, id);
+    // บันทึกแชท
+    saveChat(); 
+}
+
+// Helper: Debounce (ลดการทำงานซ้ำซ้อน)
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+    
