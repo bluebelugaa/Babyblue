@@ -103,3 +103,84 @@
     font-weight: bold;
     box-shadow: 0 0 10px var(--frost-accent);
 }
+
+/* style.css - PART B: Advanced Visuals */
+
+/* เอฟเฟกต์ตัวอักษรวิบวับ */
+.sparkle-text {
+    background: linear-gradient(90deg, #fff, var(--frost-accent), #fff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: sparkle-move 3s linear infinite;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@keyframes sparkle-move {
+    to { background-position: 200% center; }
+}
+
+/* OOC Chat Bubbles */
+.ooc-display {
+    height: 250px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.ooc-bubble {
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 85%;
+    font-size: 0.9em;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.user-side { align-self: flex-end; border-right: 3px solid #fff; border-left: none !important; }
+.ai-side { align-self: flex-start; }
+
+.ooc-meta { font-size: 0.7em; margin-bottom: 4px; display: flex; justify-content: space-between; gap: 10px; }
+
+/* Status Grid Layout */
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.status-grid .item {
+    background: rgba(0, 210, 255, 0.05);
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    border: 1px solid rgba(0, 210, 255, 0.1);
+}
+
+.status-grid .item span {
+    color: var(--frost-accent);
+    display: block;
+    font-size: 0.7em;
+    text-transform: uppercase;
+}
+
+/* ปุ่มกดสไตล์กระจก */
+.menu_button {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid var(--frost-accent) !important;
+    color: var(--frost-accent) !important;
+    backdrop-filter: blur(5px);
+    transition: 0.3s;
+}
+
+.menu_button:hover {
+    background: var(--frost-accent) !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px var(--frost-accent);
+}
