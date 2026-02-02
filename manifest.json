@@ -4,8 +4,7 @@
     "params": [],
     "js": "index.js",
     "css": "style.css",
-    "author": "YourName",
+    "author": "User",
     "version": "1.0.0",
-    "website": "https://github.com/yourname/frost-hud",
-    "description": "Premium HUD with OOC Chat, World Status, Lore Inspector, and Quick Repair tools."
+    "loading_order": 100
 }
