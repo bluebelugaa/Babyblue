@@ -1,90 +1,205 @@
-/* style.css */
+/* --- Root Variables: ธีมสีหลัก --- */
 :root {
-    --frost-bg: rgba(5, 12, 20, 0.95);
-    --frost-accent: #00d2ff;
-    --frost-border: 1px solid #00d2ff;
+    --x-theme-black: #050505;
+    --x-theme-dark-gray: #121212;
+    --x-theme-pale-blue: #a3d1ff; /* ฟ้าจางเย็นชา */
+    --x-theme-cyan-glow: rgba(163, 209, 255, 0.6);
+    --x-glass-bg: rgba(5, 5, 5, 0.95);
+    --x-border-color: #334455;
+    --x-sparkle-color: #ffffff;
 }
 
-/* ปุ่มเปิด X - ปรับให้เห็นชัดที่สุด */
-#frost-trigger {
+/* --- 1. The Floating Button (สัญลักษณ์ X) --- */
+#x_floating_btn {
     position: fixed;
-    top: 100px; /* เลื่อนลงมาหน่อยกันชนเมนูบน */
-    left: 20px;
     width: 50px;
     height: 50px;
-    background: #000; /* สีดำเข้ม */
-    border: 2px solid #00d2ff; /* ขอบฟ้าสว่าง */
-    border-radius: 12px;
-    color: #00d2ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+    background: radial-gradient(circle, var(--x-theme-dark-gray) 30%, var(--x-theme-black) 100%);
+    border: 2px solid var(--x-theme-pale-blue);
+    border-radius: 50%;
+    color: var(--x-theme-pale-blue);
+    font-family: 'Courier New', monospace; /* ฟอนต์แข็งๆ เย็นชา */
     font-size: 24px;
-    z-index: 2147483647; /* ค่าสูงสุดที่เป็นไปได้ ทะลุทุกเลเยอร์ */
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    box-shadow: 0 0 20px #00d2ff; /* แสงฟุ้ง */
+    z-index: 9999; /* อยู่บนสุดเสมอ */
+    box-shadow: 0 0 10px var(--x-theme-cyan-glow);
+    transition: all 0.3s ease;
     user-select: none;
-    transition: transform 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
 }
 
-#frost-trigger:active {
+/* เอฟเฟกต์วิบวับ (Glitter Animation) */
+#x_floating_btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 40%,
+        rgba(255, 255, 255, 0.8) 50%,
+        transparent 60%
+    );
+    animation: glitter-shine 3s infinite;
+    pointer-events: none;
+}
+
+#x_floating_btn:active {
     transform: scale(0.9);
+    box-shadow: 0 0 20px var(--x-theme-pale-blue);
 }
 
-/* หน้าต่างหลัก */
-#frost-container {
+/* --- 2. The Main Window (หน้าต่างหลัก) --- */
+#x_main_modal {
+    display: none; /* ซ่อนก่อน */
     position: fixed;
-    top: 50px;
-    left: 50px;
-    width: 85vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw; /* กว้างเกือบเต็มจอมือถือ */
     height: 80vh;
-    background: #0f1520;
-    border: 2px solid #00d2ff;
-    z-index: 2147483647; /* ทะลุทุกเลเยอร์ */
-    display: none; /* ซ่อนไว้ก่อน */
+    background-color: var(--x-glass-bg);
+    border: 1px solid var(--x-theme-pale-blue);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(163, 209, 255, 0.1);
+    z-index: 10000;
     flex-direction: column;
-    color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    animation: modal-pop 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
-.frost-header {
-    padding: 15px;
-    background: rgba(0, 210, 255, 0.2);
+/* Header Bar (ส่วนบนสุดสำหรับตั้งค่าและย้าย) */
+.x-modal-header {
+    height: 50px;
+    background: linear-gradient(90deg, var(--x-theme-black) 0%, #1a2530 100%);
+    border-bottom: 1px solid var(--x-border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #00d2ff;
+    padding: 0 10px;
 }
 
-/* Tabs */
-.frost-tabs {
+.x-header-controls {
     display: flex;
-    background: #000;
-    padding: 5px;
-    overflow-x: auto;
+    gap: 10px;
 }
 
-.frost-tab-btn {
-    padding: 10px 15px;
-    color: #888;
+/* ปุ่มตั้งค่าใน Header */
+.x-icon-btn {
+    background: transparent;
+    border: 1px solid var(--x-border-color);
+    color: #556677;
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    white-space: nowrap;
+    transition: all 0.2s;
 }
-.frost-tab-btn.active {
-    color: #00d2ff;
+
+.x-icon-btn.active {
+    color: var(--x-theme-pale-blue);
+    border-color: var(--x-theme-pale-blue);
+    box-shadow: 0 0 8px var(--x-theme-cyan-glow);
+    animation: pulse-blue 2s infinite;
+}
+
+.x-close-btn {
+    color: #ff6b6b;
+    font-size: 20px;
     font-weight: bold;
-    border-bottom: 2px solid #00d2ff;
+    cursor: pointer;
+    padding: 5px 10px;
 }
 
-.frost-content {
-    flex: 1;
-    padding: 15px;
+/* --- 3. Content Area (พื้นที่เนื้อหา) --- */
+.x-modal-content {
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    color: #eee;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Page Navigation (ปุ่มเปลี่ยนหน้า แบบหนังสือ) */
+.x-page-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-top: 1px solid var(--x-border-color);
+}
+
+.x-nav-arrow {
+    background: transparent;
+    border: none;
+    color: var(--x-theme-pale-blue);
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.x-page-indicator {
+    font-size: 14px;
+    color: #8899aa;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Pages Container */
+.x-pages-container {
+    flex-grow: 1;
+    position: relative;
     overflow-y: auto;
+    padding: 15px;
 }
 
-/* ส่วนอื่นๆ */
-.menu_button {
-    background: #333; color: white; border: 1px solid #555; padding: 5px;
+.x-page {
+    display: none; /* ซ่อนทุกหน้าก่อน */
+    animation: fade-in 0.3s ease;
+}
+
+.x-page.active {
+    display: block;
+}
+
+/* --- Animations --- */
+@keyframes glitter-shine {
+    0% { transform: translate(-100%, -100%) rotate(45deg); }
+    100% { transform: translate(100%, 100%) rotate(45deg); }
+}
+
+@keyframes pulse-blue {
+    0% { box-shadow: 0 0 5px var(--x-theme-cyan-glow); }
+    50% { box-shadow: 0 0 15px var(--x-theme-cyan-glow); }
+    100% { box-shadow: 0 0 5px var(--x-theme-cyan-glow); }
+}
+
+@keyframes modal-pop {
+    0% { transform: translate(-50%, -40%) scale(0.9); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Helper Class for Draggable State */
+.x-dragging {
+    opacity: 0.8;
+    border: 2px dashed var(--x-theme-pale-blue) !important;
 }
