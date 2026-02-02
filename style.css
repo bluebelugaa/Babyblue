@@ -1,244 +1,90 @@
+/* style.css */
 :root {
-    --frost-bg: rgba(5, 12, 20, 0.9);
-    --frost-glass: rgba(255, 255, 255, 0.05);
-    --frost-border: 1px solid rgba(0, 210, 255, 0.3);
+    --frost-bg: rgba(5, 12, 20, 0.95);
     --frost-accent: #00d2ff;
-    --frost-accent-glow: 0 0 15px rgba(0, 210, 255, 0.5);
-    --frost-text: #e0faff;
-    --frost-danger: #ff4444;
+    --frost-border: 1px solid #00d2ff;
 }
 
-/* --- 1. ปุ่มเปิด X (Floating Trigger) --- */
+/* ปุ่มเปิด X - ปรับให้เห็นชัดที่สุด */
 #frost-trigger {
     position: fixed;
-    top: 20%;
-    left: 10px;
+    top: 100px; /* เลื่อนลงมาหน่อยกันชนเมนูบน */
+    left: 20px;
     width: 50px;
     height: 50px;
-    background: radial-gradient(circle, #1a2a3a 0%, #000 100%);
-    border: var(--frost-border);
+    background: #000; /* สีดำเข้ม */
+    border: 2px solid #00d2ff; /* ขอบฟ้าสว่าง */
     border-radius: 12px;
+    color: #00d2ff;
     display: flex;
-    justify-content: center;
     align-items: center;
-    color: var(--frost-accent);
-    font-family: 'Cinzel', serif; /* ฟอนต์หรู */
+    justify-content: center;
+    font-weight: bold;
     font-size: 24px;
-    z-index: 9999;
-    box-shadow: var(--frost-accent-glow);
+    z-index: 2147483647; /* ค่าสูงสุดที่เป็นไปได้ ทะลุทุกเลเยอร์ */
     cursor: pointer;
+    box-shadow: 0 0 20px #00d2ff; /* แสงฟุ้ง */
     user-select: none;
-    touch-action: none; /* สำคัญสำหรับลากบนมือถือ */
     transition: transform 0.2s;
 }
 
-/* เอฟเฟกต์วิบวับ (Sparkle Animation) */
-#frost-trigger::after {
-    content: '';
-    position: absolute;
-    top: -2px; left: -2px; right: -2px; bottom: -2px;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.8), transparent);
-    z-index: -1;
-    background-size: 200%;
-    animation: frost-shimmer 3s infinite linear;
-    border-radius: 12px;
-    opacity: 0.5;
+#frost-trigger:active {
+    transform: scale(0.9);
 }
 
-@keyframes frost-shimmer {
-    0% { background-position: 0% 50%; opacity: 0.3; }
-    50% { opacity: 0.8; }
-    100% { background-position: 200% 50%; opacity: 0.3; }
-}
-
-/* --- 2. หน้าต่างหลัก (Main Window) --- */
+/* หน้าต่างหลัก */
 #frost-container {
     position: fixed;
-    top: 10%;
-    left: 5%;
-    width: 90vw;
+    top: 50px;
+    left: 50px;
+    width: 85vw;
     height: 80vh;
-    background: var(--frost-bg);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: var(--frost-border);
-    border-radius: 15px;
-    z-index: 10000;
-    display: none; /* ซ่อนเป็นค่าเริ่มต้น */
+    background: #0f1520;
+    border: 2px solid #00d2ff;
+    z-index: 2147483647; /* ทะลุทุกเลเยอร์ */
+    display: none; /* ซ่อนไว้ก่อน */
     flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    color: var(--frost-text);
+    color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
 }
 
-/* Header Bar */
 .frost-header {
     padding: 15px;
-    background: linear-gradient(180deg, rgba(0,210,255,0.15), transparent);
+    background: rgba(0, 210, 255, 0.2);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: var(--frost-border);
-    cursor: move; /* บอกว่าลากได้ */
+    border-bottom: 1px solid #00d2ff;
 }
 
-.frost-title {
-    font-weight: bold;
-    letter-spacing: 2px;
-    text-shadow: 0 0 5px var(--frost-accent);
-    text-transform: uppercase;
-}
-
-.frost-controls button {
-    background: transparent;
-    border: 1px solid var(--frost-accent);
-    color: var(--frost-accent);
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 5px;
-    transition: 0.3s;
-}
-.frost-controls button:hover {
-    background: var(--frost-accent);
-    color: #000;
-    box-shadow: var(--frost-accent-glow);
-}
-
-/* Tab Navigation (แบบหนังสือ/ที่คั่น) */
+/* Tabs */
 .frost-tabs {
     display: flex;
-    background: rgba(0,0,0,0.5);
+    background: #000;
     padding: 5px;
     overflow-x: auto;
 }
 
 .frost-tab-btn {
-    flex: 1;
-    padding: 10px;
-    text-align: center;
-    border-bottom: 2px solid transparent;
-    opacity: 0.7;
+    padding: 10px 15px;
+    color: #888;
     cursor: pointer;
     white-space: nowrap;
 }
 .frost-tab-btn.active {
-    opacity: 1;
-    border-bottom: 2px solid var(--frost-accent);
-    background: linear-gradient(0deg, rgba(0,210,255,0.1), transparent);
+    color: #00d2ff;
     font-weight: bold;
+    border-bottom: 2px solid #00d2ff;
 }
 
-/* Content Area */
 .frost-content {
     flex: 1;
     padding: 15px;
     overflow-y: auto;
-    font-size: 0.9rem;
 }
 
-/* --- 3. ส่วนประกอบย่อย (Status / OOC / Lore) --- */
-
-/* Lorebook Cards */
-.lore-card {
-    background: var(--frost-glass);
-    border-left: 3px solid var(--frost-accent);
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 0 5px 5px 0;
-}
-
-/* OOC Chat Styles */
-.ooc-area {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-.ooc-messages {
-    flex: 1;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.3);
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-.ooc-bubble {
-    background: rgba(255,255,255,0.08);
-    padding: 8px 12px;
-    border-radius: 12px;
-    margin-bottom: 5px;
-    max-width: 85%;
-    font-size: 0.85em;
-    position: relative;
-}
-.ooc-bubble.user { align-self: flex-end; margin-left: auto; border: 1px solid rgba(255,255,255,0.3); }
-.ooc-bubble.char { align-self: flex-start; border: 1px solid var(--frost-accent); }
-.ooc-sender-name { font-size: 0.7em; font-weight: bold; opacity: 0.8; margin-bottom: 2px; display: block; }
-
-.ooc-input-group {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-}
-.ooc-input-group input[type="text"] { flex: 1; }
-
-/* Status Grid */
-.status-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-.status-item {
-    background: rgba(0,210,255,0.05);
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(0,210,255,0.1);
-}
-.status-label { color: var(--frost-accent); font-size: 0.75em; text-transform: uppercase; display: block;}
-.status-value { font-size: 0.95em; font-weight: bold; }
-
-/* --- 4. Selection Menu (Repair Tools) --- */
-#frost-selection-menu {
-    position: fixed; /* ใช้ fixed หรือ absolute ตามบริบท */
-    z-index: 20000;
-    background: #0f1820;
-    border: 1px solid var(--frost-accent);
-    border-radius: 8px;
-    padding: 5px;
-    display: none;
-    box-shadow: 0 0 15px rgba(0,210,255,0.4);
-    animation: popUp 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-}
-@keyframes popUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; }}
-
-.repair-btn {
-    display: block;
-    width: 100%;
-    background: transparent;
-    color: #fff;
-    border: none;
-    text-align: left;
-    padding: 8px 12px;
-    font-size: 0.85em;
-    cursor: pointer;
-}
-.repair-btn:hover { background: var(--frost-accent); color: #000; }
-.repair-btn i { margin-right: 8px; width: 15px; text-align: center; }
-
-/* Modal Edit */
-.frost-modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 20001;
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-.frost-modal-box {
-    background: #111;
-    border: 1px solid var(--frost-accent);
-    padding: 20px;
-    width: 80%;
-    max-width: 400px;
-    border-radius: 10px;
+/* ส่วนอื่นๆ */
+.menu_button {
+    background: #333; color: white; border: 1px solid #555; padding: 5px;
 }
