@@ -1,71 +1,255 @@
-:root {
-    --dark-void: #0a0a0a;
-    --soft-ice-blue: rgba(137, 212, 255, 0.3); /* ฟ้าจางมาก */
-    --drop-color: rgba(137, 212, 255, 0.6); /* สีหยดน้ำ */
-    --shadow-deep: rgba(0,0,0,0.8);
-}
+// ==================================================================================
+// PART 1: VISUAL CORE & STYLES (LUXURY FROST EDITION)
+// Theme: Black-Void, Faint-Ice-Blue, Sparkling, Cold, Minimalist
+// ==================================================================================
 
-/* สัญลักษณ์วงกลมแบบหยุดนิ่ง (The Droplet Orb) */
-#cyber-trigger-btn {
-    position: fixed;
-    top: 8%; left: 50%;
-    transform: translateX(-50%);
-    width: 48px; height: 48px;
+(function() {
+    // ป้องกันการรันซ้ำ
+    if (document.getElementById('frozen-void-style')) return;
+
+    const cssContent = `
+    :root {
+        /* Color Palette: Cold Luxury */
+        --void-base: #050505;
+        --void-deep: #000000;
+        --ice-faint: rgba(180, 230, 255, 0.15); /* ฟ้าจางมาก ดูแพง */
+        --ice-glow: rgba(137, 212, 255, 0.6);   /* แสงฟ้าเย็น */
+        --ice-solid: #89d4ff;
+        --silver-text: #c0c0c0;
+        --alert-crimson: rgba(255, 107, 107, 0.8);
+        --glass-surface: rgba(10, 10, 15, 0.85);
+        --frost-border: 1px solid rgba(137, 212, 255, 0.15);
+    }
+
+    /* -----------------------------------------------------------
+       1. THE TRIGGER ORB (ปุ่มเปิด X วิบวับ)
+       ----------------------------------------------------------- */
+    #void-trigger-btn {
+        position: fixed;
+        top: 10%; left: 50%;
+        width: 50px; height: 50px;
+        background: radial-gradient(circle at 30% 30%, #1a1a1a, #000);
+        border: 1px solid rgba(137, 212, 255, 0.3);
+        border-radius: 50%;
+        display: flex; justify-content: center; align-items: center;
+        cursor: pointer;
+        z-index: 99999;
+        box-shadow: 0 0 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(137,212,255,0.05);
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        backdrop-filter: blur(5px);
+        transform: translate(-50%, -50%);
+        overflow: visible; /* ให้แสงพุ่งออกมาได้ */
+    }
+
+    #void-trigger-btn:hover {
+        border-color: var(--ice-solid);
+        box-shadow: 0 0 25px var(--ice-faint);
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    /* สัญลักษณ์ X ตรงกลาง */
+    .void-symbol {
+        font-family: 'Cinzel', serif; /* ถ้าไม่มีจะ Fallback */
+        font-size: 18px;
+        color: var(--ice-solid);
+        text-shadow: 0 0 8px var(--ice-glow);
+        opacity: 0.8;
+        pointer-events: none;
+    }
+
+    /* เอฟเฟกต์วิบวับ (Sparkles) */
+    .sparkle {
+        position: absolute;
+        width: 2px; height: 2px;
+        background: white;
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow: 0 0 4px var(--ice-solid);
+    }
+
+    @keyframes sparkle-anim {
+        0% { transform: scale(0) rotate(0deg); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: scale(1.5) rotate(180deg); opacity: 0; top: -20px; } /* ลอยขึ้นแล้วหายไป */
+    }
+
+    /* -----------------------------------------------------------
+       2. MAIN PANEL (หน้าต่างระบบ)
+       ----------------------------------------------------------- */
+    #void-panel {
+        position: fixed;
+        top: 50%; left: 50%;
+        width: 800px; height: 600px; /* ขนาดตั้งต้น */
+        max-width: 95vw; max-height: 90vh;
+        background: var(--glass-surface);
+        backdrop-filter: blur(12px) saturate(120%);
+        border: var(--frost-border);
+        border-radius: 4px; /* มุมเหลี่ยมเล็กน้อยให้ดู Tech */
+        display: none; /* ซ่อนก่อน */
+        flex-direction: column;
+        z-index: 100000;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.95);
+        color: var(--silver-text);
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    #void-panel.active {
+        display: flex;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Header Bar */
+    .void-header {
+        height: 40px;
+        background: rgba(0,0,0,0.4);
+        border-bottom: var(--frost-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+        user-select: none;
+    }
+
+    .void-title {
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: #555;
+        text-transform: uppercase;
+    }
+
+    .void-controls {
+        display: flex;
+        gap: 10px;
+    }
+
+    /* Control Buttons (Move T, Move W, Close) */
+    .ctrl-btn {
+        font-size: 10px;
+        background: transparent;
+        border: 1px solid #333;
+        color: #666;
+        padding: 2px 8px;
+        cursor: pointer;
+        border-radius: 2px;
+        transition: all 0.2s;
+        text-transform: uppercase;
+    }
     
-    background: var(--dark-void);
-    border-radius: 50%;
-    /* ขอบบางเฉียบ สีฟ้าจางมาก */
-    border: 1px solid var(--soft-ice-blue); 
+    .ctrl-btn:hover { border-color: #555; color: #888; }
     
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; z-index: 999999;
+    /* สถานะ Active ของปุ่มย้าย */
+    .ctrl-btn.toggle-on {
+        border-color: var(--ice-solid);
+        color: var(--ice-solid);
+        box-shadow: 0 0 8px rgba(137, 212, 255, 0.2);
+        background: rgba(137, 212, 255, 0.05);
+    }
+
+    .ctrl-close:hover {
+        border-color: var(--alert-crimson);
+        color: var(--alert-crimson);
+        box-shadow: 0 0 8px rgba(255, 107, 107, 0.2);
+    }
+
+    /* -----------------------------------------------------------
+       3. NAVIGATION & CONTENT
+       ----------------------------------------------------------- */
+    .void-nav {
+        display: flex;
+        background: rgba(0,0,0,0.2);
+        border-bottom: var(--frost-border);
+        padding: 10px 15px 0 15px;
+        gap: 2px;
+    }
+
+    .nav-tab {
+        padding: 8px 16px;
+        font-size: 12px;
+        cursor: pointer;
+        color: #666;
+        border: 1px solid transparent;
+        border-bottom: none;
+        background: transparent;
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .nav-tab:hover { color: #aaa; }
+
+    .nav-tab.active {
+        color: var(--ice-solid);
+        background: rgba(137, 212, 255, 0.03);
+        border-color: rgba(137, 212, 255, 0.1);
+        border-top: 1px solid var(--ice-solid); /* เส้นบนเรืองแสง */
+    }
+
+    .void-body {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    /* Custom Scrollbar */
+    .void-body::-webkit-scrollbar { width: 6px; }
+    .void-body::-webkit-scrollbar-track { background: #000; }
+    .void-body::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+    .void-body::-webkit-scrollbar-thumb:hover { background: #444; }
+
+    /* -----------------------------------------------------------
+       4. SPECIFIC SYSTEMS UI
+       ----------------------------------------------------------- */
     
-    /* เงาที่ลึกและแสงสะท้อนเบาๆ */
-    box-shadow: 
-        inset 0 0 10px rgba(255,255,255,0.05),
-        0 4px 12px var(--shadow-deep);
-    transition: all 0.3s ease-out;
-    overflow: hidden; /* สำคัญสำหรับเอฟเฟกต์หยดน้ำ */
-}
+    /* Bookmarks / Pagination */
+    .page-controls {
+        display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px;
+    }
+    .page-btn { cursor: pointer; color: #444; font-size: 18px; }
+    .page-btn:hover { color: var(--ice-solid); }
 
-/* เอฟเฟกต์หยดน้ำ (CSS-only droplets) */
-.water-drop {
-    position: absolute;
-    width: 3px; height: 3px;
-    background: var(--drop-color);
-    border-radius: 50%;
-    opacity: 0;
-    animation: drip 3s ease-in forwards;
-    pointer-events: none; /* ทำให้คลิกผ่านได้ */
-}
+    /* Message Inspector */
+    .inspector-box {
+        background: #080808; border: 1px solid #222; padding: 10px; margin-top: 10px; font-family: 'Consolas', monospace; font-size: 12px; color: #888;
+    }
+    .inspector-input {
+        background: transparent; border: 1px solid #333; color: var(--ice-solid); padding: 5px; width: 60px; text-align: center;
+    }
 
-/* Animation หยดน้ำ */
-@keyframes drip {
-    0% { top: -10%; opacity: 0; transform: scale(0.5); }
-    10% { opacity: 1; transform: scale(1); }
-    80% { top: 110%; opacity: 1; }
-    100% { top: 120%; opacity: 0; transform: scale(0.2); }
-}
+    /* OOC Chat Styles */
+    .ooc-container { display: flex; flex-direction: column; height: 100%; }
+    .ooc-log { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-right: 5px; border: 1px solid #111; background: rgba(0,0,0,0.3); padding: 10px; }
+    .ooc-message { margin-bottom: 8px; font-size: 13px; line-height: 1.4; padding: 5px 8px; border-radius: 4px; position: relative; }
+    .ooc-message.user { border-left: 2px solid var(--ice-solid); background: rgba(137, 212, 255, 0.05); }
+    .ooc-message.ai { border-left: 2px solid #ff6b6b; background: rgba(255, 107, 107, 0.05); }
+    .ooc-controls { display: flex; gap: 5px; }
+    .ooc-input { flex: 1; background: #0a0a0a; border: 1px solid #333; color: #ddd; padding: 8px; }
 
-/* หน้าต่างระบบ (Minimalist Panel) */
-#wasteland-panel {
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90vw; height: 82vh;
-    background: rgba(0, 0, 0, 0.95); /* ดำสนิทเกือบโปร่ง */
-    border: 1px solid rgba(137, 212, 255, 0.2); /* ขอบบาง */
-    border-radius: 10px; /* ลดความเหลี่ยมลงเล็กน้อย */
-    display: none; flex-direction: column;
-    z-index: 1000000;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #bbb;
-}
+    /* World State Cards */
+    .state-card {
+        background: linear-gradient(135deg, rgba(20,20,20,1) 0%, rgba(10,10,10,1) 100%);
+        border: 1px solid #222;
+        padding: 15px; margin-bottom: 10px;
+        position: relative; overflow: hidden;
+    }
+    .state-card::before {
+        content: ''; position: absolute; top:0; left:0; width: 2px; height: 100%; background: var(--ice-solid); opacity: 0.5;
+    }
+    .state-label { font-size: 9px; color: #555; text-transform: uppercase; margin-bottom: 4px; }
+    .state-value { font-size: 14px; color: #ccc; }
+    .trigger-highlight { color: var(--ice-solid); font-weight: bold; }
 
-/* แถบ Header และ Footer ของหน้าต่าง */
-#panel-header, .nav-container {
-    background: #111; /* สีเข้มขึ้นเล็กน้อย */
-    border-color: rgba(137, 212, 255, 0.1);
-}
+    `;
+
+    const styleEl = document.createElement('style');
+    styleEl.id = 'frozen-void-style';
+    styleEl.innerHTML = cssContent;
+    document.head.appendChild(styleEl);
+
+    console.log(">> Frozen Void UI: CSS Loaded.");
+})();
