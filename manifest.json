@@ -1,13 +1,11 @@
 {
-    "name": "FrostGlass_HUD",
-    "display_name": "❄️ FrostGlass HUD Protocol",
-    "version": "1.0.0",
-    "description": "High-end Cold-Blue HUD for Lorebook, Status, and OOC Chat.",
-    "author": "YourName & AI Collaborator",
+    "display_name": "Frost Protocol HUD",
+    "requires": [],
+    "params": [],
     "js": "index.js",
     "css": "style.css",
-    "native_apps": {
-        "android": true,
-        "ios": true
-    }
+    "author": "YourName",
+    "version": "1.0.0",
+    "website": "https://github.com/yourname/frost-hud",
+    "description": "Premium HUD with OOC Chat, World Status, Lore Inspector, and Quick Repair tools."
 }
