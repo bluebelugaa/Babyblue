@@ -184,3 +184,123 @@
     color: #000 !important;
     box-shadow: 0 0 15px var(--frost-accent);
 }
+
+/* style.css - PART C: Repair Menu & Modals */
+
+#frost-selection-menu {
+    position: absolute;
+    z-index: 20000; /* ต้องสูงกว่าทุกอย่าง */
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.frost-glass-panel {
+    background: rgba(10, 20, 30, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--frost-accent);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+    min-width: 200px;
+}
+
+.menu-header {
+    font-size: 0.75em;
+    color: var(--frost-accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 5px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.frost-action-btn {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+
+.frost-action-btn i {
+    font-size: 1.2em;
+    color: var(--frost-accent);
+}
+
+.frost-action-btn:hover {
+    background: var(--frost-accent);
+    color: #000;
+}
+.frost-action-btn:hover i {
+    color: #000;
+}
+
+.menu-footer {
+    font-size: 0.6em;
+    color: #aaa;
+    text-align: center;
+    margin-top: 8px;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.8) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Modal Styling */
+.frost-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 20001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.frost-modal-content {
+    background: #0f1520;
+    border: 1px solid var(--frost-accent);
+    padding: 20px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 0 30px rgba(0,210,255,0.3);
+}
+
+.frost-modal-content h3 {
+    margin-top: 0;
+    color: var(--frost-accent);
+}
+
+#frost-edit-input {
+    width: 100%;
+    background: #000;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 15px 0;
+    resize: vertical;
+    font-family: monospace;
+}
+
+.frost-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
