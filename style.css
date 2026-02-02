@@ -1,40 +1,45 @@
-/* --- Root Variables: ธีมสีหลัก --- */
+/* --- Root Variables: ธีมสีหลัก (ปรับให้ Luxury ขึ้น) --- */
 :root {
-    --x-theme-black: #050505;
-    --x-theme-dark-gray: #121212;
-    --x-theme-pale-blue: #a3d1ff; /* ฟ้าจางเย็นชา */
-    --x-theme-cyan-glow: rgba(163, 209, 255, 0.6);
-    --x-glass-bg: rgba(5, 5, 5, 0.95);
-    --x-border-color: #334455;
-    --x-sparkle-color: #ffffff;
+    --x-bg-deep: #020204;
+    --x-glass-panel: rgba(10, 15, 20, 0.85); /* พื้นหลังกระจก */
+    --x-accent-blue: #a3d1ff; /* ฟ้าจางเย็นชา */
+    --x-accent-glow: rgba(163, 209, 255, 0.4);
+    --x-text-main: #e0e6ed;
+    --x-text-muted: #8b9bb4;
+    --x-border-glass: rgba(163, 209, 255, 0.3);
 }
 
-/* --- 1. The Floating Button (สัญลักษณ์ X) --- */
+/* --- 1. The Floating Button (ลูกแก้ว X วิบวับ) --- */
 #x_floating_btn {
     position: fixed;
-    width: 50px;
-    height: 50px;
-    background: radial-gradient(circle, var(--x-theme-dark-gray) 30%, var(--x-theme-black) 100%);
-    border: 2px solid var(--x-theme-pale-blue);
+    width: 56px;
+    height: 56px;
+    /* ไล่สีแบบ Metallic Black */
+    background: radial-gradient(120% 120% at 30% 30%, #2a3b4c 0%, #050505 90%);
+    border: 1px solid var(--x-border-glass);
     border-radius: 50%;
-    color: var(--x-theme-pale-blue);
-    font-family: 'Courier New', monospace; /* ฟอนต์แข็งๆ เย็นชา */
-    font-size: 24px;
-    font-weight: bold;
+    color: var(--x-accent-blue);
+    font-family: 'Cinzel', 'Courier New', serif; /* เปลี่ยนฟอนต์ให้ดูขลัง */
+    font-size: 26px;
+    font-weight: 600;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 9999; /* อยู่บนสุดเสมอ */
-    box-shadow: 0 0 10px var(--x-theme-cyan-glow);
-    transition: all 0.3s ease;
+    z-index: 9999;
+    /* แสงเงาหลายชั้น */
+    box-shadow: 
+        inset 0 0 10px rgba(163, 209, 255, 0.1),
+        0 4px 15px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(4px);
     overflow: hidden;
 }
 
-/* เอฟเฟกต์วิบวับ (Glitter Animation) */
-#x_floating_btn::before {
+/* เอฟเฟกต์แสงวาบ (Shine Effect) */
+#x_floating_btn::after {
     content: '';
     position: absolute;
     top: -50%;
@@ -43,163 +48,209 @@
     height: 200%;
     background: linear-gradient(
         45deg,
-        transparent 40%,
-        rgba(255, 255, 255, 0.8) 50%,
-        transparent 60%
+        transparent 45%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 55%
     );
-    animation: glitter-shine 3s infinite;
-    pointer-events: none;
+    animation: luxury-shine 5s infinite ease-in-out;
+}
+
+/* แสงหายใจ (Breathing Glow) */
+#x_floating_btn:not(.x-dragging) {
+    animation: breathe-glow 4s infinite alternate;
 }
 
 #x_floating_btn:active {
-    transform: scale(0.9);
-    box-shadow: 0 0 20px var(--x-theme-pale-blue);
+    transform: scale(0.92);
 }
 
-/* --- 2. The Main Window (หน้าต่างหลัก) --- */
+/* --- 2. The Main Window (กระจกหรูหรา) --- */
 #x_main_modal {
-    display: none; /* ซ่อนก่อน */
+    display: none;
     position: fixed;
-    top: 50%;
+    /* ปรับตำแหน่งเริ่มต้นใน CSS (แต่ JS จะคุมอีกที) */
+    top: 55%; 
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90vw; /* กว้างเกือบเต็มจอมือถือ */
-    height: 80vh;
-    background-color: var(--x-glass-bg);
-    border: 1px solid var(--x-theme-pale-blue);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(163, 209, 255, 0.1);
+    
+    width: 92vw;
+    height: 75vh;
+    
+    /* Glassmorphism ขั้นสูง */
+    background: var(--x-glass-panel);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    
+    border: 1px solid var(--x-border-glass);
+    border-radius: 12px;
+    
+    /* เงาลึกทำให้ดูลอย */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.8),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        
     z-index: 10000;
     flex-direction: column;
     overflow: hidden;
-    backdrop-filter: blur(5px);
-    border-radius: 8px;
-    animation: modal-pop 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    animation: modal-unfold 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Header Bar (ส่วนบนสุดสำหรับตั้งค่าและย้าย) */
+/* พื้นหลัง Grid จางๆ ข้างใน */
+#x_main_modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        linear-gradient(rgba(163, 209, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(163, 209, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Header Bar */
 .x-modal-header {
+    height: 55px;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid var(--x-border-glass);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+}
+
+/* ปุ่มควบคุมใน Header */
+.x-icon-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--x-text-muted);
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.x-icon-btn:hover {
+    background: rgba(163, 209, 255, 0.1);
+    color: var(--x-accent-blue);
+}
+
+.x-icon-btn.active {
+    background: rgba(163, 209, 255, 0.15);
+    border-color: var(--x-accent-blue);
+    color: var(--x-accent-blue);
+    box-shadow: 0 0 10px var(--x-accent-glow);
+}
+
+.x-close-btn {
+    color: var(--x-text-muted);
+    font-family: sans-serif;
+    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.x-close-btn:hover {
+    background: rgba(255, 50, 50, 0.2);
+    color: #ff8888;
+}
+
+/* --- 3. Content Area --- */
+.x-modal-content {
+    flex-grow: 1;
+    color: var(--x-text-main);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Page Navigation (แถบล่าง) */
+.x-page-nav {
     height: 50px;
-    background: linear-gradient(90deg, var(--x-theme-black) 0%, #1a2530 100%);
-    border-bottom: 1px solid var(--x-border-color);
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid var(--x-border-glass);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
 }
 
-.x-header-controls {
-    display: flex;
-    gap: 10px;
-}
-
-/* ปุ่มตั้งค่าใน Header */
-.x-icon-btn {
-    background: transparent;
-    border: 1px solid var(--x-border-color);
-    color: #556677;
-    width: 35px;
-    height: 35px;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.x-icon-btn.active {
-    color: var(--x-theme-pale-blue);
-    border-color: var(--x-theme-pale-blue);
-    box-shadow: 0 0 8px var(--x-theme-cyan-glow);
-    animation: pulse-blue 2s infinite;
-}
-
-.x-close-btn {
-    color: #ff6b6b;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 5px 10px;
-}
-
-/* --- 3. Content Area (พื้นที่เนื้อหา) --- */
-.x-modal-content {
-    flex-grow: 1;
-    position: relative;
-    overflow: hidden;
-    color: #eee;
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Page Navigation (ปุ่มเปลี่ยนหน้า แบบหนังสือ) */
-.x-page-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    border-top: 1px solid var(--x-border-color);
-}
-
 .x-nav-arrow {
-    background: transparent;
+    background: none;
     border: none;
-    color: var(--x-theme-pale-blue);
-    font-size: 24px;
-    padding: 10px;
+    color: var(--x-accent-blue);
+    font-size: 20px;
+    padding: 0 20px;
     cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
 }
+.x-nav-arrow:hover { opacity: 1; text-shadow: 0 0 5px var(--x-accent-blue); }
 
 .x-page-indicator {
-    font-size: 14px;
-    color: #8899aa;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--x-accent-blue);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 8px var(--x-accent-glow);
 }
 
-/* Pages Container */
+/* Pages */
 .x-pages-container {
     flex-grow: 1;
-    position: relative;
+    padding: 20px;
     overflow-y: auto;
-    padding: 15px;
+    position: relative;
 }
 
 .x-page {
-    display: none; /* ซ่อนทุกหน้าก่อน */
-    animation: fade-in 0.3s ease;
+    display: none;
+    animation: slide-up-fade 0.4s ease-out;
 }
+.x-page.active { display: block; }
 
-.x-page.active {
-    display: block;
+/* Placeholder Text Styling */
+.x-page h3 {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    color: var(--x-text-main);
+    font-size: 18px;
+    border-left: 3px solid var(--x-accent-blue);
+    padding-left: 10px;
 }
 
 /* --- Animations --- */
-@keyframes glitter-shine {
-    0% { transform: translate(-100%, -100%) rotate(45deg); }
-    100% { transform: translate(100%, 100%) rotate(45deg); }
+@keyframes luxury-shine {
+    0%, 80% { transform: translate(-100%, -100%) rotate(45deg); opacity: 0; }
+    85% { opacity: 1; }
+    100% { transform: translate(100%, 100%) rotate(45deg); opacity: 0; }
 }
 
-@keyframes pulse-blue {
-    0% { box-shadow: 0 0 5px var(--x-theme-cyan-glow); }
-    50% { box-shadow: 0 0 15px var(--x-theme-cyan-glow); }
-    100% { box-shadow: 0 0 5px var(--x-theme-cyan-glow); }
+@keyframes breathe-glow {
+    0% { box-shadow: inset 0 0 10px rgba(163, 209, 255, 0.05), 0 0 5px var(--x-accent-glow); }
+    100% { box-shadow: inset 0 0 15px rgba(163, 209, 255, 0.2), 0 0 15px var(--x-accent-glow); }
 }
 
-@keyframes modal-pop {
-    0% { transform: translate(-50%, -40%) scale(0.9); opacity: 0; }
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+@keyframes modal-unfold {
+    0% { transform: translate(-50%, -45%) scale(0.95); opacity: 0; filter: blur(5px); }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: blur(0); }
 }
 
-@keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
+@keyframes slide-up-fade {
+    from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Helper Class for Draggable State */
+/* Dragging State */
 .x-dragging {
-    opacity: 0.8;
-    border: 2px dashed var(--x-theme-pale-blue) !important;
+    cursor: grabbing !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 20px var(--x-accent-blue) !important;
 }
