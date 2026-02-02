@@ -1,256 +1,105 @@
-/* --- Global Theme Variables --- */
+/* style.css */
 :root {
-    --frost-bg: rgba(10, 15, 25, 0.95); /* สีดำอมน้ำเงินเข้ม เกือบทึบ */
-    --frost-accent: #00d2ff; /* สีฟ้าสว่าง (Cyan Ice) */
-    --frost-accent-dim: #005f73;
+    --frost-bg: rgba(5, 10, 20, 0.85);
+    --frost-accent: #00d2ff;
+    --frost-accent-glow: rgba(0, 210, 255, 0.6);
     --frost-border: 1px solid rgba(0, 210, 255, 0.3);
-    --frost-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
     --frost-text: #e0faff;
-    --frost-sparkle: #ffffff;
-    --glass-blur: blur(10px);
+    --glass-blur: blur(15px);
+    --sparkle-color: rgba(255, 255, 255, 0.8);
 }
 
-/* --- The Floating 'X' Button (Trigger) --- */
+/* --- The Floating 'X' Trigger --- */
 #frost-hud-trigger {
     position: fixed;
-    width: 50px;
-    height: 50px;
-    background: radial-gradient(circle at 30% 30%, #2b3240, #000000);
-    border: 2px solid var(--frost-accent);
-    border-radius: 50%; /* กลมดิก */
+    width: 45px;
+    height: 45px;
+    background: radial-gradient(circle at 30% 30%, #1a2a3a, #000);
+    border: 1.5px solid var(--frost-accent);
+    border-radius: 12px; /* ทรงเหลี่ยมมนหรูหรา */
     color: var(--frost-accent);
-    font-family: 'Courier New', monospace;
-    font-size: 24px;
-    font-weight: bold;
+    font-family: 'serif';
+    font-size: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 0 10px var(--frost-accent-dim), inset 0 0 10px #000;
     z-index: 9999;
-    transition: all 0.3s ease;
-    overflow: hidden;
+    box-shadow: 0 0 15px var(--frost-accent-glow);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     user-select: none;
-    top: 20%; /* ค่าเริ่มต้น */
-    left: 10px;
+    touch-action: none; /* สำหรับ Mobile Drag */
 }
 
-/* Effect: Sparkling / Breathing */
-@keyframes frost-pulse {
-    0% { box-shadow: 0 0 5px var(--frost-accent-dim); transform: scale(1); }
-    50% { box-shadow: 0 0 20px var(--frost-accent), 0 0 10px var(--frost-sparkle); transform: scale(1.05); }
-    100% { box-shadow: 0 0 5px var(--frost-accent-dim); transform: scale(1); }
-}
-
-#frost-hud-trigger.sparkling {
-    animation: frost-pulse 3s infinite ease-in-out;
-}
-
-/* Effect: Particle Sparkle (CSS Only) */
-#frost-hud-trigger::after {
+/* วิบวับแบบซ่าๆ (Sparkling Animation) */
+#frost-hud-trigger::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-    transform: rotate(45deg);
-    animation: shine 4s infinite linear;
+    inset: -2px;
+    background: linear-gradient(45deg, transparent, var(--sparkle-color), transparent);
+    z-index: -1;
+    border-radius: 12px;
+    animation: frost-shimmer 2s infinite linear;
+    opacity: 0.5;
 }
 
-@keyframes shine {
-    0% { top: -150%; left: -150%; }
-    100% { top: 150%; left: 150%; }
+@keyframes frost-shimmer {
+    0% { transform: rotate(0deg) scale(1); opacity: 0.3; }
+    50% { opacity: 0.7; transform: scale(1.05); }
+    100% { transform: rotate(360deg) scale(1); opacity: 0.3; }
 }
 
-/* --- Main Window Container --- */
+/* --- Main Window --- */
 #frost-hud-container {
     position: fixed;
-    width: 90vw; /* เกือบเต็มจอมือถือ */
-    height: 80vh;
-    top: 10vh;
-    left: 5vw;
+    width: 92vw;
+    height: 85vh;
     background: var(--frost-bg);
     backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border: var(--frost-border);
-    border-radius: 15px;
-    display: none; /* ซ่อนก่อน */
-    flex-direction: column;
+    border-radius: 20px;
     z-index: 10000;
+    display: none;
+    flex-direction: column;
     color: var(--frost-text);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 20px var(--frost-accent-glow);
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- Header Bar (Drag Area) --- */
+/* Header & Controls */
 .frost-header {
-    height: 50px;
-    background: linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,40,60,0.5));
+    padding: 15px;
+    background: linear-gradient(180deg, rgba(0, 210, 255, 0.1), transparent);
     border-bottom: var(--frost-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 15px;
-    user-select: none;
 }
 
-.frost-title {
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 0 0 5px var(--frost-accent);
-}
-
-.frost-controls {
+.frost-nav-book {
     display: flex;
-    gap: 10px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 10px;
+    padding: 5px;
+    margin: 10px;
+    gap: 5px;
+    overflow-x: auto;
 }
 
-/* ปุ่มควบคุมเล็กๆ */
-.frost-btn-icon {
-    background: transparent;
-    border: 1px solid var(--frost-accent-dim);
-    color: var(--frost-accent);
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-
-.frost-btn-icon:hover, .frost-btn-icon.active {
-    background: var(--frost-accent);
-    color: #000;
-    box-shadow: 0 0 10px var(--frost-accent);
-}
-
-.frost-btn-close {
-    border-color: #ff4444;
-    color: #ff4444;
-}
-.frost-btn-close:hover {
-    background: #ff4444;
-    color: #fff;
-}
-
-/* --- Content Area (Pages) --- */
-.frost-content {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-}
-
-/* Navigation Tabs (Book Style Side/Bottom) */
-.frost-nav {
-    width: 60px;
-    background: rgba(0,0,0,0.3);
-    border-right: var(--frost-border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 10px;
-    gap: 15px;
-    overflow-y: auto;
-}
-
-.frost-nav-item {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
+.nav-tab {
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    white-space: nowrap;
     cursor: pointer;
     transition: 0.3s;
     border: 1px solid transparent;
 }
 
-.frost-nav-item.active {
-    border-color: var(--frost-accent);
-    background: rgba(0, 210, 255, 0.1);
-    box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
-    transform: scale(1.1);
+.nav-tab.active {
+    background: var(--frost-accent);
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 0 10px var(--frost-accent);
 }
-
-/* Page Views */
-.frost-page {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    display: none; /* ซ่อนหน้าอื่นๆ */
-    animation: fadeIn 0.3s ease;
-}
-
-.frost-page.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- Specific Modules Styling --- */
-
-/* Lorebook Inspector */
-.lore-entry {
-    background: rgba(0,0,0,0.4);
-    border-left: 3px solid var(--frost-accent);
-    padding: 10px;
-    margin-bottom: 10px;
-    font-size: 0.9em;
-}
-.lore-keyword { color: #ffeb3b; font-weight: bold; }
-
-/* Status Panel (Grid) */
-.status-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.status-card {
-    background: rgba(255,255,255,0.05);
-    padding: 10px;
-    border-radius: 8px;
-}
-.status-label { font-size: 0.8em; color: var(--frost-accent-dim); }
-.status-value { font-size: 1em; font-weight: bold; }
-
-/* OOC Chat */
-.ooc-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-.ooc-history {
-    flex: 1;
-    overflow-y: auto;
-    margin-bottom: 10px;
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 10px;
-    border-radius: 5px;
-}
-.ooc-input-area {
-    display: flex;
-    gap: 5px;
-}
-.ooc-msg {
-    margin-bottom: 8px;
-    padding: 5px 10px;
-    border-radius: 10px;
-    max-width: 80%;
-    word-wrap: break-word;
-}
-.ooc-msg.user { background: #004455; align-self: flex-end; margin-left: auto; }
-.ooc-msg.ai { background: #222; border: 1px solid #444; }
-
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: var(--frost-accent-dim); border-radius: 3px; }
