@@ -1,256 +1,290 @@
-/* --- Root Variables: ธีมสีหลัก (ปรับให้ Luxury ขึ้น) --- */
+/* --- Project X: Frost Protocol Theme (Mobile Luxury) --- */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+
 :root {
-    --x-bg-deep: #020204;
-    --x-glass-panel: rgba(10, 15, 20, 0.85); /* พื้นหลังกระจก */
-    --x-accent-blue: #a3d1ff; /* ฟ้าจางเย็นชา */
-    --x-accent-glow: rgba(163, 209, 255, 0.4);
-    --x-text-main: #e0e6ed;
-    --x-text-muted: #8b9bb4;
-    --x-border-glass: rgba(163, 209, 255, 0.3);
+    /* Color Palette: Cold Luxury */
+    --frost-bg-dark: #050505;
+    --frost-bg-panel: rgba(8, 12, 18, 0.92);
+    --frost-accent-primary: #00d2ff;   /* ฟ้าสว่างเย็น */
+    --frost-accent-dim: #4a7a96;       /* ฟ้าตุ่น */
+    --frost-text-main: #e0f7ff;
+    --frost-text-muted: #6c859e;
+    --frost-border: rgba(0, 210, 255, 0.25);
+    --frost-glow: rgba(0, 210, 255, 0.4);
+    --frost-danger: #ff4a4a;
+    
+    /* Effects */
+    --glass-blur: blur(16px);
 }
 
-/* --- 1. The Floating Button (ลูกแก้ว X วิบวับ) --- */
+/* Global Reset for Extension Scope */
+#x_main_modal *, #x_floating_btn * {
+    box-sizing: border-box;
+    font-family: 'Rajdhani', sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: var(--frost-accent-dim) transparent;
+}
+
+/* --- 1. The Orb (ลูกแก้ว X) --- */
+/* ปรับขนาดให้เล็กลงตามขอ (42px) */
 #x_floating_btn {
     position: fixed;
-    width: 56px;
-    height: 56px;
-    /* ไล่สีแบบ Metallic Black */
-    background: radial-gradient(120% 120% at 30% 30%, #2a3b4c 0%, #050505 90%);
-    border: 1px solid var(--x-border-glass);
+    width: 42px;
+    height: 42px;
+    background: radial-gradient(circle at 30% 30%, #1a2530, #000000);
+    border: 1px solid var(--frost-border);
     border-radius: 50%;
-    color: var(--x-accent-blue);
-    font-family: 'Cinzel', 'Courier New', serif; /* เปลี่ยนฟอนต์ให้ดูขลัง */
-    font-size: 26px;
-    font-weight: 600;
+    color: var(--frost-accent-primary);
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 9999;
-    /* แสงเงาหลายชั้น */
+    z-index: 20000; /* สูงกว่า SillyTavern เดิม */
+    
+    /* Luxury Glow Effect */
     box-shadow: 
-        inset 0 0 10px rgba(163, 209, 255, 0.1),
-        0 4px 15px rgba(0, 0, 0, 0.8),
-        0 0 0 1px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        0 0 10px rgba(0, 210, 255, 0.1),
+        inset 0 0 8px rgba(0, 210, 255, 0.05);
+    transition: transform 0.2s, box-shadow 0.3s;
     user-select: none;
-    backdrop-filter: blur(4px);
-    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* เอฟเฟกต์แสงวาบ (Shine Effect) */
-#x_floating_btn::after {
+/* Effect: Pulse Breathing (หายใจวิบวับ) */
+#x_floating_btn:not(.x-dragging) {
+    animation: frost-pulse 4s infinite ease-in-out;
+}
+
+/* Effect: Orbit Ring (วงแหวนรอบลูกแก้ว) */
+#x_floating_btn::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent 45%,
-        rgba(255, 255, 255, 0.6) 50%,
-        transparent 55%
-    );
-    animation: luxury-shine 5s infinite ease-in-out;
-}
-
-/* แสงหายใจ (Breathing Glow) */
-#x_floating_btn:not(.x-dragging) {
-    animation: breathe-glow 4s infinite alternate;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    border-top-color: var(--frost-accent-primary);
+    border-bottom-color: rgba(0, 210, 255, 0.1);
+    animation: spin-slow 8s linear infinite;
+    pointer-events: none;
 }
 
 #x_floating_btn:active {
-    transform: scale(0.92);
+    transform: scale(0.9);
+    box-shadow: 0 0 20px var(--frost-accent-primary);
 }
 
-/* --- 2. The Main Window (กระจกหรูหรา) --- */
+/* --- 2. Main Window (หน้าต่างระบบ) --- */
 #x_main_modal {
-    display: none;
+    display: none; /* Hidden by default */
     position: fixed;
-    /* ปรับตำแหน่งเริ่มต้นใน CSS (แต่ JS จะคุมอีกที) */
-    top: 55%; 
-    left: 50%;
-    transform: translate(-50%, -50%);
+    /* Default CSS Position (JS จะ Override ถ้ามี Save) */
+    top: 15vh; /* ปรับลงมาจากขอบบน เพื่อไม่ให้บัง Status Bar มือถือ */
+    left: 5vw;
+    width: 90vw;
+    height: 70vh; /* ไม่เต็มจอเกินไป เพื่อให้เห็น Chat ด้านหลังบ้าง */
+    max-height: 600px;
     
-    width: 92vw;
-    height: 75vh;
+    /* Glassmorphism Styling */
+    background: var(--frost-bg-panel);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--frost-border);
+    border-radius: 8px; /* มุมมนน้อยๆ ดู Tech */
     
-    /* Glassmorphism ขั้นสูง */
-    background: var(--x-glass-panel);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    
-    border: 1px solid var(--x-border-glass);
-    border-radius: 12px;
-    
-    /* เงาลึกทำให้ดูลอย */
-    box-shadow: 
-        0 20px 50px rgba(0, 0, 0, 0.8),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        
-    z-index: 10000;
+    /* Tech Corners (ขอบมุม 4 ด้าน) */
+    clip-path: polygon(
+        0 10px, 10px 0, 
+        100% 0, 100% calc(100% - 10px), 
+        calc(100% - 10px) 100%, 0 100%
+    );
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+    z-index: 20001;
     flex-direction: column;
     overflow: hidden;
-    animation: modal-unfold 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: holo-open 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* พื้นหลัง Grid จางๆ ข้างใน */
-#x_main_modal::before {
+/* Grid Background Pattern inside Modal */
+#x_main_modal::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0; left: 0; width: 100%; height: 100%;
     background-image: 
-        linear-gradient(rgba(163, 209, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(163, 209, 255, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
+        linear-gradient(var(--frost-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--frost-border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.03;
     pointer-events: none;
     z-index: -1;
 }
 
-/* Header Bar */
-.x-modal-header {
-    height: 55px;
-    background: rgba(0, 0, 0, 0.4);
-    border-bottom: 1px solid var(--x-border-glass);
+/* --- 2.1 Header --- */
+.x-header {
+    height: 45px;
+    background: linear-gradient(90deg, rgba(0,0,0,0.5), rgba(0,20,30,0.5));
+    border-bottom: 1px solid var(--frost-border);
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
+    padding: 0 10px;
+    cursor: default; /* Default cursor unless moved */
 }
 
-/* ปุ่มควบคุมใน Header */
-.x-icon-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--x-text-muted);
-    width: 38px;
-    height: 38px;
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
+.x-title-glitch {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--frost-accent-primary);
+    text-shadow: 0 0 5px var(--frost-glow);
     font-size: 14px;
+    letter-spacing: 1px;
 }
 
-.x-icon-btn:hover {
-    background: rgba(163, 209, 255, 0.1);
-    color: var(--x-accent-blue);
+.x-controls {
+    display: flex;
+    gap: 8px;
 }
 
-.x-icon-btn.active {
-    background: rgba(163, 209, 255, 0.15);
-    border-color: var(--x-accent-blue);
-    color: var(--x-accent-blue);
-    box-shadow: 0 0 10px var(--x-accent-glow);
-}
-
-.x-close-btn {
-    color: var(--x-text-muted);
-    font-family: sans-serif;
-    font-size: 18px;
-    padding: 8px 12px;
+.x-btn-icon {
+    width: 30px; height: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.3);
+    color: var(--frost-text-muted);
+    display: flex; align-items: center; justify-content: center;
     border-radius: 4px;
     cursor: pointer;
-    transition: 0.2s;
-}
-.x-close-btn:hover {
-    background: rgba(255, 50, 50, 0.2);
-    color: #ff8888;
+    font-size: 12px;
+    transition: all 0.2s;
 }
 
-/* --- 3. Content Area --- */
-.x-modal-content {
-    flex-grow: 1;
-    color: var(--x-text-main);
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+.x-btn-icon:hover {
+    color: var(--frost-text-main);
+    border-color: var(--frost-text-muted);
+}
+
+.x-btn-icon.active {
+    background: rgba(0, 210, 255, 0.15);
+    border-color: var(--frost-accent-primary);
+    color: var(--frost-accent-primary);
+    box-shadow: 0 0 8px var(--frost-glow);
+}
+
+.x-close {
+    margin-left: 10px;
+    color: var(--frost-danger);
+    opacity: 0.7;
+}
+.x-close:hover { opacity: 1; text-shadow: 0 0 5px red; }
+
+/* --- 2.2 Content Area --- */
+.x-content-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-/* Page Navigation (แถบล่าง) */
-.x-page-nav {
-    height: 50px;
-    background: rgba(0, 0, 0, 0.3);
-    border-top: 1px solid var(--x-border-glass);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-}
-
-.x-nav-arrow {
-    background: none;
-    border: none;
-    color: var(--x-accent-blue);
-    font-size: 20px;
-    padding: 0 20px;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: 0.2s;
-}
-.x-nav-arrow:hover { opacity: 1; text-shadow: 0 0 5px var(--x-accent-blue); }
-
-.x-page-indicator {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--x-accent-blue);
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    text-shadow: 0 0 8px var(--x-accent-glow);
-}
-
-/* Pages */
-.x-pages-container {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
-    position: relative;
-}
-
 .x-page {
-    display: none;
-    animation: slide-up-fade 0.4s ease-out;
+    flex: 1;
+    display: none; /* Hide all by default */
+    padding: 15px;
+    overflow-y: auto;
+    animation: slide-in 0.3s ease-out;
 }
 .x-page.active { display: block; }
 
-/* Placeholder Text Styling */
+/* Styling for content inside pages */
 .x-page h3 {
-    margin: 0 0 10px 0;
-    font-weight: 300;
-    color: var(--x-text-main);
-    font-size: 18px;
-    border-left: 3px solid var(--x-accent-blue);
+    border-left: 2px solid var(--frost-accent-primary);
     padding-left: 10px;
+    margin-top: 0;
+    color: var(--frost-text-main);
+    font-family: 'Cinzel', serif;
+    background: linear-gradient(90deg, rgba(0, 210, 255, 0.1), transparent);
+}
+
+.x-data-block {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* --- 2.3 Navigation Bar (Bottom) --- */
+.x-nav-bar {
+    height: 50px;
+    background: rgba(0,0,0,0.6);
+    border-top: 1px solid var(--frost-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+
+.x-nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--frost-accent-primary);
+    font-size: 18px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.x-nav-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.x-nav-title {
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: var(--frost-text-main);
+}
+.x-nav-dots {
+    display: flex;
+    gap: 4px;
+    margin-top: 3px;
+}
+.x-dot {
+    width: 6px; height: 2px;
+    background: var(--frost-text-muted);
+    opacity: 0.3;
+}
+.x-dot.active {
+    background: var(--frost-accent-primary);
+    opacity: 1;
+    box-shadow: 0 0 5px var(--frost-accent-primary);
 }
 
 /* --- Animations --- */
-@keyframes luxury-shine {
-    0%, 80% { transform: translate(-100%, -100%) rotate(45deg); opacity: 0; }
-    85% { opacity: 1; }
-    100% { transform: translate(100%, 100%) rotate(45deg); opacity: 0; }
+@keyframes frost-pulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(0,210,255,0.2); }
+    50% { box-shadow: 0 0 15px rgba(0,210,255,0.6); }
+}
+@keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@keyframes holo-open {
+    from { opacity: 0; transform: scaleY(0.1); filter: blur(10px); }
+    to { opacity: 1; transform: scaleY(1); filter: blur(0); }
+}
+@keyframes slide-in {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes breathe-glow {
-    0% { box-shadow: inset 0 0 10px rgba(163, 209, 255, 0.05), 0 0 5px var(--x-accent-glow); }
-    100% { box-shadow: inset 0 0 15px rgba(163, 209, 255, 0.2), 0 0 15px var(--x-accent-glow); }
-}
-
-@keyframes modal-unfold {
-    0% { transform: translate(-50%, -45%) scale(0.95); opacity: 0; filter: blur(5px); }
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: blur(0); }
-}
-
-@keyframes slide-up-fade {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Dragging State */
-.x-dragging {
-    cursor: grabbing !important;
-    border-color: #fff !important;
-    box-shadow: 0 0 20px var(--x-accent-blue) !important;
+/* Dragging States */
+.x-movable-active {
+    cursor: move !important;
+    border-color: var(--frost-accent-primary) !important;
+    box-shadow: 0 0 15px var(--frost-glow) !important;
 }
