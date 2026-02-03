@@ -1,236 +1,228 @@
-/* --- Project X: Frost Protocol (Luxury Core Edition) --- */
-
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
+/* --- Project X: Wasteland Protocol (Apocalypse Edition) --- */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
 
 :root {
-    --frost-bg: rgba(5, 8, 12, 0.95);
-    --frost-cyan: #00f2ff;       /* ฟ้าสว่างนีออน */
-    --frost-deep: #0078d7;       /* ฟ้าลึก */
-    --frost-glass: rgba(0, 242, 255, 0.15);
-    --frost-danger: #ff2a2a;
-    --frost-text: #eefbff;
-    --frost-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+    /* Color Palette: Desolation */
+    --waste-bg-dark: #080808;      /* ดำสนิท */
+    --waste-bg-panel: #121212;     /* เทาดำ */
+    --waste-gray-dark: #2a2a2a;    /* เทาเข้ม */
+    --waste-gray-mid: #555555;     /* เทากลาง */
+    --waste-gray-light: #888888;   /* เทาอ่อน */
+    --waste-cyan: #80dfff;         /* ฟ้าซีด (Pale Cyan) */
+    --waste-cyan-dim: #2d4d59;     /* ฟ้าหม่น */
+    --waste-danger: #802020;       /* แดงเลือดหมู (ใช้ตอน Error) */
+    
+    /* Effects */
+    --scanline: rgba(0, 0, 0, 0.5);
 }
 
-/* --- 1. The Frost Core (ลูกแก้วแบบใหม่) --- */
-/* ลดขนาดลงเหลือ 38px (กะทัดรัดมาก) */
+/* Global Reset */
+#x_main_modal *, #x_floating_btn * {
+    box-sizing: border-box;
+    font-family: 'Share Tech Mono', monospace; /* ฟอนต์เครื่องจักร */
+    user-select: none;
+}
+
+/* --- 1. The Artifact (ลูกแก้ว - ลดขนาดเหลือ 32px) --- */
 #x_floating_btn {
     position: fixed;
-    width: 38px;
-    height: 38px;
-    background: #000;
-    border-radius: 50%;
-    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    background: var(--waste-bg-dark);
+    border: 1px solid var(--waste-gray-mid);
+    /* รูปทรง 6 เหลี่ยม (Hexagon) ให้ดูเป็นชิ้นส่วนเครื่องจักร */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     z-index: 20000;
-    box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,0,0,0.8);
+    transition: all 0.2s ease;
 }
 
-/* Core Design: ผลึกตรงกลาง (แทนตัว X) */
+/* แกนพลังงานด้านใน */
 #x_floating_btn .x-core {
-    width: 12px;
-    height: 12px;
-    background: var(--frost-cyan);
-    transform: rotate(45deg);
-    box-shadow: 0 0 10px var(--frost-cyan);
-    position: relative;
-    transition: transform 0.5s;
-}
-
-/* Outer Ring: วงแหวนหมุนรอบ */
-#x_floating_btn::before {
-    content: '';
-    position: absolute;
-    top: -4px; left: -4px; right: -4px; bottom: -4px;
-    border: 1px dashed rgba(0, 242, 255, 0.4);
+    width: 8px;
+    height: 8px;
+    background: var(--waste-cyan);
     border-radius: 50%;
-    animation: spin-slow 10s linear infinite;
+    box-shadow: 0 0 5px var(--waste-cyan);
+    animation: pulse-weak 4s infinite; /* หายใจรวยริน */
 }
 
-/* Inner Pulse: แสงหายใจ */
-#x_floating_btn::after {
-    content: '';
-    position: absolute;
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    box-shadow: inset 0 0 10px var(--frost-deep);
-    opacity: 0.5;
-    animation: pulse-core 3s infinite;
-}
-
-/* Animation เวลาลาก (Active Drag) */
+/* สถานะ Active (ตอนลาก) */
 #x_floating_btn.x-dragging {
-    transform: scale(1.1);
-    border-color: var(--frost-cyan);
-    box-shadow: 0 0 20px var(--frost-cyan);
-}
-#x_floating_btn.x-dragging .x-core {
-    background: var(--frost-danger); /* เปลี่ยนเป็นสีแดงเตือนว่ากำลังย้าย */
-    box-shadow: 0 0 15px var(--frost-danger);
-    transform: rotate(225deg);
+    border-color: var(--waste-cyan);
+    transform: scale(1.2);
+    box-shadow: 0 0 15px var(--waste-cyan-dim);
 }
 
-/* --- 2. Main Window (หน้าต่างย่อส่วน) --- */
+/* --- 2. Main Terminal (หน้าต่างระบบ) --- */
 #x_main_modal {
     display: none;
     position: fixed;
-    top: 15vh;
-    left: 5vw;
+    top: 15vh; left: 5vw;
     width: 90vw;
+    /* ลดความสูงลงอีกนิด */
+    height: 50vh; 
+    max-height: 400px;
     
-    /* ลดความสูงลงตามขอ (เหลือ 55% ของจอ หรือไม่เกิน 450px) */
-    height: 55vh;
-    max-height: 450px;
+    background: var(--waste-bg-panel);
+    border: 1px solid var(--waste-gray-dark);
+    /* ขอบตัดมุมแบบทหาร */
+    clip-path: polygon(
+        0 0, 100% 0, 
+        100% calc(100% - 15px), calc(100% - 15px) 100%, 
+        0 100%
+    );
     
-    background: linear-gradient(180deg, rgba(8,12,16,0.98) 0%, rgba(5,8,10,0.95) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    
-    /* กรอบสไตล์ Cyberpunk แบบบาง */
-    border: 1px solid rgba(0, 242, 255, 0.2);
-    border-top: 2px solid var(--frost-cyan);
-    border-radius: 0 0 8px 8px; /* มนแค่ด้านล่าง */
-    
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    box-shadow: 10px 10px 0px rgba(0,0,0,0.5); /* เงาแข็ง ไม่เบลอ */
     z-index: 20001;
     flex-direction: column;
-    overflow: hidden;
-    font-family: 'Rajdhani', sans-serif;
-    animation: hologram-in 0.3s ease-out;
 }
 
-/* --- 3. Header & Controls (ส่วนที่แก้ไขเยอะสุด) --- */
+/* ลายเส้น Scanline ทับหน้าจอ */
+#x_main_modal::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: -1;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+/* --- 3. Header (แผงควบคุมด้านบน) --- */
 .x-header {
-    height: 40px; /* ลดความสูง Header */
-    background: rgba(0, 242, 255, 0.05);
-    border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+    height: 35px;
+    background: var(--waste-gray-dark);
+    border-bottom: 1px solid var(--waste-gray-mid);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 8px;
+    padding: 0 5px;
 }
 
-.x-title-glitch {
-    color: var(--frost-text);
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 2px;
-    text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
-    opacity: 0.9;
-}
-
-.x-controls {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-/* ดีไซน์ปุ่มเปิดปิดการเคลื่อนย้ายใหม่ (Cyber Switch) */
-.x-switch-btn {
-    position: relative;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid #334;
-    color: #556;
-    height: 24px;
-    padding: 0 8px;
+.x-title-block {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 10px;
-    font-weight: 700;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
+}
+
+.x-status-light {
+    width: 6px; height: 6px;
+    background: var(--waste-gray-mid);
+    border-radius: 50%;
+}
+.x-status-light.online { background: var(--waste-cyan); box-shadow: 0 0 5px var(--waste-cyan); }
+
+.x-title-text {
+    font-size: 12px;
+    color: var(--waste-gray-light);
     letter-spacing: 1px;
 }
 
-/* สถานะ Active (Unlocked) */
-.x-switch-btn.active {
-    background: rgba(0, 242, 255, 0.1);
-    border-color: var(--frost-cyan);
-    color: var(--frost-cyan);
-    box-shadow: 0 0 8px rgba(0, 242, 255, 0.2);
+/* Control Switches (ปุ่มสี่เหลี่ยมดิบๆ) */
+.x-controls {
+    display: flex;
+    gap: 2px;
 }
 
-/* ไฟสถานะดวงเล็กๆ ในปุ่ม */
-.x-led {
-    width: 4px; height: 4px;
-    background: #334;
-    border-radius: 50%;
-    box-shadow: inset 0 0 2px #000;
-}
-.x-switch-btn.active .x-led {
-    background: var(--frost-cyan);
-    box-shadow: 0 0 4px var(--frost-cyan);
-}
-
-/* ปุ่มปิด (Close) */
-.x-close-btn {
-    margin-left: 8px;
-    color: var(--frost-danger);
-    font-size: 14px;
+.x-btn-tactical {
+    background: #000;
+    border: 1px solid var(--waste-gray-mid);
+    color: var(--waste-gray-light);
+    height: 25px;
+    padding: 0 8px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     cursor: pointer;
-    opacity: 0.6;
-    transition: 0.2s;
+    transition: all 0.1s;
 }
-.x-close-btn:hover { opacity: 1; text-shadow: 0 0 5px red; }
 
-/* --- 4. Content Area --- */
+.x-btn-tactical:hover { border-color: var(--waste-gray-light); }
+
+/* ปุ่ม Active (ตอนกดปลดล็อค) */
+.x-btn-tactical.active {
+    background: var(--waste-cyan-dim);
+    color: var(--waste-cyan);
+    border-color: var(--waste-cyan);
+}
+
+/* ปุ่มปิด (X) */
+.x-close-tactical {
+    background: #200000;
+    border: 1px solid #500;
+    color: #a00;
+    width: 25px;
+    justify-content: center;
+}
+.x-close-tactical:hover { background: #400; color: #f00; }
+/* สถานะ Disable (กดไม่ได้) */
+.x-close-tactical.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #111;
+    border-color: #333;
+    color: #333;
+}
+
+/* --- 4. Content --- */
 .x-content-wrapper {
     flex: 1;
-    padding: 0;
     overflow: hidden;
-    position: relative;
+    padding: 10px;
+    color: var(--waste-text-main);
+}
+.x-page { display: none; height: 100%; overflow-y: auto; }
+.x-page.active { display: block; }
+
+/* หัวข้อในหน้า */
+.x-section-header {
+    border-bottom: 1px solid var(--waste-gray-mid);
+    color: var(--waste-cyan);
+    font-size: 11px;
+    margin-bottom: 10px;
+    padding-bottom: 2px;
+    text-transform: uppercase;
 }
 
-.x-page {
-    display: none;
-    height: 100%;
-    overflow-y: auto;
-    padding: 15px;
-}
-.x-page.active { display: block; animation: fade-slide 0.3s; }
-
-/* --- 5. Navigation Bar (Bottom) --- */
+/* --- 5. Footer Nav --- */
 .x-nav-bar {
-    height: 40px;
-    border-top: 1px solid rgba(0, 242, 255, 0.1);
-    background: rgba(0,0,0,0.4);
+    height: 30px;
+    background: #000;
+    border-top: 1px solid var(--waste-gray-mid);
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
+
 .x-nav-btn {
-    background: none; border: none;
-    color: var(--frost-cyan);
-    width: 40px; height: 100%;
+    background: var(--waste-gray-dark);
+    border: none;
+    border-right: 1px solid #000;
+    color: var(--waste-gray-light);
+    width: 40px;
     cursor: pointer;
-    opacity: 0.7;
 }
-.x-nav-btn:hover { opacity: 1; background: rgba(0,242,255,0.05); }
+.x-nav-btn:hover { background: var(--waste-gray-mid); color: #fff; }
 
 .x-nav-info {
-    font-size: 12px;
-    color: var(--frost-text);
-    letter-spacing: 1px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--waste-gray-mid);
+    letter-spacing: 2px;
 }
 
-/* --- Keyframes --- */
-@keyframes spin-slow { 100% { transform: rotate(360deg); } }
-@keyframes pulse-core { 
-    0%, 100% { opacity: 0.3; transform: scale(0.9); } 
-    50% { opacity: 0.6; transform: scale(1.05); } 
+/* Animation */
+@keyframes pulse-weak {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
 }
-@keyframes hologram-in {
-    from { opacity: 0; transform: scaleY(0.05); }
-    to { opacity: 1; transform: scaleY(1); }
-}
-@keyframes fade-slide {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+
