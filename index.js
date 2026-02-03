@@ -1,314 +1,319 @@
-// --- Project X: The Cold Luxury Extension ---
-// Part 1.5: UI Update & Positioning
-// ---------------------------------------------
+// --- Project X: Frost Protocol (Luxury Edition) ---
+// Author: User & AI Assistant
+// Version: 2.0 (Mobile Optimized)
 
 import { extension_settings } from "../../../extensions.js";
+// หมายเหตุ: SillyTavern extensions ทำงานใน global scope ของ jQuery เป็นหลัก
 
-// Global Variables
-const EXTENSION_NAME = "Black_Blue_X";
-const SETTINGS_KEY = "black_blue_x_settings";
+// --- Configuration & State ---
+const SYSTEM_ID = "frost_protocol_hud";
+const STORAGE_KEY = "frost_protocol_v2_data";
 
-// --- ปรับค่าเริ่มต้นตรงนี้ ---
-let xSettings = {
-    // ย้ายไปขวา (right) และขยับลงมาจากบน 150px
-    btnPosition: { top: '150px', right: '20px', left: 'auto' }, 
-    // หน้าต่างให้เริ่มต่ำลงมาหน่อย (จัดการใน CSS แล้ว แต่เก็บค่าไว้เผื่ออนาคต)
-    modalPosition: { top: '55%', left: '50%' },
-    currentPage: 0
+// Default Configuration (Mobile Optimized)
+const DEFAULT_CONFIG = {
+    // ตำแหน่งลูกแก้ว (ขวาบน แต่ต่ำลงมาหน่อยให้กดยง่าย)
+    btnPos: { top: '120px', right: '10px', left: 'auto' },
+    // ตำแหน่งหน้าต่าง (กลางๆ แต่ค่อนบน)
+    winPos: { top: '15vh', left: '5vw' },
+    lastPageIndex: 0,
+    isMenuLocked: true, // เริ่มต้นล็อคไว้เสมอ
+    isBtnLocked: true
 };
 
-// State Flags
-let isBtnMovable = false;
-let isWindowMovable = false;
-let currentPageIndex = 0;
+let currentState = { ...DEFAULT_CONFIG };
 
-// Page Definitions
+// Pages Definition
 const PAGES = [
-    { id: 'lorebook', title: 'Lorebook Analysis' },
-    { id: 'context', title: 'Context Inspector' },
-    { id: 'chat_ooc', title: 'OOC Chat Room' },
-    { id: 'status', title: 'World & Status' },
-    { id: 'helper', title: 'User Helper' }
+    { id: 'lore', title: 'LOREBOOK TRACER', icon: 'fa-book-skull' },
+    { id: 'inspect', title: 'CONTEXT INSPECT', icon: 'fa-glasses' },
+    { id: 'ooc', title: 'OOC CHANNEL', icon: 'fa-comments' },
+    { id: 'world', title: 'WORLD STATUS', icon: 'fa-globe-americas' },
+    { id: 'helper', title: 'AI ASSISTANT', icon: 'fa-robot' }
 ];
 
-// ------------------------------
-// 1. Initialization
-// ------------------------------
+// -----------------------------------
+// 1. Initialization & Life Cycle
+// -----------------------------------
 
-async function loadSettings() {
-    const stored = localStorage.getItem(SETTINGS_KEY);
-    if (stored) {
-        // ผสานค่าที่เก็บไว้ (เผื่ออัปเดตเวอร์ชันแล้ว key ไม่ครบ)
-        const parsed = JSON.parse(stored);
-        
-        // *FIX: ถ้าของเก่าเป็น left แต่เราอยากเปลี่ยนเป็น right ให้ผู้ใช้ใหม่
-        // แต่ถ้าผู้ใช้เคยย้ายเองแล้ว ให้เคารพการย้ายของผู้ใช้
-        xSettings = { ...xSettings, ...parsed };
+jQuery(async () => {
+    console.log(`${SYSTEM_ID} : Initializing Frost Protocol...`);
+    loadState();
+    injectInterface();
+    // รอ Event Bus ของ SillyTavern (ถ้ามี) หรือ Hook เข้าไประบบ
+    // eventSource.on(event_types.MESSAGE_RECEIVED, handleNewMessage); 
+});
+
+function loadState() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+        try {
+            const saved = JSON.parse(raw);
+            currentState = { ...DEFAULT_CONFIG, ...saved };
+        } catch (e) {
+            console.error("Frost Protocol: State corrupted, resetting.");
+        }
     }
 }
 
-function saveSettings() {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(xSettings));
+function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
 }
 
-function createInterface() {
-    // ลบอันเก่าออกก่อนกันซ้ำ (กรณี reload script)
+// -----------------------------------
+// 2. UI Construction (HTML Injection)
+// -----------------------------------
+
+function injectInterface() {
+    // ล้างของเก่าทิ้ง (Re-inject safe)
     $('#x_floating_btn').remove();
     $('#x_main_modal').remove();
 
-    // 1.1 Create Floating Button (X)
-    const btn = document.createElement('div');
-    btn.id = 'x_floating_btn';
-    btn.innerHTML = 'X'; // หรือจะใส่ไอคอน <i class="fa-solid fa-gem"></i> ก็ได้
-    btn.title = 'Project X System';
+    // 2.1 The Orb
+    const btn = $(`<div id="x_floating_btn" title="Open Frost HUD">X</div>`);
     
-    // Apply saved position
-    btn.style.top = xSettings.btnPosition.top;
-    if (xSettings.btnPosition.left && xSettings.btnPosition.left !== 'auto') {
-        btn.style.left = xSettings.btnPosition.left;
-        btn.style.right = 'auto';
-    } else {
-        btn.style.right = xSettings.btnPosition.right || '20px';
-        btn.style.left = 'auto';
-    }
-
-    document.body.appendChild(btn);
-
-    // 1.2 Create Main Modal
-    const modal = document.createElement('div');
-    modal.id = 'x_main_modal';
-    
-    // ใช้ตำแหน่งที่ตั้งไว้ (ถ้ามีการย้าย)
-    // หมายเหตุ: CSS กำหนดค่า Default ไว้แล้ว แต่ JS จะ Override ถ้ามีการบันทึก
-    
-    // Header HTML
-    const headerHtml = `
-        <div class="x-modal-header">
-            <div class="x-header-controls">
-                <div id="x_btn_move_icon" class="x-icon-btn" title="Unlock Icon">
-                    <i class="fa-solid fa-arrows-up-down-left-right"></i>
-                </div>
-                <div id="x_btn_move_window" class="x-icon-btn" title="Unlock Window">
-                    <i class="fa-solid fa-expand"></i>
-                </div>
-            </div>
-            <div class="x-close-btn" id="x_close_modal"><i class="fa-solid fa-times"></i></div>
-        </div>
-    `;
-
-    // Content & Pages HTML
-    let pagesHtml = '<div class="x-pages-container">';
-    PAGES.forEach((page, index) => {
-        pagesHtml += `
-            <div id="x_page_${page.id}" class="x-page ${index === 0 ? 'active' : ''}">
-                <h3>${page.title}</h3>
-                <div class="x-page-content-placeholder">
-                    <p style="color: var(--x-text-muted); font-size: 0.9em;">
-                        Waiting for data stream... <br>
-                        <span style="font-size: 0.8em; opacity: 0.5;">[System ID: ${page.id}]</span>
-                    </p>
-                </div>
-            </div>
-        `;
+    // Apply Position
+    btn.css({
+        top: currentState.btnPos.top,
+        left: currentState.btnPos.left,
+        right: currentState.btnPos.right
     });
-    pagesHtml += '</div>';
+    
+    $('body').append(btn);
 
-    // Navigation HTML
-    const navHtml = `
-        <div class="x-page-nav">
-            <button class="x-nav-arrow" id="x_prev_page"><i class="fa-solid fa-chevron-left"></i></button>
-            <span class="x-page-indicator" id="x_page_title">${PAGES[0].title}</span>
-            <button class="x-nav-arrow" id="x_next_page"><i class="fa-solid fa-chevron-right"></i></button>
+    // 2.2 The Main Window
+    const modalHtml = `
+    <div id="x_main_modal">
+        <div class="x-header" id="x_header_drag_area">
+            <div class="x-title-glitch">FROST PROTOCOL</div>
+            <div class="x-controls">
+                <div id="x_toggle_orb_move" class="x-btn-icon" title="Unlock Orb Movement">
+                    <i class="fa-solid fa-arrows-alt"></i>
+                </div>
+                <div id="x_toggle_win_move" class="x-btn-icon" title="Unlock Window Movement">
+                    <i class="fa-solid fa-expand-arrows-alt"></i>
+                </div>
+                <div id="x_close_modal" class="x-close"><i class="fa-solid fa-times"></i></div>
+            </div>
         </div>
+
+        <div class="x-content-wrapper" id="x_content_area">
+            ${PAGES.map((p, idx) => `
+                <div id="x_page_${p.id}" class="x-page ${idx === 0 ? 'active' : ''}">
+                    <h3><i class="fa-solid ${p.icon}"></i> ${p.title}</h3>
+                    <div class="x-data-block">
+                        Status: <span style="color:var(--frost-accent-primary)">ONLINE</span><br>
+                        <small>Waiting for synchronization...</small>
+                    </div>
+                    <div id="x_content_${p.id}"></div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="x-nav-bar">
+            <button class="x-nav-btn" id="x_prev_page"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="x-nav-indicator">
+                <span id="x_page_label" class="x-nav-title">${PAGES[0].title}</span>
+                <div class="x-nav-dots">
+                    ${PAGES.map((_, idx) => `<div class="x-dot ${idx===0?'active':''}" id="x_dot_${idx}"></div>`).join('')}
+                </div>
+            </div>
+            <button class="x-nav-btn" id="x_next_page"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </div>
     `;
 
-    modal.innerHTML = headerHtml + pagesHtml + navHtml;
-    document.body.appendChild(modal);
+    $('body').append(modalHtml);
+    
+    // Apply Window Position
+    const modal = $('#x_main_modal');
+    modal.css({
+        top: currentState.winPos.top,
+        left: currentState.winPos.left
+    });
 
-    bindEvents();
+    bindInteractions();
+    renderPage(currentState.lastPageIndex);
 }
 
-// ------------------------------
-// 2. Event Listeners & Logic
-// ------------------------------
+// -----------------------------------
+// 3. Logic & Interaction
+// -----------------------------------
 
-function bindEvents() {
-    const btn = document.getElementById('x_floating_btn');
-    const modal = document.getElementById('x_main_modal');
-    const closeBtn = document.getElementById('x_close_modal');
+function bindInteractions() {
+    const orb = $('#x_floating_btn');
+    const modal = $('#x_main_modal');
+    const header = $('#x_header_drag_area');
 
-    // Toggle Modal
-    btn.addEventListener('click', () => {
-        if (isBtnMovable) return; 
-        if (modal.style.display === 'flex') {
-            modal.style.display = 'none';
+    // Toggle Open/Close
+    orb.on('click', (e) => {
+        // ถ้ากำลังขยับลูกแก้ว ห้ามเปิดหน้าต่าง
+        if (!currentState.isBtnLocked) return;
+        
+        if (modal.is(':visible')) {
+            modal.fadeOut(200);
         } else {
-            modal.style.display = 'flex';
+            modal.css('display', 'flex').hide().fadeIn(200);
         }
     });
 
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-        if (isWindowMovable) toggleWindowMove(false);
+    $('#x_close_modal').on('click', () => {
+        modal.fadeOut(200);
+        // Safety: Auto-lock window movement when closed
+        if(!currentState.isMenuLocked) toggleWindowMove(true); 
     });
-
-    // Move Toggles
-    document.getElementById('x_btn_move_icon').addEventListener('click', () => toggleIconMove());
-    document.getElementById('x_btn_move_window').addEventListener('click', () => toggleWindowMove());
 
     // Navigation
-    document.getElementById('x_prev_page').addEventListener('click', () => changePage(-1));
-    document.getElementById('x_next_page').addEventListener('click', () => changePage(1));
+    $('#x_prev_page').on('click', () => changePage(-1));
+    $('#x_next_page').on('click', () => changePage(1));
 
-    // Draggable
-    initDraggable(btn, 'icon');
-    initDraggable(modal, 'window');
+    // Unlock Toggles
+    $('#x_toggle_orb_move').on('click', () => toggleOrbMove());
+    $('#x_toggle_win_move').on('click', () => toggleWindowMove());
+
+    // Initialize Drag Logic
+    makeDraggable(orb[0], 'orb');
+    makeDraggable(modal[0], 'window', header[0]);
 }
 
-function changePage(direction) {
-    document.getElementById(`x_page_${PAGES[currentPageIndex].id}`).classList.remove('active');
-    currentPageIndex += direction;
-    if (currentPageIndex < 0) currentPageIndex = PAGES.length - 1;
-    if (currentPageIndex >= PAGES.length) currentPageIndex = 0;
-    document.getElementById(`x_page_${PAGES[currentPageIndex].id}`).classList.add('active');
-    document.getElementById('x_page_title').innerText = PAGES[currentPageIndex].title;
-}
-
-// ------------------------------
-// 3. Movement Logic (Updated)
-// ------------------------------
-
-function toggleIconMove() {
-    isBtnMovable = !isBtnMovable;
-    const btn = document.getElementById('x_floating_btn');
-    const iconBtn = document.getElementById('x_btn_move_icon');
+function changePage(dir) {
+    const total = PAGES.length;
+    let newIndex = currentState.lastPageIndex + dir;
     
-    if (isBtnMovable) {
-        iconBtn.classList.add('active');
-        btn.classList.add('x-dragging');
-        toastr.info("Icon Unlocked: Drag to move");
+    if (newIndex < 0) newIndex = total - 1;
+    if (newIndex >= total) newIndex = 0;
+
+    currentState.lastPageIndex = newIndex;
+    renderPage(newIndex);
+    saveState();
+}
+
+function renderPage(index) {
+    // Hide all
+    $('.x-page').removeClass('active');
+    $('.x-dot').removeClass('active');
+    
+    // Show target
+    const targetId = PAGES[index].id;
+    $(`#x_page_${targetId}`).addClass('active');
+    $(`#x_dot_${index}`).addClass('active');
+    
+    // Update Label
+    $('#x_page_label').text(PAGES[index].title);
+    
+    // Trigger specific logic for that page (To be implemented in Part 2)
+    // if (targetId === 'lore') updateLoreView();
+}
+
+// -----------------------------------
+// 4. Movement System (Robust)
+// -----------------------------------
+
+function toggleOrbMove() {
+    currentState.isBtnLocked = !currentState.isBtnLocked;
+    const btn = $('#x_toggle_orb_move');
+    const orb = $('#x_floating_btn');
+
+    if (!currentState.isBtnLocked) {
+        // Unlock State
+        btn.addClass('active');
+        orb.addClass('x-dragging');
+        orb.css('cursor', 'move');
+        toastr.info("Orb Unlocked: Drag to move");
     } else {
-        iconBtn.classList.remove('active');
-        btn.classList.remove('x-dragging');
+        // Lock State
+        btn.removeClass('active');
+        orb.removeClass('x-dragging');
+        orb.css('cursor', 'pointer');
         
-        // Save logic: Check if it's on left or right side of screen to determine anchor
-        const rect = btn.getBoundingClientRect();
-        const screenWidth = window.innerWidth;
-        
-        if (rect.left > screenWidth / 2) {
-            // Anchor to right
-            xSettings.btnPosition = { 
-                top: btn.style.top, 
-                right: (screenWidth - rect.right) + 'px',
-                left: 'auto'
-            };
-        } else {
-            // Anchor to left
-            xSettings.btnPosition = { 
-                top: btn.style.top, 
-                left: rect.left + 'px',
-                right: 'auto'
-            };
-        }
-        
-        saveSettings();
-        toastr.success("Icon Position Saved");
+        // Save Position
+        const rect = orb[0].getBoundingClientRect();
+        // คำนวณ Relative เพื่อรองรับการหมุนจอ
+        currentState.btnPos = {
+            top: rect.top + 'px',
+            left: rect.left + 'px',
+            right: 'auto'
+        };
+        saveState();
+        toastr.success("Orb Position Saved");
     }
 }
 
-function toggleWindowMove(forceState = null) {
-    const btnMoveWin = document.getElementById('x_btn_move_window');
-    const modal = document.getElementById('x_main_modal');
-    isWindowMovable = forceState !== null ? forceState : !isWindowMovable;
+function toggleWindowMove(forceLock = false) {
+    const btn = $('#x_toggle_win_move');
+    const header = $('#x_header_drag_area');
+    const modal = $('#x_main_modal');
 
-    if (isWindowMovable) {
-        btnMoveWin.classList.add('active');
-        modal.style.borderColor = "var(--x-text-main)";
-        modal.style.borderStyle = "dashed";
-        toastr.info("Window Unlocked");
+    if (forceLock) currentState.isMenuLocked = false; // logic inversion preparation
+    
+    currentState.isMenuLocked = !currentState.isMenuLocked; // Toggle
+
+    if (!currentState.isMenuLocked) {
+        // Unlock
+        btn.addClass('active');
+        header.addClass('x-movable-active');
+        modal.css('border-style', 'dashed');
+        toastr.info("Window Unlocked: Drag via Header");
     } else {
-        btnMoveWin.classList.remove('active');
-        modal.style.borderColor = "var(--x-border-glass)";
-        modal.style.borderStyle = "solid";
-        toastr.success("Window Locked");
+        // Lock
+        btn.removeClass('active');
+        header.removeClass('x-movable-active');
+        modal.css('border-style', 'solid');
+        
+        // Save Position
+        const rect = modal[0].getBoundingClientRect();
+        currentState.winPos = {
+            top: rect.top + 'px',
+            left: rect.left + 'px'
+        };
+        saveState();
+        toastr.success("Window Position Locked");
     }
 }
 
-function initDraggable(elm, type) {
+// Universal Drag Handler (Mouse & Touch)
+function makeDraggable(element, type, handle = null) {
+    const target = handle || element;
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
-    const getClientY = (e) => e.touches ? e.touches[0].clientY : e.clientY;
 
-    const dragMouseDown = (e) => {
-        if (type === 'icon' && !isBtnMovable) return;
-        if (type === 'window' && !isWindowMovable) return;
-        // e.preventDefault(); // Commented out to allow touch scrolling on content when not dragging
-        // Only prevent default if we are actually dragging
-        
-        pos3 = getClientX(e);
-        pos4 = getClientY(e);
-        
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-        document.ontouchend = closeDragElement;
-        document.ontouchmove = elementDrag;
+    const dragStart = (e) => {
+        // Check locks
+        if (type === 'orb' && currentState.isBtnLocked) return;
+        if (type === 'window' && currentState.isMenuLocked) return;
+
+        e = e.type === 'touchstart' ? e.touches[0] : e;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        document.onmouseup = dragEnd;
+        document.onmousemove = dragAction;
+        document.ontouchend = dragEnd;
+        document.ontouchmove = dragAction;
     };
 
-    const elementDrag = (e) => {
-        e.preventDefault(); 
-        pos1 = pos3 - getClientX(e);
-        pos2 = pos4 - getClientY(e);
-        pos3 = getClientX(e);
-        pos4 = getClientY(e);
+    const dragAction = (e) => {
+        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
 
-        elm.style.top = (elm.offsetTop - pos2) + "px";
-        
-        // Logic สำหรับลูกแก้ว (ใช้ right หรือ left)
-        if (type === 'icon') {
-             // ถ้าลาก ให้ใช้ left เป็นหลักชั่วคราวเพื่อให้ลากลื่น
-             elm.style.left = (elm.offsetLeft - pos1) + "px";
-             elm.style.right = 'auto'; 
-        } else {
-             elm.style.left = (elm.offsetLeft - pos1) + "px";
-        }
+        e.preventDefault(); // Prevent scrolling while dragging
 
-        if (type === 'window') elm.style.transform = "translate(-50%, -50%)"; // Keep centered logic somewhat or reset it
-        // *Correction for Window*: Since we use transform translate(-50%, -50%), 
-        // dragging directly by top/left can be tricky.
-        // For simplicity in this version, we assume user drags top-left corner offset effectively.
-        // A robust implementation removes translate during drag.
-        if (type === 'window') {
-            elm.style.transform = "none"; 
-        }
+        pos1 = pos3 - clientX;
+        pos2 = pos4 - clientY;
+        pos3 = clientX;
+        pos4 = clientY;
+
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.left = (element.offsetLeft - pos1) + "px";
+        element.style.right = 'auto'; // Clear right to avoid conflict
     };
 
-    const closeDragElement = () => {
+    const dragEnd = () => {
         document.onmouseup = null;
         document.onmousemove = null;
         document.ontouchend = null;
         document.ontouchmove = null;
     };
 
-    // Attach only to header for window (to allow text selection in body)
-    if (type === 'window') {
-        const header = elm.querySelector('.x-modal-header');
-        if (header) {
-            header.onmousedown = dragMouseDown;
-            header.ontouchstart = dragMouseDown;
-        }
-    } else {
-        elm.onmousedown = dragMouseDown;
-        elm.ontouchstart = dragMouseDown;
-    }
+    target.onmousedown = dragStart;
+    target.ontouchstart = dragStart;
 }
-
-// ------------------------------
-// 4. Boot
-// ------------------------------
-
-jQuery(async () => {
-    await loadSettings();
-    createInterface();
-    // Re-inject Font Awesome if needed, but SillyTavern usually has it.
-});
 
