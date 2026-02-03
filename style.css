@@ -1,228 +1,90 @@
-/* --- Project X: Wasteland Protocol (Apocalypse Edition) --- */
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
-
-:root {
-    /* Color Palette: Desolation */
-    --waste-bg-dark: #080808;      /* ดำสนิท */
-    --waste-bg-panel: #121212;     /* เทาดำ */
-    --waste-gray-dark: #2a2a2a;    /* เทาเข้ม */
-    --waste-gray-mid: #555555;     /* เทากลาง */
-    --waste-gray-light: #888888;   /* เทาอ่อน */
-    --waste-cyan: #80dfff;         /* ฟ้าซีด (Pale Cyan) */
-    --waste-cyan-dim: #2d4d59;     /* ฟ้าหม่น */
-    --waste-danger: #802020;       /* แดงเลือดหมู (ใช้ตอน Error) */
-    
-    /* Effects */
-    --scanline: rgba(0, 0, 0, 0.5);
-}
-
-/* Global Reset */
-#x_main_modal *, #x_floating_btn * {
-    box-sizing: border-box;
-    font-family: 'Share Tech Mono', monospace; /* ฟอนต์เครื่องจักร */
-    user-select: none;
-}
-
-/* --- 1. The Artifact (ลูกแก้ว - ลดขนาดเหลือ 32px) --- */
+/* --- 1. The Hyper-Frost Core (ลูกแก้วจิ๋ว 34px) --- */
 #x_floating_btn {
     position: fixed;
-    width: 32px;
-    height: 32px;
-    background: var(--waste-bg-dark);
-    border: 1px solid var(--waste-gray-mid);
-    /* รูปทรง 6 เหลี่ยม (Hexagon) ให้ดูเป็นชิ้นส่วนเครื่องจักร */
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    width: 34px;  /* ลดขนาดลงอีก */
+    height: 34px;
+    /* พื้นหลังดำลึก มีเงาเรืองแสงด้านใน */
+    background: radial-gradient(circle at center, #1a2530 0%, #000000 100%);
+    border-radius: 50%;
+    cursor: pointer;
     z-index: 20000;
+    
+    /* แสงฟุ้งรอบตัว */
+    box-shadow: 
+        0 0 0 1px rgba(0, 242, 255, 0.15),
+        0 0 15px rgba(0, 242, 255, 0.2);
+        
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0,0,0,0.8);
-    transition: all 0.2s ease;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* แกนพลังงานด้านใน */
-#x_floating_btn .x-core {
+/* ชั้นที่ 1: แกนพลังงานตรงกลาง (Diamond Core) */
+#x_floating_btn .x-core-gem {
     width: 8px;
     height: 8px;
-    background: var(--waste-cyan);
-    border-radius: 50%;
-    box-shadow: 0 0 5px var(--waste-cyan);
-    animation: pulse-weak 4s infinite; /* หายใจรวยริน */
+    background: #e0faff;
+    transform: rotate(45deg);
+    /* แสงจ้าตรงกลาง */
+    box-shadow: 
+        0 0 5px #00f2ff,
+        0 0 10px #0078d7;
+    animation: gem-pulse 3s infinite ease-in-out;
+    z-index: 2;
 }
 
-/* สถานะ Active (ตอนลาก) */
-#x_floating_btn.x-dragging {
-    border-color: var(--waste-cyan);
-    transform: scale(1.2);
-    box-shadow: 0 0 15px var(--waste-cyan-dim);
-}
-
-/* --- 2. Main Terminal (หน้าต่างระบบ) --- */
-#x_main_modal {
-    display: none;
-    position: fixed;
-    top: 15vh; left: 5vw;
-    width: 90vw;
-    /* ลดความสูงลงอีกนิด */
-    height: 50vh; 
-    max-height: 400px;
-    
-    background: var(--waste-bg-panel);
-    border: 1px solid var(--waste-gray-dark);
-    /* ขอบตัดมุมแบบทหาร */
-    clip-path: polygon(
-        0 0, 100% 0, 
-        100% calc(100% - 15px), calc(100% - 15px) 100%, 
-        0 100%
-    );
-    
-    box-shadow: 10px 10px 0px rgba(0,0,0,0.5); /* เงาแข็ง ไม่เบลอ */
-    z-index: 20001;
-    flex-direction: column;
-}
-
-/* ลายเส้น Scanline ทับหน้าจอ */
-#x_main_modal::after {
-    content: " ";
-    display: block;
+/* ชั้นที่ 2: วงแหวนใน (หมุนขวา) */
+#x_floating_btn::before {
+    content: '';
     position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    z-index: -1;
-    background-size: 100% 2px, 3px 100%;
-    pointer-events: none;
-}
-
-/* --- 3. Header (แผงควบคุมด้านบน) --- */
-.x-header {
-    height: 35px;
-    background: var(--waste-gray-dark);
-    border-bottom: 1px solid var(--waste-gray-mid);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 5px;
-}
-
-.x-title-block {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.x-status-light {
-    width: 6px; height: 6px;
-    background: var(--waste-gray-mid);
+    width: 22px; height: 22px;
+    border: 1px dashed rgba(0, 242, 255, 0.6);
     border-radius: 50%;
-}
-.x-status-light.online { background: var(--waste-cyan); box-shadow: 0 0 5px var(--waste-cyan); }
-
-.x-title-text {
-    font-size: 12px;
-    color: var(--waste-gray-light);
-    letter-spacing: 1px;
+    animation: spin-cw 8s linear infinite;
 }
 
-/* Control Switches (ปุ่มสี่เหลี่ยมดิบๆ) */
-.x-controls {
-    display: flex;
-    gap: 2px;
+/* ชั้นที่ 3: วงแหวนนอก (หมุนซ้าย) */
+#x_floating_btn::after {
+    content: '';
+    position: absolute;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border-top: 1px solid rgba(0, 242, 255, 0.8);
+    border-bottom: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    animation: spin-ccw 5s linear infinite;
 }
 
-.x-btn-tactical {
-    background: #000;
-    border: 1px solid var(--waste-gray-mid);
-    color: var(--waste-gray-light);
-    height: 25px;
-    padding: 0 8px;
-    font-size: 10px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    transition: all 0.1s;
+/* สถานะกำลังลาก (Dragging) */
+#x_floating_btn.x-dragging {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--frost-danger); /* เปลี่ยนเป็นสีแดง */
+}
+#x_floating_btn.x-dragging .x-core-gem {
+    background: var(--frost-danger);
+    box-shadow: 0 0 10px var(--frost-danger);
+}
+#x_floating_btn.x-dragging::before, 
+#x_floating_btn.x-dragging::after {
+    border-color: var(--frost-danger);
+    animation-duration: 1s; /* หมุนเร็วขึ้นตอนลาก */
 }
 
-.x-btn-tactical:hover { border-color: var(--waste-gray-light); }
-
-/* ปุ่ม Active (ตอนกดปลดล็อค) */
-.x-btn-tactical.active {
-    background: var(--waste-cyan-dim);
-    color: var(--waste-cyan);
-    border-color: var(--waste-cyan);
-}
-
-/* ปุ่มปิด (X) */
-.x-close-tactical {
-    background: #200000;
-    border: 1px solid #500;
-    color: #a00;
-    width: 25px;
-    justify-content: center;
-}
-.x-close-tactical:hover { background: #400; color: #f00; }
-/* สถานะ Disable (กดไม่ได้) */
-.x-close-tactical.disabled {
-    opacity: 0.3;
+/* สถานะ Disabled (สำหรับปุ่มปิด) */
+.x-close-btn.disabled {
+    opacity: 0.2;
     cursor: not-allowed;
-    background: #111;
-    border-color: #333;
-    color: #333;
+    filter: grayscale(100%);
+    pointer-events: none; /* กดไม่ได้ */
 }
 
-/* --- 4. Content --- */
-.x-content-wrapper {
-    flex: 1;
-    overflow: hidden;
-    padding: 10px;
-    color: var(--waste-text-main);
+/* Keyframes */
+@keyframes gem-pulse {
+    0%, 100% { transform: rotate(45deg) scale(0.8); opacity: 0.8; }
+    50% { transform: rotate(45deg) scale(1.2); opacity: 1; box-shadow: 0 0 15px #00f2ff; }
 }
-.x-page { display: none; height: 100%; overflow-y: auto; }
-.x-page.active { display: block; }
-
-/* หัวข้อในหน้า */
-.x-section-header {
-    border-bottom: 1px solid var(--waste-gray-mid);
-    color: var(--waste-cyan);
-    font-size: 11px;
-    margin-bottom: 10px;
-    padding-bottom: 2px;
-    text-transform: uppercase;
-}
-
-/* --- 5. Footer Nav --- */
-.x-nav-bar {
-    height: 30px;
-    background: #000;
-    border-top: 1px solid var(--waste-gray-mid);
-    display: flex;
-    justify-content: space-between;
-}
-
-.x-nav-btn {
-    background: var(--waste-gray-dark);
-    border: none;
-    border-right: 1px solid #000;
-    color: var(--waste-gray-light);
-    width: 40px;
-    cursor: pointer;
-}
-.x-nav-btn:hover { background: var(--waste-gray-mid); color: #fff; }
-
-.x-nav-info {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    color: var(--waste-gray-mid);
-    letter-spacing: 2px;
-}
-
-/* Animation */
-@keyframes pulse-weak {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
+@keyframes spin-cw { 100% { transform: rotate(360deg); } }
+@keyframes spin-ccw { 100% { transform: rotate(-360deg); } }
