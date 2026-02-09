@@ -1,44 +1,45 @@
 /* =========================================
-   1. LAUNCHER (ปุ่มเปิด 🌀)
+   1. LAUNCHER (ลูกแก้ว)
    ========================================= */
 .nexus-launcher {
     position: fixed;
-    /* ตำแหน่งเริ่มต้น: มุมขวาบน (ห่างขอบนิดเดียว) */
+    /* ตำแหน่ง: มุมขวาบน */
     top: 5vh;
     right: 2vw;
     
-    /* ขนาดเล็กกะทัดรัด */
+    /* ขนาดเล็ก */
     width: 35px;
     height: 35px;
     
-    /* ดีไซน์ Cyberpunk แบบ Soft Glow */
-    background: rgba(0, 0, 0, 0.4); /* พื้นหลังจาง */
-    border: 1px solid rgba(255, 105, 180, 0.4); /* ขอบชมพูอ่อน */
-    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3); /* แสงนวลๆ */
+    /* ดีไซน์ปกติ: สีเข้มจางๆ ขอบชมพูอ่อนมาก (ตามสั่ง) */
+    background: rgba(0, 0, 0, 0.3); /* ดำจางๆ */
+    border: 1px solid rgba(255, 182, 193, 0.3); /* ขอบชมพูจางๆ */
+    box-shadow: none; /* ปกติไม่เรืองแสง */
     border-radius: 50%;
     
-    /* การจัดวางไอคอน */
+    /* ไอคอนข้างใน */
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    color: rgba(255, 182, 193, 0.9);
+    color: rgba(255, 255, 255, 0.7); /* สีไอคอนขาวนวล */
     
-    /* Interaction */
     cursor: pointer;
-    z-index: 20000; /* อยู่บนสุด */
+    z-index: 20000;
     user-select: none;
-    touch-action: none; /* ป้องกันการเลื่อนหน้าจอเมื่อลากปุ่ม */
+    touch-action: none;
     
-    /* Animation หมุนตลอดเวลา */
-    animation: slowSpin 8s linear infinite;
+    /* หมุนช้าๆ ตลอดเวลา */
+    animation: slowSpin 10s linear infinite;
+    transition: all 0.2s ease;
 }
 
-/* หยุดหมุนเมื่อเอาเมาส์ชี้ หรือกำลังกด (เพื่อให้กดง่าย) */
-.nexus-launcher:hover, .nexus-launcher:active {
-    animation-play-state: paused;
-    border-color: rgba(255, 105, 180, 0.8);
-    box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+/* เอฟเฟกต์ตอนกด (Active) : ขอบเรืองแสงวาบขึ้นมา */
+.nexus-launcher:active, .nexus-launcher.hover-active {
+    border-color: rgba(255, 105, 180, 1.0); /* ขอบชัดขึ้น */
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.8); /* เรืองแสงสีชมพูฟุ้งๆ */
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(0.95); /* ยุบลงนิดนึง */
 }
 
 @keyframes slowSpin {
@@ -50,118 +51,83 @@
    2. MAIN WINDOW (หน้าต่างหลัก)
    ========================================= */
 .nexus-window {
-    display: none; /* ซ่อนไว้ก่อน */
+    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* จัดกึ่งกลาง */
+    transform: translate(-50%, -50%);
     
-    /* ขนาดหน้าต่าง */
     width: 95vw;
     height: 80vh;
     
-    /* ธีมเขียว Matrix/Cyberpunk */
-    background: rgba(5, 15, 5, 0.95);
-    border: 1px solid rgba(0, 255, 65, 0.5);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-    color: #00ff41;
+    /* แก้ไขเรื่องสีเขียวกินตา: ใช้พื้นหลังดำทึบขึ้น ตัดแสงฟุ้งออก */
+    background: #020a02; /* ดำเขียวเข้มมาก (เกือบดำสนิท) */
+    border: 1px solid #00ff41; /* เส้นขอบเขียวคมๆ */
+    box-shadow: 0 0 10px rgba(0, 20, 0, 0.8); /* เงาดำ ตัดขอบให้ชัด */
     
+    color: #00ff41; /* ตัวหนังสือสีเขียว Matrix */
     z-index: 20001;
     flex-direction: column;
     font-family: 'Consolas', 'Courier New', monospace;
-    backdrop-filter: blur(5px);
-    overflow: hidden;
-    border-radius: 5px;
+    
+    /* เอาความเบลอออกเล็กน้อยเพื่อให้ตัวหนังสือชัด */
+    backdrop-filter: none; 
+    border-radius: 4px;
 }
 
-/* ส่วนหัว (Header) */
+/* Header */
 .nexus-header {
-    background: rgba(0, 255, 65, 0.1);
+    background: #001100; /* พื้นหลัง Header เข้ม */
     padding: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(0, 255, 65, 0.3);
-    cursor: default; /* จะเปลี่ยนเป็น move เมื่อปลดล็อค */
+    border-bottom: 1px solid #004411; /* เส้นแบ่งจางๆ */
 }
 
-/* ปุ่มควบคุมใน Header */
-.nexus-ctrl-group {
-    display: flex;
-    gap: 5px;
-}
-
+/* ปุ่มควบคุม */
 .nexus-btn {
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid #00ff41;
-    color: #00ff41;
-    padding: 4px 8px;
+    background: #000;
+    border: 1px solid #005511;
+    color: #00aa22;
+    padding: 4px 10px;
     font-size: 11px;
     cursor: pointer;
-    transition: all 0.2s;
     text-transform: uppercase;
-}
-
-.nexus-btn:hover {
-    background: rgba(0, 255, 65, 0.2);
 }
 
 .nexus-btn.active {
     background: #00ff41;
     color: #000;
-    box-shadow: 0 0 10px #00ff41;
+    border-color: #00ff41;
     font-weight: bold;
 }
 
 .nexus-btn.danger {
-    border-color: #ff0055;
-    color: #ff0055;
-}
-.nexus-btn.danger:hover {
-    background: rgba(255, 0, 85, 0.2);
+    border-color: #880022;
+    color: #ff3355;
 }
 
-/* พื้นที่เนื้อหา (Body) */
+/* Body Content */
 .nexus-body {
     flex: 1;
     overflow-y: auto;
-    padding: 10px;
-    position: relative;
-    
-    /* ลายเส้น Scanline จางๆ */
-    background-image: linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px);
-    background-size: 100% 3px;
-}
-
-/* หน้า (Pages) */
-.nexus-page {
-    display: none;
-    animation: fadeIn 0.3s ease-in-out;
-}
-.nexus-page.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+    padding: 15px;
+    background: #020a02;
 }
 
 h3 {
-    border-bottom: 1px dashed #00ff41;
-    padding-bottom: 5px;
+    border-bottom: 1px solid #004411;
+    color: #ccffcc; /* หัวข้อสีขาวอมเขียว อ่านง่าย */
     margin-top: 0;
-    color: #ccffcc;
-    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    padding-bottom: 5px;
 }
 
-/* =========================================
-   3. FOOTER (แถบเมนูด้านล่าง)
-   ========================================= */
+/* Footer */
 .nexus-footer {
     display: flex;
     background: #000;
-    border-top: 1px solid rgba(0, 255, 65, 0.3);
+    border-top: 1px solid #004411;
     overflow-x: auto;
 }
 
@@ -169,22 +135,14 @@ h3 {
     flex: 1;
     padding: 12px 5px;
     text-align: center;
-    border-right: 1px solid rgba(0, 255, 65, 0.2);
+    border-right: 1px solid #002205;
     font-size: 12px;
+    color: #006611; /* สีตอนยังไม่เลือก (เขียวมืด) */
     cursor: pointer;
-    white-space: nowrap;
-    color: #008822;
-    transition: all 0.2s;
-}
-
-.nav-tab:hover {
-    background: rgba(0, 255, 65, 0.1);
-    color: #00ff41;
 }
 
 .nav-tab.active {
-    background: rgba(0, 255, 65, 0.2);
-    color: #fff;
-    text-shadow: 0 0 5px #00ff41;
+    background: #001a05;
+    color: #00ff41; /* สีตอนเลือก (เขียวสว่าง) */
     border-top: 2px solid #00ff41;
 }
