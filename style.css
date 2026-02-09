@@ -1,90 +1,10 @@
-/* --- 1. The Hyper-Frost Core (ลูกแก้วจิ๋ว 34px) --- */
-#x_floating_btn {
-    position: fixed;
-    width: 34px;  /* ลดขนาดลงอีก */
-    height: 34px;
-    /* พื้นหลังดำลึก มีเงาเรืองแสงด้านใน */
-    background: radial-gradient(circle at center, #1a2530 0%, #000000 100%);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 20000;
-    
-    /* แสงฟุ้งรอบตัว */
-    box-shadow: 
-        0 0 0 1px rgba(0, 242, 255, 0.15),
-        0 0 15px rgba(0, 242, 255, 0.2);
-        
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    -webkit-tap-highlight-color: transparent;
+{
+    "name": "CyberCore Nexus",
+    "display_name": "🌀 CyberCore Nexus",
+    "version": "1.0.0",
+    "description": "Advanced Roleplay Management System with Cyberpunk UI",
+    "author": "User",
+    "js": "index.js",
+    "css": "style.css",
+    "native_modules": true
 }
-
-/* ชั้นที่ 1: แกนพลังงานตรงกลาง (Diamond Core) */
-#x_floating_btn .x-core-gem {
-    width: 8px;
-    height: 8px;
-    background: #e0faff;
-    transform: rotate(45deg);
-    /* แสงจ้าตรงกลาง */
-    box-shadow: 
-        0 0 5px #00f2ff,
-        0 0 10px #0078d7;
-    animation: gem-pulse 3s infinite ease-in-out;
-    z-index: 2;
-}
-
-/* ชั้นที่ 2: วงแหวนใน (หมุนขวา) */
-#x_floating_btn::before {
-    content: '';
-    position: absolute;
-    width: 22px; height: 22px;
-    border: 1px dashed rgba(0, 242, 255, 0.6);
-    border-radius: 50%;
-    animation: spin-cw 8s linear infinite;
-}
-
-/* ชั้นที่ 3: วงแหวนนอก (หมุนซ้าย) */
-#x_floating_btn::after {
-    content: '';
-    position: absolute;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border-top: 1px solid rgba(0, 242, 255, 0.8);
-    border-bottom: 1px solid transparent;
-    border-left: 1px solid transparent;
-    border-right: 1px solid transparent;
-    animation: spin-ccw 5s linear infinite;
-}
-
-/* สถานะกำลังลาก (Dragging) */
-#x_floating_btn.x-dragging {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px var(--frost-danger); /* เปลี่ยนเป็นสีแดง */
-}
-#x_floating_btn.x-dragging .x-core-gem {
-    background: var(--frost-danger);
-    box-shadow: 0 0 10px var(--frost-danger);
-}
-#x_floating_btn.x-dragging::before, 
-#x_floating_btn.x-dragging::after {
-    border-color: var(--frost-danger);
-    animation-duration: 1s; /* หมุนเร็วขึ้นตอนลาก */
-}
-
-/* สถานะ Disabled (สำหรับปุ่มปิด) */
-.x-close-btn.disabled {
-    opacity: 0.2;
-    cursor: not-allowed;
-    filter: grayscale(100%);
-    pointer-events: none; /* กดไม่ได้ */
-}
-
-/* Keyframes */
-@keyframes gem-pulse {
-    0%, 100% { transform: rotate(45deg) scale(0.8); opacity: 0.8; }
-    50% { transform: rotate(45deg) scale(1.2); opacity: 1; box-shadow: 0 0 15px #00f2ff; }
-}
-@keyframes spin-cw { 100% { transform: rotate(360deg); } }
-@keyframes spin-ccw { 100% { transform: rotate(-360deg); } }
