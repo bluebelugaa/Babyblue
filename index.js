@@ -1,144 +1,211 @@
+// =================================================================
+// CHRONOS NEXUS - Ultimate Extension
+// Version: 2.1 (Separated Logic)
+// =================================================================
+
 (function () {
-    const EXTENSION_NAME = "CyberCore Nexus";
-    let isLauncherLocked = true; 
-    let isWindowLocked = true;   
-
-    function init() {
-        if (document.getElementById('nexus-root')) return;
-
-        const root = document.createElement('div');
-        root.id = 'nexus-root';
-        document.body.appendChild(root);
-
-        // Launcher
-        const launcher = document.createElement('div');
-        launcher.id = 'nexus-launcher';
-        launcher.className = 'nexus-launcher';
-        launcher.innerHTML = '🌀';
-        root.appendChild(launcher);
-
-        // Window
-        const win = document.createElement('div');
-        win.id = 'nexus-window';
-        win.className = 'nexus-window';
-        win.innerHTML = `
-            <div class="nexus-header" id="nexus-header-drag">
-                <div style="display:flex; gap:5px;">
-                    <button id="btn-unlock-launcher" class="nexus-btn">Move 🌀</button>
-                    <button id="btn-unlock-window" class="nexus-btn">Move Win</button>
-                </div>
-                <button id="btn-close-nexus" class="nexus-btn danger">CLOSE X</button>
-            </div>
-
-            <div class="nexus-body">
-                <div id="page-lore" class="nexus-page active">
-                    <h3>📜 Lorebook Monitor</h3>
-                    <p>System Ready...</p>
-                </div>
-                <div id="page-check" class="nexus-page">
-                    <h3>🔍 Inspector</h3>
-                    <p>No selection.</p>
-                </div>
-                <div id="page-chat" class="nexus-page">
-                    <h3>💬 Chat</h3>
-                    <div style="height:100px; border:1px solid #003300; color:#55aa55; padding:5px;">Simulation Log...</div>
-                </div>
-                <div id="page-status" class="nexus-page">
-                    <h3>🌎 Status</h3>
-                    <p>Location: Unknown</p>
-                </div>
-                <div id="page-help" class="nexus-page">
-                    <h3>❓ Help</h3>
-                    <p>Tap buttons above to unlock movement.</p>
-                </div>
-            </div>
-
-            <div class="nexus-footer">
-                <div class="nav-tab active" onclick="nexusSwitchPage('lore', this)">📜 Lore</div>
-                <div class="nav-tab" onclick="nexusSwitchPage('check', this)">🔍 Check</div>
-                <div class="nav-tab" onclick="nexusSwitchPage('chat', this)">💬 Chat</div>
-                <div class="nav-tab" onclick="nexusSwitchPage('status', this)">🌎 Status</div>
-                <div class="nav-tab" onclick="nexusSwitchPage('help', this)">❓ Help</div>
-            </div>
-        `;
-        root.appendChild(win);
-
-        setupEvents(launcher, win);
-    }
-
-    window.nexusSwitchPage = function(pageName, tabElement) {
-        document.querySelectorAll('.nexus-page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(`page-${pageName}`).classList.add('active');
-        tabElement.classList.add('active');
+    // --- 1. CONFIGURATION & STATE ---
+    const EXTENSION_NAME = "Chronos_Nexus_V2";
+    
+    let config = {
+        stripCode: true,      // เปิดระบบตัดโค้ดเริ่มต้น
+        orbLocked: true,      // ล็อคลูกแก้ว
+        panelLocked: true     // ล็อคหน้าต่าง
     };
 
-    function setupEvents(launcher, win) {
-        const btnMoveLauncher = document.getElementById('btn-unlock-launcher');
-        const btnMoveWin = document.getElementById('btn-unlock-window');
-        const btnClose = document.getElementById('btn-close-nexus');
-        
-        let isDragging = false;
+    // --- 2. UI GENERATION (สร้างลูกแก้ว & หน้าต่าง) ---
+    function createUI() {
+        // ป้องกันการสร้างซ้ำ
+        if (document.getElementById('chronos-orb')) return;
 
-        // กดที่ลูกแก้ว
-        launcher.addEventListener('click', () => {
-            if (!isDragging && isLauncherLocked) {
-                // เอฟเฟกต์กด
-                launcher.classList.add('hover-active');
-                setTimeout(() => launcher.classList.remove('hover-active'), 200);
-                
-                win.style.display = 'flex';
+        // 1. สร้างลูกแก้ว
+        const orb = document.createElement('div');
+        orb.id = 'chronos-orb';
+        orb.innerHTML = '🌀'; 
+        orb.title = "Open Chronos Nexus";
+        document.body.appendChild(orb);
+
+        // 2. สร้างหน้าต่าง Panel
+        const panel = document.createElement('div');
+        panel.id = 'chronos-panel';
+        panel.innerHTML = `
+            <div class="c-header" id="c-drag-header">
+                <span>CHRONOS SYSTEM</span>
+                <span id="c-close-btn" style="cursor:pointer; color:#ff3366;">[X]</span>
+            </div>
+            <div class="c-body">
+                <div class="c-row">
+                    <div style="font-weight:bold; color:#fff;">🛡️ PROMPT GUARD</div>
+                    <label class="c-toggle" style="margin-top:5px;">
+                        <input type="checkbox" class="c-checkbox" id="chk-strip" ${config.stripCode ? 'checked' : ''}>
+                        <span>Auto-Strip HTML/Code</span>
+                    </label>
+                    <div style="font-size:9px; color:#888; margin-top:2px;">
+                        Prevent sending raw HTML tags to AI.
+                    </div>
+                </div>
+
+                <div class="c-row">
+                    <div style="font-weight:bold; color:#fff;">📘 LOREBOOK MONITOR</div>
+                    <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                        <span>Active Entries:</span>
+                        <span id="c-lore-count" style="color:#fff; font-weight:bold;">0</span>
+                    </div>
+                    <button class="c-btn" id="btn-scan" style="width:100%; margin-top:5px;">Manual Scan</button>
+                </div>
+
+                <div class="c-row">
+                    <div style="font-weight:bold; color:#fff;">⚙️ INTERFACE</div>
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button class="c-btn" id="btn-unlock-orb">Move Orb</button>
+                        <button class="c-btn" id="btn-unlock-panel">Move Panel</button>
+                    </div>
+                </div>
+
+                <div style="font-weight:bold; color:#fff; font-size:10px;">SYSTEM LOGS:</div>
+                <div class="c-log-box" id="c-logs">
+                    <div class="log-entry">System Initialized...</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(panel);
+
+        // --- Event Listeners ---
+        setupEvents(orb, panel);
+    }
+
+    // --- 3. LOGIC & EVENTS ---
+    function setupEvents(orb, panel) {
+        // เปิด/ปิด หน้าต่าง
+        let isDraggingOrb = false;
+        orb.addEventListener('click', () => {
+            if (!isDraggingOrb && config.orbLocked) {
+                panel.style.display = (panel.style.display === 'flex') ? 'none' : 'flex';
             }
         });
 
-        btnClose.addEventListener('click', () => {
-            win.style.display = 'none';
-            isLauncherLocked = true;
-            isWindowLocked = true;
-            btnMoveLauncher.classList.remove('active');
-            btnMoveWin.classList.remove('active');
+        document.getElementById('c-close-btn').addEventListener('click', () => {
+            panel.style.display = 'none';
         });
 
-        btnMoveLauncher.addEventListener('click', () => {
-            isLauncherLocked = !isLauncherLocked;
-            btnMoveLauncher.classList.toggle('active', !isLauncherLocked);
-            launcher.style.cursor = isLauncherLocked ? 'pointer' : 'move';
+        // Toggle Strip Code
+        document.getElementById('chk-strip').addEventListener('change', (e) => {
+            config.stripCode = e.target.checked;
+            logSystem(`Prompt Guard: ${config.stripCode ? 'ON' : 'OFF'}`);
         });
 
-        btnMoveWin.addEventListener('click', () => {
-            isWindowLocked = !isWindowLocked;
-            btnMoveWin.classList.toggle('active', !isWindowLocked);
+        // Manual Scan Button
+        document.getElementById('btn-scan').addEventListener('click', () => {
+            logSystem("Scanning Lorebook...");
+            scanLorebook();
         });
 
-        makeDraggable(launcher, () => !isLauncherLocked, (d) => isDragging = d);
-        makeDraggable(win, () => !isWindowLocked, null, document.getElementById('nexus-header-drag'));
+        // Lock/Unlock Buttons
+        const btnOrb = document.getElementById('btn-unlock-orb');
+        const btnPanel = document.getElementById('btn-unlock-panel');
+
+        btnOrb.addEventListener('click', () => {
+            config.orbLocked = !config.orbLocked;
+            btnOrb.classList.toggle('active');
+            btnOrb.innerText = config.orbLocked ? "Unlock Orb" : "Lock Orb";
+            orb.style.cursor = config.orbLocked ? 'pointer' : 'move';
+            orb.style.animationPlayState = config.orbLocked ? 'running' : 'paused'; 
+        });
+
+        btnPanel.addEventListener('click', () => {
+            config.panelLocked = !config.panelLocked;
+            btnPanel.classList.toggle('active');
+            btnPanel.innerText = config.panelLocked ? "Unlock Win" : "Lock Win";
+        });
+
+        // Draggable Logic
+        makeDraggable(orb, () => !config.orbLocked, (s) => isDraggingOrb = s);
+        makeDraggable(panel, () => !config.panelLocked, null, document.getElementById('c-drag-header'));
     }
 
-    function makeDraggable(element, checkUnlock, callback, handle = element) {
-        let pos1=0, pos2=0, pos3=0, pos4=0;
+    // --- 4. CORE FUNCTIONS (Stripper & Lorebook) ---
+
+    function sanitizePayload(data) {
+        if (!config.stripCode) return data;
+
+        const startLength = JSON.stringify(data).length;
         
+        // Helper ในการลบ HTML tags
+        const stripText = (text) => {
+            if (!text) return "";
+            let clean = text.replace(/<br\s*\/?>/gi, '\n')
+                            .replace(/<\/p>/gi, '\n')
+                            .replace(/<\/div>/gi, '\n')
+                            .replace(/<[^>]+>/g, ''); // ลบ tag ที่เหลือ
+            clean = clean.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            return clean.trim();
+        };
+
+        if (data.body) {
+            if (data.body.prompt && typeof data.body.prompt === 'string') {
+                data.body.prompt = stripText(data.body.prompt);
+            }
+            if (data.body.messages && Array.isArray(data.body.messages)) {
+                data.body.messages.forEach(msg => {
+                    if (msg.content) {
+                        msg.content = stripText(msg.content);
+                    }
+                });
+            }
+        }
+
+        const endLength = JSON.stringify(data).length;
+        if (startLength - endLength > 0) {
+            logSystem(`✂️ Stripped ${startLength - endLength} chars.`);
+        }
+        return data;
+    }
+
+    function scanLorebook() {
+        let count = 0;
+        if (typeof SillyTavern !== 'undefined' && SillyTavern.world_info) {
+            const entries = Object.values(SillyTavern.world_info);
+            count = entries.length; 
+        }
+        document.getElementById('c-lore-count').innerText = count;
+        if (count > 0) logSystem(`Found ${count} WI entries.`);
+        else logSystem("No WI found/API unavailable.");
+    }
+
+    function logSystem(msg) {
+        const box = document.getElementById('c-logs');
+        if (box) {
+            const time = new Date().toLocaleTimeString().split(' ')[0];
+            box.innerHTML += `<div class="log-entry"><span>[${time}]</span> ${msg}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+    }
+
+    function makeDraggable(el, checkUnlock, callback, handle = el) {
+        let pos1=0, pos2=0, pos3=0, pos4=0;
         handle.onmousedown = dragStart;
         handle.ontouchstart = dragStart;
 
         function dragStart(e) {
             if (!checkUnlock()) return;
+            e.preventDefault();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             pos3 = clientX; pos4 = clientY;
             document.onmouseup = closeDrag; document.ontouchend = closeDrag;
-            document.onmousemove = dragging; document.ontouchmove = dragging;
+            document.onmousemove = elementDrag; document.ontouchmove = elementDrag;
             if(callback) callback(true);
         }
 
-        function dragging(e) {
+        function elementDrag(e) {
             e.preventDefault();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             pos1 = pos3 - clientX; pos2 = pos4 - clientY;
             pos3 = clientX; pos4 = clientY;
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
-            element.style.transform = "none";
+            el.style.top = (el.offsetTop - pos2) + "px";
+            el.style.left = (el.offsetLeft - pos1) + "px";
+            el.style.transform = "none";
         }
 
         function closeDrag() {
@@ -148,5 +215,20 @@
         }
     }
 
+    // --- 5. STARTUP ---
+    function init() {
+        console.log(`[${EXTENSION_NAME}] Initializing...`);
+        createUI();
+
+        if (typeof SillyTavern !== 'undefined' && SillyTavern.extension_manager) {
+            SillyTavern.extension_manager.register_hook('chat_completion_request', sanitizePayload);
+            SillyTavern.extension_manager.register_hook('text_completion_request', sanitizePayload);
+            logSystem("Stripper Hook Registered.");
+        } else {
+            logSystem("⚠️ UI Only Mode");
+        }
+    }
+
     setTimeout(init, 2000);
+
 })();
