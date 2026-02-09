@@ -1,110 +1,135 @@
-// ตัวแปรเก็บสถานะ
-let isDraggable = false;
-let isLauncherDraggable = false;
+(function() {
+    let isLauncherMoveable = false;
+    let isWindowMoveable = false;
 
-function createNexusUI() {
-    // 1. สร้างปุ่ม Launcher
-    const launcher = document.createElement('div');
-    launcher.id = 'nexus-launcher';
-    launcher.className = 'nexus-launcher';
-    launcher.innerHTML = '🌀';
-    document.body.appendChild(launcher);
+    // ฟังก์ชันสร้าง UI
+    function initNexus() {
+        console.log("Nexus System: Initializing...");
 
-    // 2. สร้างหน้าต่างหลัก
-    const window = document.createElement('div');
-    window.id = 'nexus-window';
-    window.className = 'nexus-window';
-    window.innerHTML = `
-        <div class="nexus-header" id="nexus-header">
-            <div class="nexus-controls">
-                <button id="lock-icon-btn" class="nexus-btn">Move 🌀</button>
-                <button id="lock-win-btn" class="nexus-btn">Move Window</button>
-                <span id="move-status" class="lock-warning">LOCKED</span>
+        // ตรวจสอบว่ามีอยู่หรือยัง
+        if (document.getElementById('nexus-launcher')) return;
+
+        // สร้าง Launcher 🌀
+        const launcher = document.createElement('div');
+        launcher.id = 'nexus-launcher';
+        launcher.className = 'nexus-launcher';
+        launcher.innerHTML = '🌀';
+        document.body.appendChild(launcher);
+
+        // สร้าง Window
+        const win = document.createElement('div');
+        win.id = 'nexus-window';
+        win.className = 'nexus-window';
+        win.innerHTML = `
+            <div class="nexus-header" id="nexus-drag-zone">
+                <div style="display:flex; gap:5px;">
+                    <button id="btn-move-launcher" class="nexus-btn">Move 🌀</button>
+                    <button id="btn-move-win" class="nexus-btn">Move Window</button>
+                </div>
+                <div id="nexus-close" class="nexus-btn" style="color:#ff0055; border-color:#ff0055;">CLOSE X</div>
             </div>
-            <div class="nexus-title">NEXUS_SYSTEM</div>
-            <div id="nexus-close" class="nexus-btn" style="color: #ff0055; border-color: #ff0055;">X</div>
-        </div>
-        
-        <div class="nexus-body" id="nexus-content">
-            <div id="page-lore" class="nexus-page active"><h3>Lorebook Tracker</h3><div class="data-area"></div></div>
-            <div id="page-check" class="nexus-page"><h3>Message Inspector</h3><div class="data-area"></div></div>
-            <div id="page-chat" class="nexus-page"><h3>AI Companion</h3><div class="data-area"></div></div>
-            <div id="page-status" class="nexus-page"><h3>World Status</h3><div class="data-area"></div></div>
-            <div id="page-help" class="nexus-page"><h3>System Help</h3><div class="data-area"></div></div>
-        </div>
+            <div class="nexus-body">
+                <div id="nexus-pages">
+                    <div id="p-lore" class="page-content"><h2>Lorebook Monitoring</h2><p>ระบบตรวจสอบ Lorebook พร้อมใช้งาน...</p></div>
+                </div>
+            </div>
+            <div class="nexus-footer">
+                <div class="nav-tab active">📜 Lore</div>
+                <div class="nav-tab">🔍 Check</div>
+                <div class="nav-tab">💬 Chat</div>
+                <div class="nav-tab">🌎 Status</div>
+                <div class="nav-tab">❓ Help</div>
+            </div>
+        `;
+        document.body.appendChild(win);
 
-        <div class="nexus-footer">
-            <div class="nav-tab active" onclick="switchPage('lore')">📜 Lore</div>
-            <div class="nav-tab" onclick="switchPage('check')">🔍 Inspect</div>
-            <div class="nav-tab" onclick="switchPage('chat')">💬 Chat</div>
-            <div class="nav-tab" onclick="switchPage('status')">🌎 World</div>
-            <div class="nav-tab" onclick="switchPage('help')">❓ Help</div>
-        </div>
-    `;
-    document.body.appendChild(window);
-
-    setupEventListeners();
-}
-
-// ระบบสลับหน้า
-window.switchPage = function(pageId) {
-    document.querySelectorAll('.nexus-page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(`page-${pageId}`).classList.add('active');
-    event.currentTarget.classList.add('active');
-};
-
-function setupEventListeners() {
-    const launcher = document.getElementById('nexus-launcher');
-    const win = document.getElementById('nexus-window');
-    const closeBtn = document.getElementById('nexus-close');
-    const lockIconBtn = document.getElementById('lock-icon-btn');
-    const lockWinBtn = document.getElementById('lock-win-btn');
-
-    // เปิดหน้าต่าง
-    launcher.addEventListener('click', () => {
-        if (!isLauncherDraggable) {
-            win.style.display = 'flex';
-        }
-    });
-
-    // ปิดหน้าต่าง
-    closeBtn.addEventListener('click', () => {
-        win.style.display = 'none';
-        // Reset ระบบเคลื่อนย้ายทันทีเมื่อปิด เพื่อความปลอดภัยตามกฎข้อ 2
-        isDraggable = false;
-        isLauncherDraggable = false;
-        lockIconBtn.classList.remove('active');
-        lockWinBtn.classList.remove('active');
-        document.getElementById('move-status').innerText = 'LOCKED';
-    });
-
-    // ระบบยอมรับการเคลื่อนย้าย (กฎข้อ 1)
-    lockIconBtn.addEventListener('click', () => {
-        isLauncherDraggable = !isLauncherDraggable;
-        lockIconBtn.classList.toggle('active');
-        updateStatus();
-    });
-
-    lockWinBtn.addEventListener('click', () => {
-        isDraggable = !isDraggable;
-        lockWinBtn.classList.toggle('active');
-        updateStatus();
-    });
-}
-
-function updateStatus() {
-    const status = document.getElementById('move-status');
-    if (isDraggable || isLauncherDraggable) {
-        status.innerText = 'UNLOCKED';
-        status.style.color = '#00ff41';
-    } else {
-        status.innerText = 'LOCKED';
-        status.style.color = '#ff0055';
+        setupLogic();
     }
-}
 
-// เริ่มต้นระบบ
-jQuery(document).ready(() => {
-    createNexusUI();
-});
+    function setupLogic() {
+        const launcher = document.getElementById('nexus-launcher');
+        const win = document.getElementById('nexus-window');
+        const closeBtn = document.getElementById('nexus-close');
+        const moveLauncherBtn = document.getElementById('btn-move-launcher');
+        const moveWinBtn = document.getElementById('btn-move-win');
+
+        // คลิกเพื่อเปิดหน้าต่าง
+        launcher.addEventListener('click', () => {
+            if (!isLauncherMoveable) {
+                win.style.display = 'flex';
+            }
+        });
+
+        // ปิดหน้าต่าง
+        closeBtn.addEventListener('click', () => {
+            win.style.display = 'none';
+            // ปิดโหมดเคลื่อนย้ายทันทีเพื่อความปลอดภัย (กฎข้อ 2)
+            isLauncherMoveable = false;
+            isWindowMoveable = false;
+            moveLauncherBtn.classList.remove('active');
+            moveWinBtn.classList.remove('active');
+        });
+
+        // เปิด/ปิดโหมดเคลื่อนย้าย
+        moveLauncherBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isLauncherMoveable = !isLauncherMoveable;
+            moveLauncherBtn.classList.toggle('active');
+        });
+
+        moveWinBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isWindowMoveable = !isWindowMoveable;
+            moveWinBtn.classList.toggle('active');
+        });
+
+        // ระบบลากวาง (Touch Support สำหรับมือถือ)
+        makeDraggable(launcher, () => isLauncherMoveable);
+        makeDraggable(win, () => isWindowMoveable);
+    }
+
+    function makeDraggable(el, checkFunction) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+        el.ontouchstart = dragMouseDown;
+        el.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            if (!checkFunction()) return;
+            e = e || window.event;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            document.onmouseup = closeDragElement;
+            document.ontouchend = closeDragElement;
+            document.onmousemove = elementDrag;
+            document.ontouchmove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            pos1 = pos3 - clientX;
+            pos2 = pos4 - clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            el.style.top = (el.offsetTop - pos2) + "px";
+            el.style.left = (el.offsetLeft - pos1) + "px";
+            el.style.transform = "none"; // ยกเลิกการจัดการกลางจอเมื่อเริ่มลาก
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+        }
+    }
+
+    // รันทันทีและลองรันซ้ำเมื่อหน้าจอโหลดเสร็จ
+    initNexus();
+    setTimeout(initNexus, 2000); 
+})();
+
