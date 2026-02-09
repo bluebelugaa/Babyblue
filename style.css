@@ -1,148 +1,118 @@
-/* =========================================
-   1. LAUNCHER (ลูกแก้ว)
-   ========================================= */
-.nexus-launcher {
+/* --- ORB (ลูกแก้ว) --- */
+#chronos-orb {
     position: fixed;
-    /* ตำแหน่ง: มุมขวาบน */
-    top: 5vh;
+    top: 15vh;
     right: 2vw;
+    width: 45px;
+    height: 45px;
     
-    /* ขนาดเล็ก */
-    width: 35px;
-    height: 35px;
-    
-    /* ดีไซน์ปกติ: สีเข้มจางๆ ขอบชมพูอ่อนมาก (ตามสั่ง) */
-    background: rgba(0, 0, 0, 0.3); /* ดำจางๆ */
-    border: 1px solid rgba(255, 182, 193, 0.3); /* ขอบชมพูจางๆ */
-    box-shadow: none; /* ปกติไม่เรืองแสง */
+    /* สีปกติ: ดำจาง ๆ ขอบชมพูอ่อนมาก ๆ */
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 182, 193, 0.3);
     border-radius: 50%;
     
-    /* ไอคอนข้างใน */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.7); /* สีไอคอนขาวนวล */
-    
+    font-size: 24px;
     cursor: pointer;
-    z-index: 20000;
+    z-index: 99999;
+    
+    /* หมุนช้าๆ */
+    animation: orbSpin 12s linear infinite;
+    transition: all 0.3s ease;
     user-select: none;
     touch-action: none;
-    
-    /* หมุนช้าๆ ตลอดเวลา */
-    animation: slowSpin 10s linear infinite;
-    transition: all 0.2s ease;
 }
 
-/* เอฟเฟกต์ตอนกด (Active) : ขอบเรืองแสงวาบขึ้นมา */
-.nexus-launcher:active, .nexus-launcher.hover-active {
-    border-color: rgba(255, 105, 180, 1.0); /* ขอบชัดขึ้น */
-    box-shadow: 0 0 15px rgba(255, 105, 180, 0.8); /* เรืองแสงสีชมพูฟุ้งๆ */
-    background: rgba(0, 0, 0, 0.8);
-    transform: scale(0.95); /* ยุบลงนิดนึง */
+/* ตอนเอาเมาส์ชี้ หรือกด: เรืองแสงนวลๆ */
+#chronos-orb:hover, #chronos-orb:active {
+    border-color: rgba(255, 105, 180, 0.8);
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.5); /* แสงนวล ไม่แสบตา */
+    transform: scale(1.05);
 }
 
-@keyframes slowSpin {
+@keyframes orbSpin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
-/* =========================================
-   2. MAIN WINDOW (หน้าต่างหลัก)
-   ========================================= */
-.nexus-window {
+/* --- PANEL (หน้าต่างระบบ) --- */
+#chronos-panel {
     display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 350px;
+    height: 500px;
     
-    width: 95vw;
-    height: 80vh;
+    /* ธีม Cyberpunk เข้ม */
+    background: rgba(5, 10, 15, 0.95);
+    border: 1px solid #00E676;
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.2);
+    color: #00E676;
     
-    /* แก้ไขเรื่องสีเขียวกินตา: ใช้พื้นหลังดำทึบขึ้น ตัดแสงฟุ้งออก */
-    background: #020a02; /* ดำเขียวเข้มมาก (เกือบดำสนิท) */
-    border: 1px solid #00ff41; /* เส้นขอบเขียวคมๆ */
-    box-shadow: 0 0 10px rgba(0, 20, 0, 0.8); /* เงาดำ ตัดขอบให้ชัด */
-    
-    color: #00ff41; /* ตัวหนังสือสีเขียว Matrix */
-    z-index: 20001;
+    z-index: 100000;
+    font-family: 'Consolas', monospace;
+    border-radius: 8px;
     flex-direction: column;
-    font-family: 'Consolas', 'Courier New', monospace;
-    
-    /* เอาความเบลอออกเล็กน้อยเพื่อให้ตัวหนังสือชัด */
-    backdrop-filter: none; 
-    border-radius: 4px;
+    backdrop-filter: blur(5px);
 }
 
-/* Header */
-.nexus-header {
-    background: #001100; /* พื้นหลัง Header เข้ม */
-    padding: 8px;
+.c-header {
+    padding: 10px 15px;
+    background: rgba(0, 230, 118, 0.1);
+    border-bottom: 1px solid #00E676;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #004411; /* เส้นแบ่งจางๆ */
+    cursor: move; /* จุดจับลาก */
 }
 
-/* ปุ่มควบคุม */
-.nexus-btn {
-    background: #000;
-    border: 1px solid #005511;
-    color: #00aa22;
-    padding: 4px 10px;
-    font-size: 11px;
-    cursor: pointer;
-    text-transform: uppercase;
-}
-
-.nexus-btn.active {
-    background: #00ff41;
-    color: #000;
-    border-color: #00ff41;
-    font-weight: bold;
-}
-
-.nexus-btn.danger {
-    border-color: #880022;
-    color: #ff3355;
-}
-
-/* Body Content */
-.nexus-body {
+.c-body {
     flex: 1;
-    overflow-y: auto;
     padding: 15px;
-    background: #020a02;
+    overflow-y: auto;
 }
 
-h3 {
-    border-bottom: 1px solid #004411;
-    color: #ccffcc; /* หัวข้อสีขาวอมเขียว อ่านง่าย */
-    margin-top: 0;
-    padding-bottom: 5px;
+.c-row {
+    margin-bottom: 12px;
+    border-bottom: 1px dashed rgba(0, 230, 118, 0.3);
+    padding-bottom: 8px;
 }
 
-/* Footer */
-.nexus-footer {
-    display: flex;
+.c-btn {
     background: #000;
-    border-top: 1px solid #004411;
-    overflow-x: auto;
+    border: 1px solid #00E676;
+    color: #00E676;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: 0.2s;
 }
+.c-btn:hover { background: rgba(0, 230, 118, 0.2); }
+.c-btn.active { background: #00E676; color: #000; }
+.c-btn.danger { border-color: #ff3366; color: #ff3366; }
 
-.nav-tab {
-    flex: 1;
-    padding: 12px 5px;
-    text-align: center;
-    border-right: 1px solid #002205;
-    font-size: 12px;
-    color: #006611; /* สีตอนยังไม่เลือก (เขียวมืด) */
+.c-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     cursor: pointer;
 }
+.c-checkbox { accent-color: #00E676; }
 
-.nav-tab.active {
-    background: #001a05;
-    color: #00ff41; /* สีตอนเลือก (เขียวสว่าง) */
-    border-top: 2px solid #00ff41;
+/* Logs Console Style */
+.c-log-box {
+    background: #000;
+    border: 1px solid #333;
+    height: 150px;
+    overflow-y: scroll;
+    padding: 5px;
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 10px;
 }
+.log-entry { margin-bottom: 3px; border-bottom: 1px solid #111; }
+.log-entry span { color: #D500F9; } /* สีม่วงสำหรับ Tag */
