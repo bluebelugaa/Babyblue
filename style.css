@@ -1,55 +1,190 @@
-/* ปุ่ม Launcher - ปรับขนาดเล็กและย้ายไปมุมขวาบน */
+/* =========================================
+   1. LAUNCHER (ปุ่มเปิด 🌀)
+   ========================================= */
 .nexus-launcher {
     position: fixed;
+    /* ตำแหน่งเริ่มต้น: มุมขวาบน (ห่างขอบนิดเดียว) */
+    top: 5vh;
+    right: 2vw;
     
-    /* ตำแหน่ง: มุมขวาบน และขยับลงมา 5% */
-    top: 5vh; 
-    right: 5vw;
-    
-    /* ขนาด: เล็กลงเยอะ (จากเดิม 80px เหลือ 35px) */
+    /* ขนาดเล็กกะทัดรัด */
     width: 35px;
     height: 35px;
     
-    /* พื้นหลังและขอบ */
-    background: rgba(0, 0, 0, 0.6); /* โปร่งแสงมากขึ้น */
-    border: 1px solid #ff00ff; /* ขอบบางลง */
-    box-shadow: 0 0 10px #ff00ff; /* แสงนวลๆ ไม่แยงตา */
+    /* ดีไซน์ Cyberpunk แบบ Soft Glow */
+    background: rgba(0, 0, 0, 0.4); /* พื้นหลังจาง */
+    border: 1px solid rgba(255, 105, 180, 0.4); /* ขอบชมพูอ่อน */
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3); /* แสงนวลๆ */
     border-radius: 50%;
     
-    /* จัดไอคอนให้อยู่ตรงกลาง */
+    /* การจัดวางไอคอน */
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 20px;
+    color: rgba(255, 182, 193, 0.9);
     
-    /* ขนาดไอคอน */
-    font-size: 20px; 
-    
+    /* Interaction */
     cursor: pointer;
-    z-index: 999999;
+    z-index: 20000; /* อยู่บนสุด */
     user-select: none;
-    transition: transform 0.2s; /* เอฟเฟกต์ตอนกด */
+    touch-action: none; /* ป้องกันการเลื่อนหน้าจอเมื่อลากปุ่ม */
+    
+    /* Animation หมุนตลอดเวลา */
+    animation: slowSpin 8s linear infinite;
 }
 
-.nexus-launcher:active {
-    transform: scale(0.8); /* กดแล้วยุบลงนิดนึง */
+/* หยุดหมุนเมื่อเอาเมาส์ชี้ หรือกำลังกด (เพื่อให้กดง่าย) */
+.nexus-launcher:hover, .nexus-launcher:active {
+    animation-play-state: paused;
+    border-color: rgba(255, 105, 180, 0.8);
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
 }
 
-/* คงเดิมไว้ */
+@keyframes slowSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* =========================================
+   2. MAIN WINDOW (หน้าต่างหลัก)
+   ========================================= */
 .nexus-window {
-    /* ... (code หน้าต่างคงเดิม) ... */
-    display: none;
+    display: none; /* ซ่อนไว้ก่อน */
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); /* จัดกึ่งกลาง */
+    
+    /* ขนาดหน้าต่าง */
     width: 95vw;
-    height: 85vh;
-    background: #051405;
-    border: 2px solid #00ff41;
-    box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+    height: 80vh;
+    
+    /* ธีมเขียว Matrix/Cyberpunk */
+    background: rgba(5, 15, 5, 0.95);
+    border: 1px solid rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
     color: #00ff41;
-    z-index: 1000000;
+    
+    z-index: 20001;
     flex-direction: column;
-    font-family: 'monospace';
+    font-family: 'Consolas', 'Courier New', monospace;
+    backdrop-filter: blur(5px);
+    overflow: hidden;
+    border-radius: 5px;
 }
-/* ... ส่วนอื่นๆ คงเดิม ... */
+
+/* ส่วนหัว (Header) */
+.nexus-header {
+    background: rgba(0, 255, 65, 0.1);
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+    cursor: default; /* จะเปลี่ยนเป็น move เมื่อปลดล็อค */
+}
+
+/* ปุ่มควบคุมใน Header */
+.nexus-ctrl-group {
+    display: flex;
+    gap: 5px;
+}
+
+.nexus-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.nexus-btn:hover {
+    background: rgba(0, 255, 65, 0.2);
+}
+
+.nexus-btn.active {
+    background: #00ff41;
+    color: #000;
+    box-shadow: 0 0 10px #00ff41;
+    font-weight: bold;
+}
+
+.nexus-btn.danger {
+    border-color: #ff0055;
+    color: #ff0055;
+}
+.nexus-btn.danger:hover {
+    background: rgba(255, 0, 85, 0.2);
+}
+
+/* พื้นที่เนื้อหา (Body) */
+.nexus-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    position: relative;
+    
+    /* ลายเส้น Scanline จางๆ */
+    background-image: linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+    background-size: 100% 3px;
+}
+
+/* หน้า (Pages) */
+.nexus-page {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+.nexus-page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h3 {
+    border-bottom: 1px dashed #00ff41;
+    padding-bottom: 5px;
+    margin-top: 0;
+    color: #ccffcc;
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+/* =========================================
+   3. FOOTER (แถบเมนูด้านล่าง)
+   ========================================= */
+.nexus-footer {
+    display: flex;
+    background: #000;
+    border-top: 1px solid rgba(0, 255, 65, 0.3);
+    overflow-x: auto;
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 12px 5px;
+    text-align: center;
+    border-right: 1px solid rgba(0, 255, 65, 0.2);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    color: #008822;
+    transition: all 0.2s;
+}
+
+.nav-tab:hover {
+    background: rgba(0, 255, 65, 0.1);
+    color: #00ff41;
+}
+
+.nav-tab.active {
+    background: rgba(0, 255, 65, 0.2);
+    color: #fff;
+    text-shadow: 0 0 5px #00ff41;
+    border-top: 2px solid #00ff41;
+}
