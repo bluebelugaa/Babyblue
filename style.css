@@ -1,10 +1,123 @@
-{
-    "name": "CyberCore Nexus",
-    "display_name": "🌀 CyberCore Nexus",
-    "version": "1.0.0",
-    "description": "Advanced Roleplay Management System with Cyberpunk UI",
-    "author": "User",
-    "js": "index.js",
-    "css": "style.css",
-    "native_modules": true
+/* การตกแต่งสัญลักษณ์เริ่มต้น */
+.nexus-launcher {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #ff00ff; /* ขอบเรืองแสงสีชมพู */
+    box-shadow: 0 0 15px #ff00ff, inset 0 0 10px #ff00ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 9999;
+    transition: all 0.3s ease;
+    user-select: none;
+    touch-action: none; /* สำหรับการเลื่อนบนมือถือ */
+}
+
+.nexus-launcher:active {
+    transform: scale(0.9);
+}
+
+/* หน้าต่างหลัก (Cyberpunk Green) */
+.nexus-window {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    height: 80vh;
+    background: rgba(5, 20, 5, 0.95);
+    border: 1px solid #00ff41; /* เขียว Matrix/Cyber */
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+    color: #00ff41;
+    z-index: 10000;
+    font-family: 'Courier New', Courier, monospace;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ส่วนหัวของหน้าต่าง */
+.nexus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 255, 65, 0.1);
+    border-bottom: 1px solid #00ff41;
+}
+
+.nexus-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.nexus-btn {
+    background: none;
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    padding: 2px 8px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.nexus-btn.active {
+    background: #00ff41;
+    color: #000;
+}
+
+/* ระบบหน้ากระดาษ (Book-like transition) */
+.nexus-body {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    padding: 15px;
+}
+
+.nexus-page {
+    display: none;
+    height: 100%;
+    animation: fadeIn 0.4s ease;
+}
+
+.nexus-page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ปุ่มนำทาง (Footer) */
+.nexus-footer {
+    display: flex;
+    overflow-x: auto;
+    background: rgba(0, 0, 0, 0.5);
+    border-top: 1px solid #00ff41;
+    white-space: nowrap;
+}
+
+.nav-tab {
+    padding: 10px 20px;
+    border-right: 1px solid rgba(0, 255, 65, 0.3);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.nav-tab:hover, .nav-tab.active {
+    background: rgba(0, 255, 65, 0.2);
+}
+
+/* ระบบ Toggle Lock สำหรับเคลื่อนย้าย */
+.lock-warning {
+    color: #ff0055;
+    font-size: 10px;
+    margin-left: 5px;
 }
