@@ -1,47 +1,53 @@
-/* --- Sweet Heart HUD: Cloud GIF Edition --- */
+/* --- Sweet Heart HUD: GIF Core Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
-    /* โทนสีเดิมที่คุณชอบ */
-    --sweet-pink: #ffb7c5;
+    --sweet-pink: #ffb7c5;      
     --sweet-pink-dark: #ea93a2;
     --sweet-bg-glass: rgba(220, 220, 220, 0.45);
-    --sweet-text: #5d5d5d;
+    --sweet-text: #5d5d5d;      
     --sweet-border: rgba(255, 255, 255, 0.6);
     --sweet-glow: rgba(255, 183, 197, 0.6);
 }
 
-/* --- 1. The Cloud GIF Core (ลูกแก้วภาพ GIF) --- */
+/* --- 1. The Floating Button (ลูกแก้ว) --- */
 #x_floating_btn {
     position: fixed;
-    width: 40px; /* ปรับขนาดให้พอดีกับ GIF */
-    height: 40px;
-    /* ลบพื้นหลังและขอบออก เพื่อให้ GIF แสดงผลเต็มที่ */
-    background: none;
-    border: none;
-    border-radius: 0;
+    width: 32px; /* ปรับขนาดเล็กน้อยให้เหมาะกับรูป */
+    height: 32px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
     cursor: pointer;
     z-index: 20000;
-    /* เพิ่มเงาฟุ้งๆ เล็กน้อยให้ดูมีมิติ */
-    filter: drop-shadow(0 0 5px var(--sweet-glow));
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 12px var(--sweet-glow);
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px solid var(--sweet-pink);
     transition: transform 0.2s;
+    
+    /* สำคัญ! ป้องกันรูปภาพล้นออกนอกกรอบวงกลม */
+    overflow: hidden; 
 }
 
-/* สไตล์สำหรับรูปภาพ GIF */
-#x_floating_btn .x-gif-img {
+/* คลาสสำหรับรูปภาพ GIF ข้างใน */
+.x-core-img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* ให้ภาพแสดงครบถ้วนในกรอบ */
-    pointer-events: none; /* ป้องกันการกดที่รูปภาพโดยตรง */
+    object-fit: cover; /* จัดภาพให้เต็มพื้นที่โดยไม่เสียสัดส่วน */
+    border-radius: 50%; /* บังคับให้ภาพเป็นวงกลมตามกรอบ */
+    padding: 2px; /* เว้นขอบเล็กน้อยให้เห็นพื้นหลังลูกแก้ว */
 }
 
-/* ลบเอฟเฟกต์หมุนและหัวใจเดิมออก */
-#x_floating_btn::before,
-#x_floating_btn .x-core-heart {
-    display: none;
+/* วงแหวนหมุนรอบ (ยังเก็บไว้เพื่อความสวยงาม) */
+#x_floating_btn::before {
+    content: ''; position: absolute;
+    width: 38px; height: 38px;
+    border: 1px dashed var(--sweet-pink);
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: sweet-spin 10s linear infinite;
+    pointer-events: none; /* ไม่ให้บังการกด */
 }
 
 /* --- 2. Main Window (คงเดิม) --- */
@@ -65,7 +71,7 @@
     animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* --- 3. Header (คงเดิม) --- */
+/* --- 3. Header --- */
 .x-header {
     height: 44px;
     background: rgba(255, 255, 255, 0.4);
@@ -85,7 +91,7 @@
     margin-right: 5px;
 }
 
-/* --- 4. Navigation Icons (คงเดิม) --- */
+/* --- 4. Navigation Icons --- */
 .x-nav-container {
     display: flex;
     align-items: center;
@@ -116,7 +122,7 @@
     transform: translateY(-1px);
 }
 
-/* --- Controls Group (คงเดิม) --- */
+/* --- Controls Group --- */
 .x-controls-group {
     display: flex;
     align-items: center;
@@ -154,7 +160,7 @@
 }
 .x-close-icon.disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
 
-/* --- 5. Content (คงเดิม) --- */
+/* --- 5. Content --- */
 .x-content-box {
     flex: 1;
     overflow-y: auto;
@@ -174,9 +180,10 @@
     padding-bottom: 4px;
 }
 
-/* Animations & States */
+/* Animations */
+@keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
 
-.x-dragging { transform: scale(1.1); }
+.x-dragging { transform: scale(1.1); border-color: #ff6b74 !important; }
 .x-head-drag { cursor: grab; background: rgba(255,255,255,0.6); }
