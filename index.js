@@ -1,18 +1,18 @@
-
-// --- Sweet Heart HUD (Full Logic) ---
-const STORAGE_KEY = "sweet_hud_settings";
+// --- Sweet Heart HUD: Harmony Edition (Full Logic) ---
+const STORAGE_KEY = "sweet_hud_harmony_settings";
+// กำหนดหน้าและไอคอน (ใช้ Font Awesome ที่มีใน SillyTavern)
 const PAGES = [
-    { id: 'lore', title: 'Diary Content' },
-    { id: 'inspect', title: 'Inspect' },
-    { id: 'ooc', title: 'Sweet Chat' },
-    { id: 'world', title: 'World View' },
-    { id: 'helper', title: 'Help' }
+    { id: 'lore', title: 'Diary', icon: 'fa-book-open' },
+    { id: 'inspect', title: 'Inspect', icon: 'fa-magnifying-glass' },
+    { id: 'ooc', title: 'Chat', icon: 'fa-comments' },
+    { id: 'world', title: 'World', icon: 'fa-globe' },
+    { id: 'helper', title: 'Help', icon: 'fa-wand-magic-sparkles' }
 ];
 
 let state = {
-    btnPos: { top: '150px', left: 'auto', right: '15px' },
+    btnPos: { top: '120px', left: 'auto', right: '20px' },
     winPos: { top: '15vh', left: '5vw' },
-    lastPage: 0,
+    currentPageId: PAGES[0].id, // ใช้ ID แทน Index เพื่อความแม่นยำ
     isOrbUnlocked: false,
     isWinUnlocked: false
 };
@@ -25,6 +25,10 @@ jQuery(async () => {
 function loadSettings() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) state = { ...state, ...JSON.parse(saved) };
+    // ตรวจสอบว่าหน้าที่บันทึกไว้ยังมีอยู่จริงไหม
+    if (!PAGES.find(p => p.id === state.currentPageId)) {
+        state.currentPageId = PAGES[0].id;
+    }
 }
 
 function saveSettings() {
@@ -34,40 +38,47 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // ลูกแก้วทรงหวาน
+    // 1. ลูกแก้ว (Sugar Core)
     const orb = $(`<div id="x_floating_btn"><div class="x-core-gem"></div></div>`);
     orb.css(state.btnPos);
     $('body').append(orb);
 
-    // หน้าต่างโปร่งแสง
+    // 2. หน้าต่างหลัก (Main Window)
     const modalHtml = `
     <div id="x_main_modal">
-        <div class="x-header" id="x_drag_handle">
-            <div class="x-title">SWEET HUD</div>
+        <div class="x-header-top" id="x_drag_handle">
+            <div class="x-title">❤ SWEET HUD</div>
             <div class="x-controls">
-                <div id="x_sw_orb" class="x-switch-btn ${state.isOrbUnlocked?'active':''}">
-                    <div class="x-led"></div> Move Core
+                <div id="x_sw_orb" class="x-switch-btn" title="Move Floating Button">
+                    <div class="x-led"></div> Move Orb
                 </div>
-                <div id="x_sw_win" class="x-switch-btn ${state.isWinUnlocked?'active':''}">
+                <div id="x_sw_win" class="x-switch-btn" title="Move Window">
                     <div class="x-led"></div> Move Win
                 </div>
-                <div id="x_close" class="x-close-btn"><i class="fa-solid fa-circle-xmark"></i></div>
+                <div id="x_close" class="x-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
-        <div style="flex:1; overflow:hidden; position:relative;">
-            ${PAGES.map((p, i) => `
-                <div id="page_${p.id}" class="x-page ${state.lastPage===i?'active':''}">
-                    <div style="color:var(--sweet-pink); font-weight:bold; font-size:11px; margin-bottom:10px;">• ${p.title}</div>
-                    <div id="content_${p.id}" style="font-size:13px; line-height:1.5;">Waiting for sweetness...</div>
+
+        <div class="x-tab-bar">
+            ${PAGES.map(p => `
+                <div class="x-tab-btn ${p.id === state.currentPageId ? 'active' : ''}" data-page-id="${p.id}">
+                    <i class="fa-solid ${p.icon}" style="margin-right:4px; opacity:0.7;"></i> ${p.title}
                 </div>
             `).join('')}
         </div>
-        <div class="x-nav-bar">
-            <button class="x-nav-btn" id="x_prev"><i class="fa-solid fa-angle-left"></i></button>
-            <div class="x-page-title" id="x_cur_title">${PAGES[state.lastPage].title}</div>
-            <button class="x-nav-btn" id="x_next"><i class="fa-solid fa-angle-right"></i></button>
+
+        <div class="x-content-container">
+            ${PAGES.map(p => `
+                <div id="page_${p.id}" class="x-page ${p.id === state.currentPageId ? 'active' : ''}">
+                    <div class="x-content-placeholder">
+                        <i class="fa-solid ${p.icon}"></i>
+                        <div style="font-weight:500; color:var(--sweet-pink-dark); margin-bottom:5px;">${p.title} Content</div>
+                        <div>Waiting for sweet data...</div>
+                    </div>
+                </div>
+            `).join('')}
         </div>
-    </div>`;
+        </div>`;
     
     $('body').append(modalHtml);
     $('#x_main_modal').css(state.winPos);
@@ -80,6 +91,7 @@ function setupEvents() {
     const orb = $('#x_floating_btn');
     const modal = $('#x_main_modal');
 
+    // เปิด/ปิด หน้าต่าง
     orb.on('click', () => {
         if (state.isOrbUnlocked) return;
         modal.fadeToggle(250).css('display', 'flex');
@@ -90,6 +102,7 @@ function setupEvents() {
         modal.fadeOut(250);
     });
 
+    // สวิตช์ปลดล็อค
     $('#x_sw_orb').on('click', () => {
         state.isOrbUnlocked = !state.isOrbUnlocked;
         updateSafetyUI();
@@ -102,32 +115,43 @@ function setupEvents() {
         saveSettings();
     });
 
-    $('#x_prev').on('click', () => movePage(-1));
-    $('#x_next').on('click', () => movePage(1));
+    // **Logic การเปลี่ยนหน้าแบบใหม่ (ใช้ Tab)**
+    $('.x-tab-btn').on('click', function() {
+        const pageId = $(this).data('page-id');
+        switchToPage(pageId);
+    });
 
+    // ระบบลากย้าย
     makeDraggable(orb[0], 'orb');
     makeDraggable(modal[0], 'win', $('#x_drag_handle')[0]);
 }
 
-function movePage(dir) {
-    state.lastPage = (state.lastPage + dir + PAGES.length) % PAGES.length;
+// ฟังก์ชันเปลี่ยนหน้า
+function switchToPage(pageId) {
+    state.currentPageId = pageId;
+    
+    // อัปเดต Tab
+    $('.x-tab-btn').removeClass('active');
+    $(`.x-tab-btn[data-page-id="${pageId}"]`).addClass('active');
+    
+    // อัปเดตเนื้อหา
     $('.x-page').removeClass('active');
-    $(`#page_${PAGES[state.lastPage].id}`).addClass('active');
-    $('#x_cur_title').text(PAGES[state.lastPage].title);
+    $(`#page_${pageId}`).addClass('active');
+    
     saveSettings();
 }
 
 function updateSafetyUI() {
     const isLocked = state.isOrbUnlocked || state.isWinUnlocked;
+    
     $('#x_sw_orb').toggleClass('active', state.isOrbUnlocked);
     $('#x_sw_win').toggleClass('active', state.isWinUnlocked);
-    $('#x_close').toggleClass('disabled', isLocked);
     
-    if(isLocked) {
-        $('#x_drag_handle').css('background', 'rgba(255,183,197,0.1)');
-    } else {
-        $('#x_drag_handle').css('background', '');
-    }
+    $('#x_floating_btn').toggleClass('x-dragging', state.isOrbUnlocked);
+    $('#x_drag_handle').toggleClass('x-dragging-win', state.isWinUnlocked);
+
+    // ปิดปุ่ม X เมื่ออยู่ในโหมดย้าย
+    $('#x_close').toggleClass('disabled', isLocked);
 }
 
 function makeDraggable(el, type, handle) {
