@@ -1,5 +1,5 @@
-// --- Sweet Heart HUD: Fixed & Secure Edition ---
-const STORAGE_KEY = "sweet_hud_fixed_v1";
+// --- Sweet Heart HUD: GIF Core Edition ---
+const STORAGE_KEY = "sweet_hud_gif_final";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -32,20 +32,18 @@ function saveSettings() {
 }
 
 function injectUI() {
-    // ล้างของเก่าทิ้งให้เกลี้ยง
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. สร้างลูกแก้ว (ใส่แค่รูปแมงกะพรุน พื้นหลังอยู่ใน CSS)
+    // 1. ลูกแก้ว (ใส่รูป GIF)
+    // พื้นหลังจะถูกโหลดจาก CSS เอง
     $('body').append(`
         <div id="x_floating_btn">
             <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="core">
         </div>
     `);
-    
-    // ตั้งค่าตำแหน่ง
     $('#x_floating_btn').css(state.btnPos);
 
-    // 2. สร้างหน้าต่างหลัก
+    // 2. หน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -93,7 +91,6 @@ function bindEvents() {
     const orb = $('#x_floating_btn');
     const modal = $('#x_main_modal');
 
-    // คลิกเพื่อเปิด/ปิด
     orb.on('click', () => {
         if (!state.lockOrb) return;
         modal.fadeToggle(200).css('display', 'flex');
@@ -104,7 +101,6 @@ function bindEvents() {
         modal.fadeOut(200);
     });
 
-    // เปลี่ยนหน้า
     $('.x-nav-icon').on('click', function() {
         const id = $(this).data('id');
         state.curPage = id;
@@ -115,7 +111,6 @@ function bindEvents() {
         saveSettings();
     });
 
-    // สวิตช์ย้าย
     $('#btn_mv_orb').on('click', () => {
         state.lockOrb = !state.lockOrb;
         updateSafety();
