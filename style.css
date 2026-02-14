@@ -1,12 +1,11 @@
-/* --- RABBIT BLUE HUD: Final Version --- */
+/* --- RABBIT BLUE HUD: Compact Size (34px) --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
     --sweet-pink: #ffb7c5;      
     --sweet-pink-dark: #ea93a2;
     --sweet-bg-glass: rgba(220, 220, 220, 0.45);
-    /* สีตัวอักษร "เหมือนเดิม" คือสีเทาเข้มครับ อ่านง่ายสุด */
-    --sweet-text: #5d5d5d;      
+    --sweet-text: #5d5d5d;  /* สีเทาเข้ม */    
     --sweet-border: rgba(255, 255, 255, 0.6);
     --sweet-glow: rgba(255, 183, 197, 0.6);
 }
@@ -14,9 +13,12 @@
 /* --- 1. The Floating Button (ลูกแก้ว) --- */
 #x_floating_btn {
     position: fixed !important;
-    width: 40px !important;
-    height: 40px !important;
-    background: transparent !important;
+    /* ขนาดตามที่คุณส่งมาเป๊ะๆ */
+    width: 34px !important;
+    height: 34px !important;
+    
+    background: transparent !important; /* โปร่งใสเพื่อให้เห็นวีดีโอ */
+    
     border-radius: 50% !important;
     cursor: pointer;
     z-index: 20000;
@@ -24,17 +26,19 @@
     /* เงา */
     box-shadow: 
         0 0 0 2px white,
-        0 4px 12px rgba(0,0,0,0.3), 
+        0 4px 10px rgba(0,0,0,0.2), 
         0 0 15px var(--sweet-glow);
         
     display: flex;
     justify-content: center;
     align-items: center;
     transition: transform 0.2s;
+    
+    /* ให้ดาวแสดงนอกกรอบได้ */
     overflow: visible !important; 
 }
 
-/* วีดีโอในลูกแก้ว */
+/* วีดีโอในลูกแก้ว (ปรับให้พอดี 34px) */
 .x-core-video {
     width: 100% !important;
     height: 100% !important;
@@ -45,7 +49,7 @@
     filter: brightness(1.1);
 }
 
-/* เอฟเฟคดาววิบวับ (จุดเล็กน่ารัก) */
+/* เอฟเฟคดาววิบวับ (ขนาดและตำแหน่งเดิม) */
 #x_floating_btn::after {
     content: '';
     position: absolute;
@@ -56,11 +60,11 @@
     border-radius: 50%;
     
     box-shadow: 
-        -18px -15px 0 0px #fff,
-         16px -18px 0 0px var(--sweet-pink),
-        -16px  16px 0 0px var(--sweet-pink),
-         18px  14px 0 0px #fff,
-         0px -24px 0 -1px #fff,
+        -18px -15px 0 1px #fff,        
+         16px -18px 0 0px var(--sweet-pink), 
+        -16px  16px 0 0px var(--sweet-pink), 
+         18px  14px 0 1px #fff,        
+         0px -24px 0 -1px #fff,        
          0px  24px 0 -1px #fff;
          
     animation: sweet-twinkle 3s infinite ease-in-out;
@@ -68,13 +72,13 @@
     z-index: -1;
 }
 
-/* วงแหวนหมุนรอบ */
+/* วงแหวนหมุนรอบ (ขนาด 44px ตามเดิม) */
 #x_floating_btn::before {
     content: ''; position: absolute;
-    width: 52px; height: 52px;
+    width: 44px; height: 44px;
     border: 1px dashed var(--sweet-pink);
     border-radius: 50%;
-    opacity: 0.6;
+    opacity: 0.4;
     animation: sweet-spin 12s linear infinite;
     pointer-events: none;
     z-index: -2;
@@ -111,23 +115,20 @@
     padding: 0 8px;
 }
 
-/* [แก้ตรงนี้] สีตัวหนังสือกลับมาเป็นสีเทาเข้ม (เหมือนเดิม) */
 .x-title {
     font-family: 'Comfortaa', cursive;
     font-weight: 700;
-    color: var(--sweet-text); /* สีเทาเข้ม */
+    color: var(--sweet-text);
     font-size: 11px;
     white-space: nowrap;
     margin-right: 5px;
 }
 
-/* --- Navigation Icons --- */
+/* --- Navigation & Controls --- */
 .x-nav-container { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; padding: 0 5px; }
 .x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; transition: 0.2s; background: rgba(255,255,255,0.3); border: 1px solid transparent; }
-.x-nav-icon:hover { background: rgba(255,255,255,0.6); }
 .x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 0 5px var(--sweet-glow); transform: translateY(-1px); }
 
-/* --- Controls --- */
 .x-controls-group { display: flex; align-items: center; gap: 4px; }
 .x-mini-btn { height: 22px; padding: 0 6px; background: rgba(255,255,255,0.5); border: 1px solid white; border-radius: 10px; font-size: 9px; color: var(--sweet-text); display: flex; align-items: center; gap: 3px; cursor: pointer; transition: 0.2s; }
 .x-mini-btn.active { background: var(--sweet-pink); color: white; border-color: var(--sweet-pink); }
@@ -148,5 +149,4 @@
     0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9) rotate(0deg); } 
     50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(15deg); } 
 }
-
 .x-dragging { transform: scale(1.1); border-color: #ff6b74 !important; }
