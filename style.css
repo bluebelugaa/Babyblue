@@ -1,9 +1,8 @@
-/* --- RABBIT BLUE: Final Sweet Lorebook Theme --- */
+/* --- RABBIT BLUE: Final Fix Style --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
     --sweet-pink: #ffb7c5;      
-    --sweet-peach: #ffe5d9;
     --sweet-grey-bg: rgba(220, 220, 220, 0.45);
     --sweet-text: #5d5d5d;      
     --sweet-border: rgba(255, 255, 255, 0.6);
@@ -11,37 +10,36 @@
     --sweet-drag-glow: rgba(255, 105, 180, 0.4);
 }
 
-/* --- ลูกแก้ว (30px + Video) --- */
+/* --- ลูกแก้ว (34px ตามที่เคยขอ) --- */
 #x_floating_btn {
     position: fixed !important;
-    width: 30px !important;
-    height: 30px !important;
-    background: transparent !important;
+    width: 34px !important;
+    height: 34px !important;
+    background: #000 !important; /* พื้นหลังดำกันภาพหาย */
     border-radius: 50% !important;
     cursor: pointer;
     z-index: 20000;
     border: 2px solid white !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15), 0 0 12px var(--sweet-glow);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 0 12px var(--sweet-glow);
     display: flex; justify-content: center; align-items: center;
-    transition: all 0.2s ease-out;
+    transition: transform 0.2s, box-shadow 0.2s;
     overflow: visible !important; 
 }
 
-/* เอฟเฟคตอนลาก (ขอบชมพู + เรืองแสง) */
+/* เอฟเฟคตอนลาก */
 #x_floating_btn.x-dragging {
     border-color: #ff8fa3 !important; 
     transform: scale(1.1);
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 15px var(--sweet-drag-glow) !important;
 }
 
-/* ปิดอนิเมชั่นตอนลากเพื่อให้ลื่น */
-.no-transition { transition: none !important; }
-
-/* วีดีโอข้างใน */
+/* วีดีโอ (บังคับเต็มกรอบ) */
 .x-core-video {
     width: 100% !important; height: 100% !important;
     object-fit: cover !important; border-radius: 50% !important;
-    z-index: 5 !important; pointer-events: none; filter: brightness(1.05);
+    z-index: 5 !important; pointer-events: none; 
+    display: block !important; /* บังคับโชว์ */
+    filter: brightness(1.1);
 }
 
 /* ดาววิบวับ */
@@ -52,95 +50,43 @@
     animation: sweet-twinkle 3s infinite ease-in-out; pointer-events: none; z-index: -1;
 }
 
-/* วงแหวนหมุน */
+/* วงแหวน */
 #x_floating_btn::before {
-    content: ''; position: absolute; width: 38px; height: 38px;
+    content: ''; position: absolute; width: 44px; height: 44px;
     border: 1px dashed var(--sweet-pink); border-radius: 50%; opacity: 0.5;
     animation: sweet-spin 12s linear infinite; pointer-events: none; z-index: -2;
 }
 
-/* --- หน้าต่างหลัก (Sweet Glass) --- */
+/* --- หน้าต่าง Lorebook (Sweet Glass) --- */
 #x_main_modal {
     display: none; position: fixed; top: 15vh; left: 5vw; width: 90vw; height: 55vh; max-height: 480px;
     background: var(--sweet-grey-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--sweet-border); border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.1); z-index: 20001;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15); z-index: 20001;
     flex-direction: column; overflow: hidden; font-family: 'Mitr', sans-serif;
     animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .x-header { height: 45px; background: rgba(255, 255, 255, 0.3); border-bottom: 1px solid var(--sweet-border); display: flex; align-items: center; justify-content: space-between; padding: 0 10px; }
-.x-title { font-family: 'Comfortaa', cursive; font-weight: 700; color: var(--sweet-text); font-size: 12px; letter-spacing: 1px; }
+.x-title { font-family: 'Comfortaa', cursive; font-weight: 700; color: var(--sweet-text); font-size: 12px; }
 
-/* --- ส่วน Lorebook Editor --- */
-.x-diary-container {
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    height: 100%;
-}
-
-.x-entry-bar {
-    display: flex; gap: 5px; align-items: center;
-    background: rgba(255, 255, 255, 0.5); padding: 5px; border-radius: 10px;
-}
-
-.x-entry-select {
-    flex: 1; background: transparent; border: none;
-    font-family: 'Mitr', sans-serif; font-size: 12px; color: var(--sweet-text);
-    font-weight: bold; outline: none;
-}
-
-.x-add-btn {
-    width: 24px; height: 24px; background: var(--sweet-pink); color: white;
-    border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
-    transition: 0.2s;
-}
+/* Lorebook Controls */
+.x-diary-container { padding: 5px; display: flex; flex-direction: column; gap: 8px; height: 100%; }
+.x-entry-bar { display: flex; gap: 5px; align-items: center; background: rgba(255, 255, 255, 0.5); padding: 5px; border-radius: 10px; }
+.x-entry-select { flex: 1; background: transparent; border: none; font-family: 'Mitr', sans-serif; font-size: 12px; color: var(--sweet-text); font-weight: bold; outline: none; }
+.x-add-btn { width: 24px; height: 24px; background: var(--sweet-pink); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
 .x-add-btn:hover { transform: scale(1.1); background: #ea93a2; }
 
-/* Trigger Keywords Label */
 .x-label { font-size: 10px; color: #ea93a2; font-weight: bold; margin-left: 2px; }
-
-/* ช่องกรอก Trigger Keys (แสดงเหมือน Tags) */
-.x-keys-input {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 183, 197, 0.5);
-    border-radius: 8px;
-    padding: 6px;
-    font-size: 11px;
-    color: #555;
-    font-family: monospace;
-}
-.x-keys-input:focus { background: rgba(255, 255, 255, 0.9); border-color: var(--sweet-pink); }
-
-.x-content-area {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
-    padding: 10px;
-    font-family: 'Mitr', sans-serif;
-    font-size: 12px;
-    color: #444;
-    resize: none;
-    outline: none;
-}
-
-.x-save-btn {
-    width: 100%; padding: 8px;
-    background: var(--sweet-pink); color: white;
-    border: none; border-radius: 10px;
-    font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.2s;
-}
+.x-keys-input { width: 100%; background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 183, 197, 0.5); border-radius: 8px; padding: 6px; font-size: 11px; color: #555; font-family: monospace; }
+.x-content-area { flex: 1; background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 10px; padding: 10px; font-family: 'Mitr', sans-serif; font-size: 12px; color: #444; resize: none; outline: none; }
+.x-save-btn { width: 100%; padding: 8px; background: var(--sweet-pink); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.2s; }
 .x-save-btn:hover { background: #ea93a2; }
 
 /* Navigation */
 .x-nav-container { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; padding: 0 5px; }
 .x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; transition: 0.2s; background: rgba(255,255,255,0.4); border: 1px solid transparent; }
 .x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 2px 8px var(--sweet-glow); transform: translateY(-1px); }
-
 .x-controls-group { display: flex; align-items: center; gap: 4px; }
 .x-mini-btn { height: 24px; padding: 0 8px; background: rgba(255,255,255,0.5); border: 1px solid white; border-radius: 12px; font-size: 10px; color: var(--sweet-text); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s; }
 .x-mini-btn.active { background: var(--sweet-pink); color: white; border-color: var(--sweet-pink); }
@@ -154,3 +100,4 @@
 @keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes sweet-twinkle { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9) rotate(0deg); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(15deg); } }
+.no-transition { transition: none !important; }
