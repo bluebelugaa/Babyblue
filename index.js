@@ -1,5 +1,5 @@
-// --- Sweet Heart HUD: Forced Background Edition ---
-const STORAGE_KEY = "sweet_hud_final_v1";
+// --- Sweet Heart HUD: GIF Core Edition (Full Fixed) ---
+const STORAGE_KEY = "sweet_hud_final_v2";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -34,21 +34,15 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // สร้างลูกแก้ว พร้อมฝังภาพพื้นหลังและ GIF โดยตรง
-    const orbHtml = `
-        <div id="x_floating_btn" style="
-            background-image: url('https://files.catbox.moe/0fd3gy.jpg') !important;
-            background-size: cover !important;
-            background-position: center !important;
-        ">
-            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="core">
+    // 1. สร้างลูกแก้ว (ภาพพื้นหลังจะถูกโหลดจาก CSS เอง)
+    $('body').append(`
+        <div id="x_floating_btn">
+            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="jellyfish">
         </div>
-    `;
-    
-    $('body').append(orbHtml);
+    `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // หน้าต่างหลัก
+    // 2. หน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -72,6 +66,7 @@ function injectUI() {
                 <div id="btn_close" class="x-close-icon"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
+
         <div class="x-content-box">
             ${PAGES.map(p => `
                 <div id="page_${p.id}" class="x-page ${p.id === state.curPage ? 'active' : ''}">
