@@ -1,26 +1,26 @@
-/* --- Sweet Heart HUD: Bookmark Edition --- */
+/* --- Sweet Heart HUD: Cute & Compact Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
-    /* นำโทนสีเดิมกลับมา (ชมพู-เทาโปร่ง) ไม่เน้นขาว */
+    /* ใช้สีชุดเดิมที่ชอบ */
     --sweet-pink: #ffb7c5;      
     --sweet-pink-dark: #ea93a2;
-    --sweet-bg-glass: rgba(220, 220, 220, 0.45); /* พื้นหลังเทาอมชมพู โปร่งแสง */
+    --sweet-bg-glass: rgba(220, 220, 220, 0.45);
     --sweet-text: #5d5d5d;      
     --sweet-border: rgba(255, 255, 255, 0.6);
     --sweet-glow: rgba(255, 183, 197, 0.6);
 }
 
-/* --- 1. The Sugar Core (ลูกแก้วเดิม) --- */
+/* --- 1. The Cute Heart Core (ลูกแก้วหัวใจจิ๋ว) --- */
 #x_floating_btn {
     position: fixed;
-    width: 34px;
-    height: 34px;
-    background: rgba(255, 255, 255, 0.85);
+    width: 30px; /* ลดขนาดลงเหลือ 30px */
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 50%;
     cursor: pointer;
     z-index: 20000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 10px var(--sweet-glow);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 12px var(--sweet-glow);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,25 +28,40 @@
     transition: transform 0.2s;
 }
 
-#x_floating_btn .x-core-gem {
-    width: 12px; height: 12px;
-    background: var(--sweet-pink);
-    border-radius: 50% 50% 0 50%; /* ทรงหยดน้ำ */
-    transform: rotate(45deg);
-    box-shadow: 0 0 5px var(--sweet-pink);
-    animation: sweet-pulse 3s infinite;
+/* สร้างรูปหัวใจด้วย CSS */
+#x_floating_btn .x-core-heart {
+    background-color: var(--sweet-pink);
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    position: relative;
+    top: 0;
+    transform: rotate(-45deg);
+    animation: sweet-beat 1.2s infinite; /* เต้นตึ้กๆ */
 }
+#x_floating_btn .x-core-heart:before,
+#x_floating_btn .x-core-heart:after {
+    content: "";
+    background-color: var(--sweet-pink);
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+}
+#x_floating_btn .x-core-heart:before { top: -4px; left: 0; }
+#x_floating_btn .x-core-heart:after { top: 0; left: 4px; }
 
+/* วงแหวนหมุนรอบ */
 #x_floating_btn::before {
     content: ''; position: absolute;
-    width: 40px; height: 40px;
+    width: 36px; height: 36px;
     border: 1px dashed var(--sweet-pink);
     border-radius: 50%;
-    opacity: 0.4;
+    opacity: 0.5;
     animation: sweet-spin 10s linear infinite;
 }
 
-/* --- 2. Main Window (แก้ขนาดและการล้น) --- */
+/* --- 2. Main Window (คงเดิม) --- */
 #x_main_modal {
     display: none;
     position: fixed;
@@ -55,7 +70,6 @@
     height: 55vh;
     max-height: 480px;
     
-    /* พื้นหลังแบบเดิมที่ชอบ */
     background: var(--sweet-bg-glass);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -70,42 +84,73 @@
     animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* --- 3. Header Compact (จัดระเบียบไม่ให้ล้น) --- */
+/* --- 3. Header (ปรับให้ใส่เมนูได้) --- */
 .x-header {
-    height: 40px; /* ลดความสูงลงนิดหน่อย */
-    background: rgba(255, 255, 255, 0.3);
+    height: 44px; /* เพิ่มความสูงนิดเดียวให้พอดีเมนู */
+    background: rgba(255, 255, 255, 0.4); /* เพิ่มความทึบให้ Header นิดนึงให้อ่านง่าย */
     border-bottom: 1px solid var(--sweet-border);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
+    justify-content: space-between; /* กระจายซ้าย-ขวา */
+    padding: 0 8px;
 }
 
 .x-title {
     font-family: 'Comfortaa', cursive;
     font-weight: 700;
     color: var(--sweet-text);
-    font-size: 12px;
-    white-space: nowrap; /* ห้ามขึ้นบรรทัดใหม่ */
+    font-size: 11px;
+    white-space: nowrap;
+    margin-right: 5px;
 }
 
-/* กลุ่มปุ่มควบคุม (ชิดขวา) */
+/* --- 4. Navigation Icons (ย้ายมาอยู่ใน Header) --- */
+.x-nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px; /* ระยะห่างระหว่างไอคอน */
+    flex: 1; /* ให้กินพื้นที่ตรงกลาง */
+    padding: 0 5px;
+}
+
+.x-nav-icon {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--sweet-text);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: 0.2s;
+    background: rgba(255,255,255,0.3);
+    border: 1px solid transparent;
+}
+
+.x-nav-icon:hover { background: rgba(255,255,255,0.6); }
+
+.x-nav-icon.active {
+    background: var(--sweet-pink);
+    color: white;
+    box-shadow: 0 0 5px var(--sweet-glow);
+    transform: translateY(-1px);
+}
+
+/* --- Controls Group (ปุ่ม Move/Close ด้านขวา) --- */
 .x-controls-group {
     display: flex;
     align-items: center;
-    gap: 6px; 
+    gap: 4px; 
 }
 
-/* ปุ่ม Move แบบย่อ (icon only หรือ text สั้นๆ) */
 .x-mini-btn {
-    height: 24px;
-    padding: 0 8px;
+    height: 22px;
+    padding: 0 6px;
     background: rgba(255,255,255,0.5);
     border: 1px solid white;
-    border-radius: 12px;
-    font-size: 10px;
+    border-radius: 10px;
+    font-size: 9px;
     color: var(--sweet-text);
-    display: flex; align-items: center; gap: 4px;
+    display: flex; align-items: center; gap: 3px;
     cursor: pointer;
     transition: 0.2s;
 }
@@ -114,57 +159,19 @@
     background: var(--sweet-pink);
     color: white;
     border-color: var(--sweet-pink);
-    box-shadow: 0 0 8px var(--sweet-glow);
 }
 
 .x-close-icon {
-    width: 24px; height: 24px;
+    width: 22px; height: 22px;
     display: flex; align-items: center; justify-content: center;
     color: #ff8b94;
     cursor: pointer;
-    font-size: 16px;
-    margin-left: 5px;
+    font-size: 14px;
+    margin-left: 2px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
 }
-.x-close-icon.disabled { opacity: 0.2; pointer-events: none; }
-
-/* --- 4. Bookmark Navigation (เมนูที่คั่นหนังสือด้านขวา) --- */
-.x-bookmark-container {
-    display: flex;
-    justify-content: flex-end; /* ชิดขวา */
-    padding: 8px 10px 0 0; /* เว้นระยะจากขอบขวา */
-    background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
-}
-
-.x-bookmark {
-    width: 32px;
-    height: 28px;
-    margin-left: 4px;
-    background: rgba(255,255,255,0.4);
-    border: 1px solid rgba(255,255,255,0.6);
-    border-bottom: none;
-    border-radius: 6px 6px 0 0; /* มนเฉพาะด้านบน */
-    
-    display: flex; justify-content: center; align-items: center;
-    color: var(--sweet-text);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    top: 0;
-}
-
-.x-bookmark:hover {
-    background: rgba(255,255,255,0.6);
-}
-
-.x-bookmark.active {
-    background: var(--sweet-pink); /* สีชมพูเมื่อเลือก */
-    color: white;
-    height: 32px; /* สูงขึ้นนิดนึงให้เด่น */
-    top: -2px; /* เด้งขึ้นมา */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-    border-color: var(--sweet-pink);
-}
+.x-close-icon.disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
 
 /* --- 5. Content --- */
 .x-content-box {
@@ -178,21 +185,19 @@
 .x-page.active { display: block; }
 
 .x-page-header {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--sweet-pink-dark);
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     border-bottom: 1px dashed var(--sweet-pink);
-    padding-bottom: 5px;
+    padding-bottom: 4px;
 }
 
-/* Animations & States */
-@keyframes sweet-pulse { 0%,100% {transform: rotate(45deg) scale(0.9);} 50% {transform: rotate(45deg) scale(1.1);} }
+/* Animations */
+@keyframes sweet-beat { 0%,100% {transform: rotate(-45deg) scale(1);} 50% {transform: rotate(-45deg) scale(1.2);} }
 @keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
 
 .x-dragging { transform: scale(1.1); border-color: #ff6b74 !important; }
-.x-dragging .x-core-gem { background: #ff6b74; }
-.x-head-drag { cursor: grab; }
-.x-head-drag:active { cursor: grabbing; background: rgba(255,255,255,0.5); }
+.x-head-drag { cursor: grab; background: rgba(255,255,255,0.6); }
