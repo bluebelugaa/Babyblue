@@ -1,5 +1,5 @@
-// --- Sweet Heart HUD: MP4 Video Edition ---
-const STORAGE_KEY = "sweet_hud_mp4_v1";
+// --- RABBIT BLUE HUD: Final Edition ---
+const STORAGE_KEY = "rabbit_blue_hud_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -34,11 +34,7 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // สร้างลูกแก้วโดยใช้ VIDEO tag
-    // autoplay: เล่นอัตโนมัติ
-    // loop: เล่นวนซ้ำ
-    // muted: ปิดเสียง (จำเป็นสำหรับ auto play บนมือถือ)
-    // playsinline: เล่นในกรอบไม่เด้งเต็มจอ (จำเป็นสำหรับ iPhone/Android)
+    // สร้างลูกแก้ว (วีดีโอ)
     $('body').append(`
         <div id="x_floating_btn">
             <video class="x-core-video" autoplay loop muted playsinline>
@@ -52,7 +48,8 @@ function injectUI() {
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
-            <div class="x-title">SWEET HUD</div>
+            <div class="x-title">RABBIT BLUE</div>
+            
             <div class="x-nav-container">
                 ${PAGES.map(p => `
                     <div class="x-nav-icon ${p.id === state.curPage ? 'active' : ''}" 
