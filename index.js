@@ -1,9 +1,9 @@
-// --- Sweet Heart HUD: Bookmark Edition ---
-const STORAGE_KEY = "sweet_hud_bookmark_v1";
+// --- Sweet Heart HUD: Final Cute Edition ---
+const STORAGE_KEY = "sweet_hud_final_v1";
 
-// กำหนดไอคอนสำหรับแต่ละหน้า (ใช้ FontAwesome)
+// แก้ไขไอคอนตรงนี้ (เปลี่ยน fa-book-heart เป็น fa-book ธรรมดา)
 const PAGES = [
-    { id: 'lore', title: 'Diary', icon: 'fa-book-heart' },   // รูปสมุดหัวใจ
+    { id: 'lore', title: 'Diary', icon: 'fa-book' },   // แก้แล้ว! ขึ้นแน่นอน
     { id: 'inspect', title: 'Check', icon: 'fa-magnifying-glass' },
     { id: 'ooc', title: 'Chat', icon: 'fa-comments' },
     { id: 'world', title: 'World', icon: 'fa-globe' },
@@ -14,7 +14,7 @@ let state = {
     btnPos: { top: '120px', left: 'auto', right: '15px' },
     winPos: { top: '15vh', left: '5vw' },
     curPage: PAGES[0].id,
-    lockOrb: true, // true = Locked (ขยับไม่ได้), false = Unlocked
+    lockOrb: true, 
     lockWin: true
 };
 
@@ -35,10 +35,10 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. ลูกแก้ว (Style เดิม)
+    // 1. ลูกแก้วหัวใจ (Cute Heart)
     $('body').append(`
         <div id="x_floating_btn">
-            <div class="x-core-gem"></div>
+            <div class="x-core-heart"></div>
         </div>
     `);
     $('#x_floating_btn').css(state.btnPos);
@@ -48,25 +48,26 @@ function injectUI() {
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
             <div class="x-title">SWEET HUD</div>
+            
+            <div class="x-nav-container">
+                ${PAGES.map(p => `
+                    <div class="x-nav-icon ${p.id === state.curPage ? 'active' : ''}" 
+                         data-id="${p.id}" 
+                         title="${p.title}">
+                        <i class="fa-solid ${p.icon}"></i>
+                    </div>
+                `).join('')}
+            </div>
+
             <div class="x-controls-group">
                 <div id="btn_mv_orb" class="x-mini-btn ${!state.lockOrb?'active':''}">
-                    <i class="fa-solid fa-arrows-up-down-left-right"></i> Orb
+                    <i class="fa-solid fa-arrows-up-down-left-right"></i>
                 </div>
                 <div id="btn_mv_win" class="x-mini-btn ${!state.lockWin?'active':''}">
-                    <i class="fa-solid fa-expand"></i> Win
+                    <i class="fa-solid fa-expand"></i>
                 </div>
                 <div id="btn_close" class="x-close-icon"><i class="fa-solid fa-xmark"></i></div>
             </div>
-        </div>
-
-        <div class="x-bookmark-container">
-            ${PAGES.map(p => `
-                <div class="x-bookmark ${p.id === state.curPage ? 'active' : ''}" 
-                     data-id="${p.id}" 
-                     title="${p.title}">
-                    <i class="fa-solid ${p.icon}"></i>
-                </div>
-            `).join('')}
         </div>
 
         <div class="x-content-box">
@@ -75,7 +76,7 @@ function injectUI() {
                     <div class="x-page-header">
                         <i class="fa-solid ${p.icon}"></i> ${p.title}
                     </div>
-                    <div id="content_${p.id}">Waiting for data...</div>
+                    <div id="content_${p.id}">Waiting for sweetness...</div>
                 </div>
             `).join('')}
         </div>
@@ -92,7 +93,6 @@ function bindEvents() {
     const orb = $('#x_floating_btn');
     const modal = $('#x_main_modal');
 
-    // เปิด/ปิด
     orb.on('click', () => {
         if (!state.lockOrb) return;
         modal.fadeToggle(200).css('display', 'flex');
@@ -103,13 +103,12 @@ function bindEvents() {
         modal.fadeOut(200);
     });
 
-    // เปลี่ยนหน้า (คลิกที่ Bookmark)
-    $('.x-bookmark').on('click', function() {
+    // เปลี่ยนหน้า
+    $('.x-nav-icon').on('click', function() {
         const id = $(this).data('id');
         state.curPage = id;
         
-        // Update UI
-        $('.x-bookmark').removeClass('active');
+        $('.x-nav-icon').removeClass('active');
         $(this).addClass('active');
         
         $('.x-page').removeClass('active');
@@ -118,14 +117,12 @@ function bindEvents() {
         saveSettings();
     });
 
-    // Toggle Move Orb
     $('#btn_mv_orb').on('click', () => {
         state.lockOrb = !state.lockOrb;
         updateSafety();
         saveSettings();
     });
 
-    // Toggle Move Win
     $('#btn_mv_win').on('click', () => {
         state.lockWin = !state.lockWin;
         updateSafety();
@@ -137,18 +134,13 @@ function bindEvents() {
 }
 
 function updateSafety() {
-    // Note: Logic กลับด้านนิดหน่อย (lock = true คือ ปลอดภัย/ขยับไม่ได้)
     const moving = (!state.lockOrb || !state.lockWin);
     
     $('#btn_mv_orb').toggleClass('active', !state.lockOrb);
     $('#btn_mv_win').toggleClass('active', !state.lockWin);
     
     $('#x_floating_btn').toggleClass('x-dragging', !state.lockOrb);
-    
-    // Disable close button if moving
     $('#btn_close').toggleClass('disabled', moving);
-    
-    // Change header cursor
     $('#x_drag_zone').toggleClass('x-head-drag', !state.lockWin);
 }
 
