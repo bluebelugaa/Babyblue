@@ -1,15 +1,15 @@
-/* --- RABBIT BLUE: Final Complete Edition --- */
+/* --- RABBIT BLUE: Original Sweet Theme --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
-    /* ธีมสีหวาน (Original Palette) */
+    /* ชุดสีหวานอันแรก (Original Palette) */
     --sweet-pink: #ffb7c5;      
     --sweet-peach: #ffe5d9;
-    --sweet-grey-bg: rgba(220, 220, 220, 0.45); /* พื้นหลังเทาโปร่งแสง */
-    --sweet-text: #5d5d5d;      /* สีเทาเข้ม อ่านง่าย */
+    --sweet-grey-bg: rgba(220, 220, 220, 0.45); /* พื้นหลังเทาโปร่งแสงแบบเดิม */
+    --sweet-text: #5d5d5d;      /* ตัวหนังสือสีเทาเข้ม อ่านง่าย */
     --sweet-border: rgba(255, 255, 255, 0.6);
     --sweet-glow: rgba(255, 183, 197, 0.6);
-    --sweet-drag-glow: rgba(255, 105, 180, 0.4); /* สีเรืองแสงตอนลาก */
+    --sweet-drag-glow: rgba(255, 105, 180, 0.4);
 }
 
 /* --- 1. The Floating Button (ลูกแก้ว 30px) --- */
@@ -23,32 +23,29 @@
     cursor: pointer;
     z-index: 20000;
     
-    /* ขอบขาว */
+    /* ขอบขาวแบบเดิม */
     border: 2px solid white !important;
     
-    /* เงาปกติ */
+    /* เงานุ่มๆ แบบเดิม */
     box-shadow: 
-        0 4px 10px rgba(0,0,0,0.15), 
+        0 4px 10px rgba(0,0,0,0.1), 
         0 0 12px var(--sweet-glow);
         
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.2s ease-out; /* นุ่มนวล */
+    transition: all 0.2s ease-out;
     overflow: visible !important; 
 }
 
-/* เอฟเฟคตอนกดย้าย (ขอบชมพู + เรืองแสงหวานๆ) */
+/* เอฟเฟคตอนกดย้าย (ขอบสีชมพูหวาน + เรืองแสง) */
 #x_floating_btn.x-dragging {
-    border-color: #ff8fa3 !important; 
+    border-color: #ff8fa3 !important; /* ชมพูเข้มขึ้นนิดนึงตอนลาก */
     transform: scale(1.1);
     box-shadow: 
         0 0 0 4px rgba(255, 255, 255, 0.5), 
         0 0 15px var(--sweet-drag-glow) !important;
 }
-
-/* คลาสปิดอนิเมชั่นตอนลาก (เพื่อให้ลากติดมือ ไม่กระตุก) */
-.no-transition { transition: none !important; }
 
 /* วีดีโอในลูกแก้ว */
 .x-core-video {
@@ -58,10 +55,11 @@
     border-radius: 50% !important;
     z-index: 5 !important;
     pointer-events: none;
-    filter: brightness(1.05);
+    /* ปรับแสงให้เข้ากับธีมหวาน */
+    filter: brightness(1.05) contrast(1.05);
 }
 
-/* เอฟเฟคดาววิบวับ (จุดเล็ก 2px) */
+/* เอฟเฟคดาววิบวับ (แบบจุดเล็ก 2px) */
 #x_floating_btn::after {
     content: '';
     position: absolute;
@@ -94,7 +92,7 @@
     z-index: -2;
 }
 
-/* --- 2. Main Window --- */
+/* --- 2. Main Window (ธีมเดิม: เทาโปร่งแสง เบลอสวยๆ) --- */
 #x_main_modal {
     display: none;
     position: fixed;
@@ -103,13 +101,13 @@
     height: 55vh;
     max-height: 480px;
     
-    /* ธีมเดิม: เทาโปร่งแสง เบลอสวยๆ */
+    /* พื้นหลังแบบเดิมที่คิดถึง */
     background: var(--sweet-grey-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     
     border: 1px solid var(--sweet-border);
-    border-radius: 20px;
+    border-radius: 20px; /* มุมมนเยอะๆ แบบเดิม */
     box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     z-index: 20001;
     flex-direction: column;
@@ -118,9 +116,10 @@
     animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* Header แบบเดิม (สีอ่อนๆ) */
 .x-header {
     height: 45px;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.3); /* สีขาวจางๆ */
     border-bottom: 1px solid var(--sweet-border);
     display: flex;
     align-items: center;
@@ -136,96 +135,7 @@
     letter-spacing: 1px;
 }
 
-/* --- Diary / Lorebook Styles (Compact) --- */
-.x-diary-controls {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.4);
-    padding: 6px;
-    border-radius: 12px;
-}
-
-/* Dropdown เล็ก */
-.x-compact-select {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid var(--sweet-pink);
-    border-radius: 8px;
-    padding: 2px 5px;
-    font-family: 'Mitr', sans-serif;
-    color: var(--sweet-text);
-    font-size: 11px;
-    height: 26px;
-    outline: none;
-    width: 0; /* Fix flex layout */
-}
-
-/* ปุ่มบวก (+) */
-.x-add-btn {
-    width: 26px; height: 26px;
-    background: var(--sweet-pink);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    font-size: 14px; font-weight: bold;
-    transition: 0.2s;
-}
-.x-add-btn:hover { background: #ea93a2; transform: scale(1.1); }
-
-/* ป้ายกำกับเล็ก */
-.x-label-small {
-    font-size: 10px;
-    color: #ea93a2;
-    font-weight: bold;
-    margin-bottom: 3px;
-    margin-top: 6px;
-    display: block;
-}
-
-/* ช่องกรอกข้อมูล */
-.x-diary-input {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 183, 197, 0.6);
-    border-radius: 10px;
-    padding: 8px;
-    font-family: 'Mitr', sans-serif;
-    font-size: 12px;
-    color: #555;
-    outline: none;
-    transition: 0.2s;
-}
-.x-diary-input:focus {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: var(--sweet-pink);
-    box-shadow: 0 0 5px var(--sweet-glow);
-}
-
-.x-diary-textarea {
-    height: 200px;
-    resize: none;
-    line-height: 1.4;
-}
-
-.x-save-btn {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    background: var(--sweet-pink);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 12px; font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.x-save-btn:hover { background: #ea93a2; }
-
-/* Navigation & Controls */
+/* Controls */
 .x-nav-container { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; padding: 0 5px; }
 .x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; transition: 0.2s; background: rgba(255,255,255,0.4); border: 1px solid transparent; }
 .x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 2px 8px var(--sweet-glow); transform: translateY(-1px); }
@@ -237,7 +147,7 @@
 .x-close-icon.disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
 
 /* Content */
-.x-content-box { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
+.x-content-box { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
 .x-page { display: none; animation: fade-up 0.3s; }
 .x-page.active { display: block; }
 .x-page-header { font-size: 14px; color: #ea93a2; font-weight: bold; margin-bottom: 10px; border-bottom: 1px dashed var(--sweet-pink); padding-bottom: 5px; }
@@ -250,3 +160,6 @@
     0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9) rotate(0deg); } 
     50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(15deg); } 
 }
+
+/* คลาสช่วยเรื่องลาก */
+.no-transition { transition: none !important; }
