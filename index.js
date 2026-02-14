@@ -1,5 +1,5 @@
-// --- RABBIT BLUE HUD: Final High-Performance ---
-const STORAGE_KEY = "rabbit_blue_final_v2";
+// --- RABBIT BLUE HUD: Classic Drag Edition ---
+const STORAGE_KEY = "rabbit_blue_classic_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -34,7 +34,7 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // สร้างลูกแก้ววีดีโอ
+    // สร้างลูกแก้ว
     $('body').append(`
         <div id="x_floating_btn">
             <video class="x-core-video" autoplay loop muted playsinline>
@@ -44,7 +44,7 @@ function injectUI() {
     `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // หน้าต่างหลัก RABBIT BLUE
+    // หน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -136,61 +136,53 @@ function updateSafety() {
     $('#x_drag_zone').css('cursor', !state.lockWin ? 'move' : 'default');
 }
 
-// ฟังก์ชันลากวางแบบ High Performance (GPU Accelerated)
+// ใช้ระบบลากแบบ Classic (เหมือนหน้าต่าง) เพื่อความเสถียร
 function makeDraggable(el, type, handle) {
-    let startX = 0, startY = 0;
-    let initialLeft = 0, initialTop = 0;
     const trigger = handle || el;
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-    const start = (e) => {
+    const dragStart = (e) => {
         if (type === 'orb' && state.lockOrb) return;
         if (type === 'win' && state.lockWin) return;
 
+        // เพิ่ม class ปิด transition เพื่อให้ลากติดมือ
+        el.classList.add('no-transition');
+
         const evt = e.type === 'touchstart' ? e.touches[0] : e;
-        startX = evt.clientX;
-        startY = evt.clientY;
+        pos3 = evt.clientX;
+        pos4 = evt.clientY;
 
-        const rect = el.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
-
-        // เปิดโหมด GPU
-        el.style.willChange = 'transform';
-        
-        document.ontouchend = stop; 
-        document.onmouseup = stop;
-        document.ontouchmove = move; 
-        document.onmousemove = move;
+        document.ontouchend = dragEnd;
+        document.onmouseup = dragEnd;
+        document.ontouchmove = dragMove;
+        document.onmousemove = dragMove;
     };
 
-    const move = (e) => {
+    const dragMove = (e) => {
         const evt = e.type === 'touchmove' ? e.touches[0] : e;
-        if (e.cancelable && type === 'orb') e.preventDefault(); 
+        
+        // ป้องกันจอเลื่อนเฉพาะตอนลากลูกแก้ว
+        if (e.cancelable && type === 'orb') e.preventDefault();
 
-        const deltaX = evt.clientX - startX;
-        const deltaY = evt.clientY - startY;
+        pos1 = pos3 - evt.clientX;
+        pos2 = pos4 - evt.clientY;
+        pos3 = evt.clientX;
+        pos4 = evt.clientY;
 
-        // ใช้ transform เพื่อความลื่นไหลสูงสุด
-        el.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0)`;
+        // คำนวณตำแหน่งและขยับทันที (Classic Way)
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
+        el.style.right = 'auto'; // ยกเลิกค่า Right เพื่อไม่ให้ตีกัน
     };
 
-    const stop = (e) => {
-        document.ontouchend = null; 
+    const dragEnd = () => {
+        // เอา class ปิด transition ออก
+        el.classList.remove('no-transition');
+        
+        document.ontouchend = null;
         document.onmouseup = null;
-        document.ontouchmove = null; 
+        document.ontouchmove = null;
         document.onmousemove = null;
-
-        // คำนวณตำแหน่งปลายทาง
-        const evt = e.type === 'touchend' ? e.changedTouches[0] : e;
-        const deltaX = evt.clientX - startX;
-        const deltaY = evt.clientY - startY;
-
-        // บันทึกค่าจริงและรีเซ็ต transform
-        el.style.transform = 'none';
-        el.style.willChange = 'auto';
-        el.style.left = (initialLeft + deltaX) + 'px';
-        el.style.top = (initialTop + deltaY) + 'px';
-        el.style.right = 'auto'; 
 
         if (type === 'orb') {
             state.btnPos = { top: el.style.top, left: el.style.left, right: 'auto' };
@@ -200,7 +192,6 @@ function makeDraggable(el, type, handle) {
         saveSettings();
     };
 
-    trigger.onmousedown = start; 
-    trigger.ontouchstart = start;
+    trigger.onmousedown = dragStart;
+    trigger.ontouchstart = dragStart;
 }
-
