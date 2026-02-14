@@ -1,22 +1,24 @@
-/* --- Sweet Heart HUD: Starry Jellyfish Edition --- */
+/* --- Sweet Heart HUD: Starry Night Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
+    /* โทนสีเดิม */
     --sweet-pink: #ffb7c5;      
     --sweet-pink-dark: #ea93a2;
     --sweet-bg-glass: rgba(220, 220, 220, 0.45);
     --sweet-text: #5d5d5d;      
     --sweet-border: rgba(255, 255, 255, 0.6);
-    --sweet-glow: rgba(255, 183, 197, 0.8); /* เพิ่มความสว่างของแสง */
+    --sweet-glow: rgba(255, 183, 197, 0.6);
+    --sweet-star: #ffd700; /* สีทองสำหรับดาว */
 }
 
-/* --- 1. The Floating Button (ลูกแก้วแมงกะพรุน+พื้นหลัง) --- */
+/* --- 1. The Floating Button (ลูกแก้วท้องฟ้า) --- */
 #x_floating_btn {
     position: fixed;
-    width: 34px; /* ขยายขนาดนิดหน่อยให้เห็นรายละเอียด */
+    width: 34px; /* เพิ่มขนาดนิดนึงให้เห็นรายละเอียด */
     height: 34px;
     
-    /* [แก้ไข] ใส่ภาพพื้นหลังท้องฟ้า */
+    /* ใส่ภาพพื้นหลังท้องฟ้าตรงนี้ */
     background-image: url('https://files.catbox.moe/0fd3gy.jpg');
     background-size: cover;
     background-position: center;
@@ -24,68 +26,59 @@
     border-radius: 50%;
     cursor: pointer;
     z-index: 20000;
-    /* เพิ่มเงาให้ดูมีมิติและเรืองแสง */
-    box-shadow: 
-        inset 0 0 10px rgba(255,255,255,0.5), /* เงาใน */
-        0 4px 10px rgba(0,0,0,0.1), /* เงาล่าง */
-        0 0 15px var(--sweet-glow); /* แสงฟุ้งรอบนอก */
-        
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 15px var(--sweet-glow);
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid var(--sweet-pink);
+    border: 2px solid white; /* ขอบขาวหนาขึ้นนิดนึงตัดกับพื้นหลัง */
     transition: transform 0.2s;
-    overflow: visible; /* [สำคัญ] ต้องเปิดให้เห็นเอฟเฟกต์ที่ล้นออกมา */
+    
+    /* ป้องกันภาพล้น */
+    /* overflow: hidden; <-- ลบอันนี้ออก เพื่อให้ดาวแสดงผลนอกกรอบได้ */
 }
 
-/* รูป GIF แมงกะพรุนด้านใน */
+/* คลาสสำหรับรูปภาพ GIF แมงกะพรุน (อยู่ด้านหน้า) */
 .x-core-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 90%; /* ลดขนาดลงนิดนึงให้เห็นขอบพื้นหลัง */
+    height: 90%;
+    object-fit: contain;
     border-radius: 50%;
-    padding: 2px; /* เว้นขอบเล็กน้อย */
-    /* ทำให้ภาพ GIF ดูใสขึ้นเพื่อให้เห็นพื้นหลัง */
-    mix-blend-mode: lighten; 
-    opacity: 0.9;
+    z-index: 2; /* อยู่บนสุด */
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); /* เพิ่มเงาให้แมงกะพรุนเด่นขึ้น */
 }
 
-/* วงแหวนเส้นประหมุนรอบ (ชั้นใน) */
+/* วงแหวนหมุนรอบ (อยู่ชั้นกลาง) */
 #x_floating_btn::before {
     content: ''; position: absolute;
     width: 40px; height: 40px;
     border: 1px dashed var(--sweet-pink);
     border-radius: 50%;
-    opacity: 0.4;
-    animation: sweet-spin 12s linear infinite;
+    opacity: 0.5;
+    animation: sweet-spin 10s linear infinite;
     pointer-events: none;
-    z-index: -1;
+    z-index: 1;
 }
 
-/* [ใหม่] เอฟเฟกต์ดาวน่ารักหมุนรอบนอก (ชั้นนอกสุด) */
-#x_floating_btn::after {
-    content: '';
+/* --- เอฟเฟกต์ดาววิบวับรอบนอก --- */
+.x-star-effect {
     position: absolute;
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    z-index: -2; /* อยู่หลังสุด */
-    
-    /* สร้างจุดดาวเล็กๆ ด้วย box-shadow */
-    box-shadow: 
-        0 -22px 0 -4px white, /* บน */
-        22px 0 0 -4px var(--sweet-pink), /* ขวา */
-        0 22px 0 -4px white, /* ล่าง */
-        -22px 0 0 -4px var(--sweet-pink), /* ซ้าย */
-        /* จุดเฉียงเล็กๆ */
-        15px -15px 0 -5px var(--sweet-pink),
-        15px 15px 0 -5px white,
-        -15px 15px 0 -5px var(--sweet-pink),
-        -15px -15px 0 -5px white;
-        
-    animation: sweet-spin 8s linear infinite; /* หมุนช้าๆ */
-    opacity: 0.8;
+    color: var(--sweet-star);
+    font-size: 10px;
+    pointer-events: none; /* ไม่ให้บังการกด */
+    text-shadow: 0 0 5px var(--sweet-star);
+    animation: twinkle 2s infinite ease-in-out;
 }
 
+/* ตำแหน่งดาวแต่ละดวง */
+.x-star-1 { top: -8px; left: -5px; animation-delay: 0s; font-size: 12px; color: var(--sweet-pink); }
+.x-star-2 { bottom: -5px; right: -8px; animation-delay: 0.7s; }
+.x-star-3 { top: 50%; right: -12px; animation-delay: 1.3s; font-size: 8px; color: #fff; }
+
+/* Animation ดาววิบวับ */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.4; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+}
 
 /* --- 2. Main Window (คงเดิม) --- */
 #x_main_modal {
