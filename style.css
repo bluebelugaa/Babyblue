@@ -163,3 +163,73 @@
 
 /* คลาสช่วยเรื่องลาก */
 .no-transition { transition: none !important; }
+
+/* [เพิ่มใหม่] สไตล์สำหรับช่อง Input/Select ในหน้า Diary */
+.x-lore-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.x-sweet-input {
+    background: rgba(255, 255, 255, 0.6); /* พื้นขาวโปร่งแสง */
+    border: 1px solid var(--sweet-pink);
+    border-radius: 12px;
+    padding: 6px 10px;
+    font-family: 'Mitr', sans-serif;
+    color: var(--sweet-text);
+    font-size: 12px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.x-sweet-input:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--sweet-pink-dark);
+    box-shadow: 0 0 5px var(--sweet-glow);
+}
+
+/* Dropdown เลือกสมุด/หัวข้อ */
+#x_lore_book, #x_lore_entry {
+    flex: 1; /* แบ่งครึ่งเท่ากัน */
+    cursor: pointer;
+    /* ตัดคำถ้ายาวเกิน */
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* พื้นที่เขียนข้อความ */
+.x-lore-text {
+    width: 100%;
+    height: 250px; /* ความสูงพื้นที่เขียน */
+    resize: none; /* ห้ามลากขยายเอง */
+    line-height: 1.5;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+/* ปุ่มบันทึก */
+.x-sweet-btn-full {
+    width: 100%;
+    padding: 8px;
+    background: var(--sweet-pink);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Comfortaa', cursive;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.x-sweet-btn-full:hover {
+    background: var(--sweet-pink-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.x-sweet-btn-full:active {
+    transform: translateY(0);
+}
