@@ -1,4 +1,4 @@
-/* --- RABBIT BLUE HUD: Sweet Glow Edition --- */
+/* --- RABBIT BLUE HUD: Final High-Performance Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
@@ -8,12 +8,10 @@
     --sweet-text: #5d5d5d;      
     --sweet-border: rgba(255, 255, 255, 0.6);
     --sweet-glow: rgba(255, 183, 197, 0.6);
-    
-    /* สีใหม่: ชมพูอ่อนจางๆ สำหรับตอนลาก */
-    --sweet-drag-glow: rgba(255, 192, 203, 0.5); 
+    --sweet-drag-glow: rgba(255, 107, 116, 0.6);
 }
 
-/* --- 1. The Floating Button (ลูกแก้ว 30px) --- */
+/* --- 1. The Floating Button (ลูกแก้วจิ๋ว 30px) --- */
 #x_floating_btn {
     position: fixed !important;
     width: 30px !important;
@@ -29,28 +27,37 @@
     
     /* เงาปกติ */
     box-shadow: 
-        0 4px 10px rgba(0,0,0,0.15), 
+        0 4px 10px rgba(0,0,0,0.2), 
         0 0 10px var(--sweet-glow);
         
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* ปรับให้นุ่มขึ้น */
+    
+    /* ใช้ will-change เพื่อบอก Browser ให้เตรียมเรนเดอร์กราฟิก (แก้กระตุก) */
+    will-change: transform; 
+    transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
     overflow: visible !important; 
 }
 
-/* [แก้ตรงนี้] เอฟเฟคตอนกดย้าย (แบบหวานๆ จางๆ) */
+/* --- เอฟเฟคตอนลาก (Dragging State) --- */
 #x_floating_btn.x-dragging {
-    /* เปลี่ยนขอบเป็นสีชมพูอ่อนมากๆ */
-    border-color: #ffe0e6 !important;
+    /* เปลี่ยนขอบเป็นสีชมพู */
+    border-color: #ff6b74 !important;
     
-    /* แสงฟุ้งกระจายแบบนุ่มนวล (Soft Glow) */
+    /* แสงฟุ้งสีชมพูหวานๆ */
     box-shadow: 
-        0 0 0 4px rgba(255, 255, 255, 0.4), /* วงแหวนขาวจางๆ ชั้นนอก */
-        0 0 20px var(--sweet-drag-glow) !important; /* แสงฟุ้งสีชมพู */
+        0 0 0 2px rgba(255, 255, 255, 0.5), 
+        0 0 20px var(--sweet-drag-glow) !important;
         
-    /* ขยายแค่นิดเดียวพอ ให้ดูนุ่มนิ่ม */
-    transform: scale(1.05);
+    transform: scale(1.1);
+}
+
+/* [Performance Fix] ซ่อนดาวและวงแหวนตอนลากเพื่อลดภาระเครื่อง */
+#x_floating_btn.x-dragging::after,
+#x_floating_btn.x-dragging::before {
+    opacity: 0;
+    transition: opacity 0.1s;
 }
 
 /* วีดีโอในลูกแก้ว */
@@ -64,7 +71,7 @@
     filter: brightness(1.1);
 }
 
-/* เอฟเฟคดาววิบวับ */
+/* เอฟเฟคดาววิบวับ (2px เล็กน่ารัก) */
 #x_floating_btn::after {
     content: '';
     position: absolute;
@@ -74,33 +81,35 @@
     background: transparent;
     border-radius: 50%;
     
+    /* ตำแหน่งดาว */
     box-shadow: 
-        -16px -14px 0 1px #fff,        
-         14px -16px 0 0px var(--sweet-pink), 
-        -14px  14px 0 0px var(--sweet-pink), 
-         16px  12px 0 1px #fff,        
-         0px -20px 0 -1px #fff,        
-         0px  20px 0 -1px #fff;
+        -14px -12px 0 1px #fff,        
+         12px -14px 0 0px var(--sweet-pink), 
+        -12px  12px 0 0px var(--sweet-pink), 
+         14px  10px 0 1px #fff,        
+         0px -18px 0 -1px #fff,        
+         0px  18px 0 -1px #fff;
          
     animation: sweet-twinkle 3s infinite ease-in-out;
     pointer-events: none;
     z-index: -1;
+    transition: opacity 0.3s;
 }
 
-/* [แก้ตรงนี้] ปรับวงแหวนให้พอดีกับลูกแก้ว 30px */
+/* วงแหวนหมุนรอบ (ปรับขนาดให้พอดี 30px) */
 #x_floating_btn::before {
     content: ''; position: absolute;
-    /* ลดขนาดลงให้กระชับ (จาก 42px เหลือ 36px) */
-    width: 36px; height: 36px;
+    width: 38px; height: 38px;
     border: 1px dashed var(--sweet-pink);
     border-radius: 50%;
-    opacity: 0.5;
+    opacity: 0.6;
     animation: sweet-spin 12s linear infinite;
     pointer-events: none;
     z-index: -2;
+    transition: opacity 0.3s;
 }
 
-/* --- 2. Main Window (คงเดิม) --- */
+/* --- 2. Main Window --- */
 #x_main_modal {
     display: none;
     position: fixed;
@@ -119,6 +128,7 @@
     overflow: hidden;
     font-family: 'Mitr', sans-serif;
     animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform, top, left; /* ช่วยเรื่องลากหน้าต่าง */
 }
 
 .x-header {
@@ -134,13 +144,13 @@
 .x-title {
     font-family: 'Comfortaa', cursive;
     font-weight: 700;
-    color: var(--sweet-text);
+    color: var(--sweet-text); /* สีเทาเข้ม */
     font-size: 11px;
     white-space: nowrap;
     margin-right: 5px;
 }
 
-/* --- Controls --- */
+/* Controls */
 .x-nav-container { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; padding: 0 5px; }
 .x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; transition: 0.2s; background: rgba(255,255,255,0.3); border: 1px solid transparent; }
 .x-nav-icon:hover { background: rgba(255,255,255,0.6); }
@@ -152,7 +162,7 @@
 .x-close-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: #ff8b94; cursor: pointer; font-size: 14px; margin-left: 2px; background: rgba(255,255,255,0.5); border-radius: 50%; }
 .x-close-icon.disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
 
-/* --- Content --- */
+/* Content */
 .x-content-box { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
 .x-page { display: none; animation: fade-up 0.3s; }
 .x-page.active { display: block; }
