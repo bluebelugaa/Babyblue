@@ -1,20 +1,21 @@
-// --- Sweet Heart HUD: Harmony Edition (Full Logic) ---
-const STORAGE_KEY = "sweet_hud_harmony_settings";
-// กำหนดหน้าและไอคอน (ใช้ Font Awesome ที่มีใน SillyTavern)
+// --- Sweet Heart HUD: Bookmark Edition ---
+const STORAGE_KEY = "sweet_hud_bookmark_v1";
+
+// กำหนดไอคอนสำหรับแต่ละหน้า (ใช้ FontAwesome)
 const PAGES = [
-    { id: 'lore', title: 'Diary', icon: 'fa-book-open' },
-    { id: 'inspect', title: 'Inspect', icon: 'fa-magnifying-glass' },
+    { id: 'lore', title: 'Diary', icon: 'fa-book-heart' },   // รูปสมุดหัวใจ
+    { id: 'inspect', title: 'Check', icon: 'fa-magnifying-glass' },
     { id: 'ooc', title: 'Chat', icon: 'fa-comments' },
     { id: 'world', title: 'World', icon: 'fa-globe' },
     { id: 'helper', title: 'Help', icon: 'fa-wand-magic-sparkles' }
 ];
 
 let state = {
-    btnPos: { top: '120px', left: 'auto', right: '20px' },
+    btnPos: { top: '120px', left: 'auto', right: '15px' },
     winPos: { top: '15vh', left: '5vw' },
-    currentPageId: PAGES[0].id, // ใช้ ID แทน Index เพื่อความแม่นยำ
-    isOrbUnlocked: false,
-    isWinUnlocked: false
+    curPage: PAGES[0].id,
+    lockOrb: true, // true = Locked (ขยับไม่ได้), false = Unlocked
+    lockWin: true
 };
 
 jQuery(async () => {
@@ -25,10 +26,6 @@ jQuery(async () => {
 function loadSettings() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) state = { ...state, ...JSON.parse(saved) };
-    // ตรวจสอบว่าหน้าที่บันทึกไว้ยังมีอยู่จริงไหม
-    if (!PAGES.find(p => p.id === state.currentPageId)) {
-        state.currentPageId = PAGES[0].id;
-    }
 }
 
 function saveSettings() {
@@ -38,153 +35,154 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. ลูกแก้ว (Sugar Core)
-    const orb = $(`<div id="x_floating_btn"><div class="x-core-gem"></div></div>`);
-    orb.css(state.btnPos);
-    $('body').append(orb);
+    // 1. ลูกแก้ว (Style เดิม)
+    $('body').append(`
+        <div id="x_floating_btn">
+            <div class="x-core-gem"></div>
+        </div>
+    `);
+    $('#x_floating_btn').css(state.btnPos);
 
-    // 2. หน้าต่างหลัก (Main Window)
-    const modalHtml = `
+    // 2. หน้าต่างหลัก
+    const html = `
     <div id="x_main_modal">
-        <div class="x-header-top" id="x_drag_handle">
-            <div class="x-title">❤ SWEET HUD</div>
-            <div class="x-controls">
-                <div id="x_sw_orb" class="x-switch-btn" title="Move Floating Button">
-                    <div class="x-led"></div> Move Orb
+        <div class="x-header" id="x_drag_zone">
+            <div class="x-title">SWEET HUD</div>
+            <div class="x-controls-group">
+                <div id="btn_mv_orb" class="x-mini-btn ${!state.lockOrb?'active':''}">
+                    <i class="fa-solid fa-arrows-up-down-left-right"></i> Orb
                 </div>
-                <div id="x_sw_win" class="x-switch-btn" title="Move Window">
-                    <div class="x-led"></div> Move Win
+                <div id="btn_mv_win" class="x-mini-btn ${!state.lockWin?'active':''}">
+                    <i class="fa-solid fa-expand"></i> Win
                 </div>
-                <div id="x_close" class="x-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></div>
+                <div id="btn_close" class="x-close-icon"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
 
-        <div class="x-tab-bar">
+        <div class="x-bookmark-container">
             ${PAGES.map(p => `
-                <div class="x-tab-btn ${p.id === state.currentPageId ? 'active' : ''}" data-page-id="${p.id}">
-                    <i class="fa-solid ${p.icon}" style="margin-right:4px; opacity:0.7;"></i> ${p.title}
+                <div class="x-bookmark ${p.id === state.curPage ? 'active' : ''}" 
+                     data-id="${p.id}" 
+                     title="${p.title}">
+                    <i class="fa-solid ${p.icon}"></i>
                 </div>
             `).join('')}
         </div>
 
-        <div class="x-content-container">
+        <div class="x-content-box">
             ${PAGES.map(p => `
-                <div id="page_${p.id}" class="x-page ${p.id === state.currentPageId ? 'active' : ''}">
-                    <div class="x-content-placeholder">
-                        <i class="fa-solid ${p.icon}"></i>
-                        <div style="font-weight:500; color:var(--sweet-pink-dark); margin-bottom:5px;">${p.title} Content</div>
-                        <div>Waiting for sweet data...</div>
+                <div id="page_${p.id}" class="x-page ${p.id === state.curPage ? 'active' : ''}">
+                    <div class="x-page-header">
+                        <i class="fa-solid ${p.icon}"></i> ${p.title}
                     </div>
+                    <div id="content_${p.id}">Waiting for data...</div>
                 </div>
             `).join('')}
         </div>
-        </div>`;
-    
-    $('body').append(modalHtml);
+    </div>`;
+
+    $('body').append(html);
     $('#x_main_modal').css(state.winPos);
 
-    setupEvents();
-    updateSafetyUI();
+    bindEvents();
+    updateSafety();
 }
 
-function setupEvents() {
+function bindEvents() {
     const orb = $('#x_floating_btn');
     const modal = $('#x_main_modal');
 
-    // เปิด/ปิด หน้าต่าง
+    // เปิด/ปิด
     orb.on('click', () => {
-        if (state.isOrbUnlocked) return;
-        modal.fadeToggle(250).css('display', 'flex');
+        if (!state.lockOrb) return;
+        modal.fadeToggle(200).css('display', 'flex');
     });
 
-    $('#x_close').on('click', () => {
-        if (state.isOrbUnlocked || state.isWinUnlocked) return;
-        modal.fadeOut(250);
+    $('#btn_close').on('click', () => {
+        if (!state.lockOrb || !state.lockWin) return;
+        modal.fadeOut(200);
     });
 
-    // สวิตช์ปลดล็อค
-    $('#x_sw_orb').on('click', () => {
-        state.isOrbUnlocked = !state.isOrbUnlocked;
-        updateSafetyUI();
+    // เปลี่ยนหน้า (คลิกที่ Bookmark)
+    $('.x-bookmark').on('click', function() {
+        const id = $(this).data('id');
+        state.curPage = id;
+        
+        // Update UI
+        $('.x-bookmark').removeClass('active');
+        $(this).addClass('active');
+        
+        $('.x-page').removeClass('active');
+        $(`#page_${id}`).addClass('active');
+        
         saveSettings();
     });
 
-    $('#x_sw_win').on('click', () => {
-        state.isWinUnlocked = !state.isWinUnlocked;
-        updateSafetyUI();
+    // Toggle Move Orb
+    $('#btn_mv_orb').on('click', () => {
+        state.lockOrb = !state.lockOrb;
+        updateSafety();
         saveSettings();
     });
 
-    // **Logic การเปลี่ยนหน้าแบบใหม่ (ใช้ Tab)**
-    $('.x-tab-btn').on('click', function() {
-        const pageId = $(this).data('page-id');
-        switchToPage(pageId);
+    // Toggle Move Win
+    $('#btn_mv_win').on('click', () => {
+        state.lockWin = !state.lockWin;
+        updateSafety();
+        saveSettings();
     });
 
-    // ระบบลากย้าย
     makeDraggable(orb[0], 'orb');
-    makeDraggable(modal[0], 'win', $('#x_drag_handle')[0]);
+    makeDraggable(modal[0], 'win', $('#x_drag_zone')[0]);
 }
 
-// ฟังก์ชันเปลี่ยนหน้า
-function switchToPage(pageId) {
-    state.currentPageId = pageId;
+function updateSafety() {
+    // Note: Logic กลับด้านนิดหน่อย (lock = true คือ ปลอดภัย/ขยับไม่ได้)
+    const moving = (!state.lockOrb || !state.lockWin);
     
-    // อัปเดต Tab
-    $('.x-tab-btn').removeClass('active');
-    $(`.x-tab-btn[data-page-id="${pageId}"]`).addClass('active');
+    $('#btn_mv_orb').toggleClass('active', !state.lockOrb);
+    $('#btn_mv_win').toggleClass('active', !state.lockWin);
     
-    // อัปเดตเนื้อหา
-    $('.x-page').removeClass('active');
-    $(`#page_${pageId}`).addClass('active');
+    $('#x_floating_btn').toggleClass('x-dragging', !state.lockOrb);
     
-    saveSettings();
-}
-
-function updateSafetyUI() {
-    const isLocked = state.isOrbUnlocked || state.isWinUnlocked;
+    // Disable close button if moving
+    $('#btn_close').toggleClass('disabled', moving);
     
-    $('#x_sw_orb').toggleClass('active', state.isOrbUnlocked);
-    $('#x_sw_win').toggleClass('active', state.isWinUnlocked);
-    
-    $('#x_floating_btn').toggleClass('x-dragging', state.isOrbUnlocked);
-    $('#x_drag_handle').toggleClass('x-dragging-win', state.isWinUnlocked);
-
-    // ปิดปุ่ม X เมื่ออยู่ในโหมดย้าย
-    $('#x_close').toggleClass('disabled', isLocked);
+    // Change header cursor
+    $('#x_drag_zone').toggleClass('x-head-drag', !state.lockWin);
 }
 
 function makeDraggable(el, type, handle) {
-    let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
+    let p1=0, p2=0, p3=0, p4=0;
     const trigger = handle || el;
 
     const start = (e) => {
-        if (type === 'orb' && !state.isOrbUnlocked) return;
-        if (type === 'win' && !state.isWinUnlocked) return;
+        if (type==='orb' && state.lockOrb) return;
+        if (type==='win' && state.lockWin) return;
         
-        const event = e.type === 'touchstart' ? e.touches[0] : e;
-        p3 = event.clientX; p4 = event.clientY;
-        document.onmousemove = move; document.ontouchmove = move;
-        document.onmouseup = stop; document.ontouchend = stop;
+        const evt = e.type === 'touchstart' ? e.touches[0] : e;
+        p3 = evt.clientX; p4 = evt.clientY;
+        document.ontouchend = stop; document.onmouseup = stop;
+        document.ontouchmove = move; document.onmousemove = move;
     };
 
     const move = (e) => {
-        const event = e.type === 'touchmove' ? e.touches[0] : e;
-        if (e.cancelable) e.preventDefault();
-        p1 = p3 - event.clientX; p2 = p4 - event.clientY;
-        p3 = event.clientX; p4 = event.clientY;
+        const evt = e.type === 'touchmove' ? e.touches[0] : e;
+        if(e.cancelable) e.preventDefault();
+        p1 = p3 - evt.clientX; p2 = p4 - evt.clientY;
+        p3 = evt.clientX; p4 = evt.clientY;
         el.style.top = (el.offsetTop - p2) + "px";
         el.style.left = (el.offsetLeft - p1) + "px";
         el.style.right = 'auto';
     };
 
     const stop = () => {
-        document.onmousemove = null; document.ontouchmove = null;
-        if (type === 'orb') state.btnPos = { top: el.style.top, left: el.style.left, right: 'auto' };
-        else state.winPos = { top: el.style.top, left: el.style.left };
+        document.ontouchend = null; document.onmouseup = null;
+        document.ontouchmove = null; document.onmousemove = null;
+        if (type==='orb') state.btnPos = {top:el.style.top, left:el.style.left, right:'auto'};
+        else state.winPos = {top:el.style.top, left:el.style.left};
         saveSettings();
     };
 
-    trigger.onmousedown = start;
-    trigger.ontouchstart = start;
+    trigger.onmousedown = start; trigger.ontouchstart = start;
 }
