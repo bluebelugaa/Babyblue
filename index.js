@@ -1,5 +1,5 @@
-// --- RABBIT BLUE HUD: Compact Video Edition ---
-const STORAGE_KEY = "rabbit_blue_compact_v1";
+// --- RABBIT BLUE HUD: Final High-Performance ---
+const STORAGE_KEY = "rabbit_blue_final_v2";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -34,7 +34,7 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // สร้างลูกแก้ว (วีดีโอ)
+    // สร้างลูกแก้ววีดีโอ
     $('body').append(`
         <div id="x_floating_btn">
             <video class="x-core-video" autoplay loop muted playsinline>
@@ -133,12 +133,10 @@ function updateSafety() {
     $('#btn_mv_win').toggleClass('active', !state.lockWin);
     $('#x_floating_btn').toggleClass('x-dragging', !state.lockOrb);
     $('#btn_close').toggleClass('disabled', moving);
-    $('#x_drag_zone').toggleClass('x-head-drag', !state.lockWin);
+    $('#x_drag_zone').css('cursor', !state.lockWin ? 'move' : 'default');
 }
 
-// --- ส่วนท้ายของ index.js ---
-
-// ฟังก์ชันลากวางแบบ High Performance (แก้หน่วง)
+// ฟังก์ชันลากวางแบบ High Performance (GPU Accelerated)
 function makeDraggable(el, type, handle) {
     let startX = 0, startY = 0;
     let initialLeft = 0, initialTop = 0;
@@ -152,13 +150,11 @@ function makeDraggable(el, type, handle) {
         startX = evt.clientX;
         startY = evt.clientY;
 
-        // จำตำแหน่งเริ่มต้นไว้
-        // ใช้ getBoundingClientRect เพื่อความแม่นยำและไม่กระตุก
         const rect = el.getBoundingClientRect();
         initialLeft = rect.left;
         initialTop = rect.top;
 
-        // เปิดโหมด GPU เพื่อความลื่น
+        // เปิดโหมด GPU
         el.style.willChange = 'transform';
         
         document.ontouchend = stop; 
@@ -169,14 +165,12 @@ function makeDraggable(el, type, handle) {
 
     const move = (e) => {
         const evt = e.type === 'touchmove' ? e.touches[0] : e;
-        // ป้องกันจอมือถือเลื่อนตามนิ้ว
         if (e.cancelable && type === 'orb') e.preventDefault(); 
 
-        // คำนวณระยะที่ลากไป
         const deltaX = evt.clientX - startX;
         const deltaY = evt.clientY - startY;
 
-        // ใช้ transform แทน top/left (ลื่นกว่ามาก เพราะใช้การ์ดจอประมวลผล)
+        // ใช้ transform เพื่อความลื่นไหลสูงสุด
         el.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0)`;
     };
 
@@ -186,19 +180,18 @@ function makeDraggable(el, type, handle) {
         document.ontouchmove = null; 
         document.onmousemove = null;
 
-        // คำนวณตำแหน่งปลายทางจริง
+        // คำนวณตำแหน่งปลายทาง
         const evt = e.type === 'touchend' ? e.changedTouches[0] : e;
         const deltaX = evt.clientX - startX;
         const deltaY = evt.clientY - startY;
 
-        // บันทึกค่าลง top/left จริงๆ และรีเซ็ต transform
+        // บันทึกค่าจริงและรีเซ็ต transform
         el.style.transform = 'none';
         el.style.willChange = 'auto';
         el.style.left = (initialLeft + deltaX) + 'px';
         el.style.top = (initialTop + deltaY) + 'px';
         el.style.right = 'auto'; 
 
-        // บันทึกลง Memory
         if (type === 'orb') {
             state.btnPos = { top: el.style.top, left: el.style.left, right: 'auto' };
         } else {
@@ -211,77 +204,3 @@ function makeDraggable(el, type, handle) {
     trigger.ontouchstart = start;
 }
 
-// --- ส่วนท้ายของ index.js ---
-
-// ฟังก์ชันลากวางแบบ High Performance (แก้หน่วง)
-function makeDraggable(el, type, handle) {
-    let startX = 0, startY = 0;
-    let initialLeft = 0, initialTop = 0;
-    const trigger = handle || el;
-
-    const start = (e) => {
-        if (type === 'orb' && state.lockOrb) return;
-        if (type === 'win' && state.lockWin) return;
-
-        const evt = e.type === 'touchstart' ? e.touches[0] : e;
-        startX = evt.clientX;
-        startY = evt.clientY;
-
-        // จำตำแหน่งเริ่มต้นไว้
-        // ใช้ getBoundingClientRect เพื่อความแม่นยำและไม่กระตุก
-        const rect = el.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
-
-        // เปิดโหมด GPU เพื่อความลื่น
-        el.style.willChange = 'transform';
-        
-        document.ontouchend = stop; 
-        document.onmouseup = stop;
-        document.ontouchmove = move; 
-        document.onmousemove = move;
-    };
-
-    const move = (e) => {
-        const evt = e.type === 'touchmove' ? e.touches[0] : e;
-        // ป้องกันจอมือถือเลื่อนตามนิ้ว
-        if (e.cancelable && type === 'orb') e.preventDefault(); 
-
-        // คำนวณระยะที่ลากไป
-        const deltaX = evt.clientX - startX;
-        const deltaY = evt.clientY - startY;
-
-        // ใช้ transform แทน top/left (ลื่นกว่ามาก เพราะใช้การ์ดจอประมวลผล)
-        el.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0)`;
-    };
-
-    const stop = (e) => {
-        document.ontouchend = null; 
-        document.onmouseup = null;
-        document.ontouchmove = null; 
-        document.onmousemove = null;
-
-        // คำนวณตำแหน่งปลายทางจริง
-        const evt = e.type === 'touchend' ? e.changedTouches[0] : e;
-        const deltaX = evt.clientX - startX;
-        const deltaY = evt.clientY - startY;
-
-        // บันทึกค่าลง top/left จริงๆ และรีเซ็ต transform
-        el.style.transform = 'none';
-        el.style.willChange = 'auto';
-        el.style.left = (initialLeft + deltaX) + 'px';
-        el.style.top = (initialTop + deltaY) + 'px';
-        el.style.right = 'auto'; 
-
-        // บันทึกลง Memory
-        if (type === 'orb') {
-            state.btnPos = { top: el.style.top, left: el.style.left, right: 'auto' };
-        } else {
-            state.winPos = { top: el.style.top, left: el.style.left };
-        }
-        saveSettings();
-    };
-
-    trigger.onmousedown = start; 
-    trigger.ontouchstart = start;
-}
