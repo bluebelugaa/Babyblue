@@ -1,4 +1,4 @@
-/* --- Sweet Heart HUD: Pastel Star Edition --- */
+/* --- Sweet Heart HUD: Starry Jellyfish Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
@@ -7,75 +7,87 @@
     --sweet-bg-glass: rgba(220, 220, 220, 0.45);
     --sweet-text: #5d5d5d;      
     --sweet-border: rgba(255, 255, 255, 0.6);
-    --sweet-glow: rgba(255, 183, 197, 0.8); /* เพิ่มความแรงของแสง glow นิดนึง */
+    --sweet-glow: rgba(255, 183, 197, 0.8); /* เพิ่มความสว่างของแสง */
 }
 
-/* --- 1. The Floating Button (ลูกแก้วพื้นหลังพาสเทล + ดาว) --- */
+/* --- 1. The Floating Button (ลูกแก้วแมงกะพรุน+พื้นหลัง) --- */
 #x_floating_btn {
     position: fixed;
-    width: 34px; /* ขยายขนาดนิดเดียวให้เห็นรายละเอียด */
+    width: 34px; /* ขยายขนาดนิดหน่อยให้เห็นรายละเอียด */
     height: 34px;
     
-    /* >> ใส่ภาพพื้นหลังตรงนี้ << */
+    /* [แก้ไข] ใส่ภาพพื้นหลังท้องฟ้า */
     background-image: url('https://files.catbox.moe/0fd3gy.jpg');
-    background-size: cover; /* ขยายภาพให้เต็มวงกลม */
+    background-size: cover;
     background-position: center;
     
     border-radius: 50%;
     cursor: pointer;
     z-index: 20000;
-    /* เพิ่มเงาแสงสีชมพูรอบนอก */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 15px var(--sweet-glow);
+    /* เพิ่มเงาให้ดูมีมิติและเรืองแสง */
+    box-shadow: 
+        inset 0 0 10px rgba(255,255,255,0.5), /* เงาใน */
+        0 4px 10px rgba(0,0,0,0.1), /* เงาล่าง */
+        0 0 15px var(--sweet-glow); /* แสงฟุ้งรอบนอก */
+        
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.8); /* ขอบสีขาวโปร่ง */
+    border: 1px solid var(--sweet-pink);
     transition: transform 0.2s;
-    
-    /* สำคัญ: ตัดส่วนเกินให้เป็นวงกลม */
-    overflow: hidden; 
-    position: relative; /* เตรียมไว้ให้ดาวหมุน */
+    overflow: visible; /* [สำคัญ] ต้องเปิดให้เห็นเอฟเฟกต์ที่ล้นออกมา */
 }
 
-/* รูปน้องแมงกะพรุน GIF */
+/* รูป GIF แมงกะพรุนด้านใน */
 .x-core-img {
-    width: 85%; /* ลดขนาดลงนิดนึงให้เห็นพื้นหลังและดาวที่ขอบ */
-    height: 85%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     border-radius: 50%;
-    z-index: 2; /* อยู่ชั้นบนสุด */
-    position: relative;
-    filter: drop-shadow(0 0 2px white); /* เพิ่มขอบขาวให้น้องแมงกะพรุนเด่นขึ้น */
+    padding: 2px; /* เว้นขอบเล็กน้อย */
+    /* ทำให้ภาพ GIF ดูใสขึ้นเพื่อให้เห็นพื้นหลัง */
+    mix-blend-mode: lighten; 
+    opacity: 0.9;
 }
 
-/* >> เอฟเฟคดาวหมุนวิบวับที่ขอบ << */
+/* วงแหวนเส้นประหมุนรอบ (ชั้นใน) */
 #x_floating_btn::before {
+    content: ''; position: absolute;
+    width: 40px; height: 40px;
+    border: 1px dashed var(--sweet-pink);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: sweet-spin 12s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* [ใหม่] เอฟเฟกต์ดาวน่ารักหมุนรอบนอก (ชั้นนอกสุด) */
+#x_floating_btn::after {
     content: '';
     position: absolute;
-    /* สร้างวงแหวนชิดขอบด้านใน */
-    top: 1px; left: 1px; right: 1px; bottom: 1px;
+    width: 100%; height: 100%;
     border-radius: 50%;
+    z-index: -2; /* อยู่หลังสุด */
     
-    /* เทคนิคสร้างดาว: ใช้เส้นประสีขาว + แสงฟุ้ง */
-    border: 2px dotted rgba(255, 255, 255, 0.9);
+    /* สร้างจุดดาวเล็กๆ ด้วย box-shadow */
     box-shadow: 
-        inset 0 0 5px var(--sweet-glow), /* แสงฟุ้งด้านใน */
-        0 0 2px var(--sweet-glow); /* แสงฟุ้งที่ตัวดาว */
+        0 -22px 0 -4px white, /* บน */
+        22px 0 0 -4px var(--sweet-pink), /* ขวา */
+        0 22px 0 -4px white, /* ล่าง */
+        -22px 0 0 -4px var(--sweet-pink), /* ซ้าย */
+        /* จุดเฉียงเล็กๆ */
+        15px -15px 0 -5px var(--sweet-pink),
+        15px 15px 0 -5px white,
+        -15px 15px 0 -5px var(--sweet-pink),
+        -15px -15px 0 -5px white;
         
-    /* สั่งให้หมุนช้าๆ */
-    animation: star-spin 20s linear infinite;
-    z-index: 1; /* อยู่ด้านหลังแมงกะพรุน */
-    pointer-events: none;
+    animation: sweet-spin 8s linear infinite; /* หมุนช้าๆ */
+    opacity: 0.8;
 }
 
-/* Animation หมุนดาว */
-@keyframes star-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
 
-/* ... (ส่วนอื่นๆ ตั้งแต่ #x_main_modal ลงไป เหมือนเดิมทุกประการ) ... */
-/* --- 2. Main Window --- */
+/* --- 2. Main Window (คงเดิม) --- */
 #x_main_modal {
     display: none;
     position: fixed;
@@ -206,6 +218,7 @@
 }
 
 /* Animations */
+@keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
 
