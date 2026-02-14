@@ -1,210 +1,198 @@
-/* --- Sweet Heart HUD: Harmony Edition --- */
+/* --- Sweet Heart HUD: Bookmark Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
-    --sweet-pink: #ffb7c5;
-    --sweet-pink-dark: #f0a0b0;
-    --sweet-peach: #ffe5d9;
-    --sweet-bg-glass: rgba(245, 245, 250, 0.65); /* พื้นหลังกระจกสว่างขึ้น */
-    --sweet-text: #6d6d6d;
-    --sweet-text-light: #9d9d9d;
-    --sweet-border: rgba(255, 255, 255, 0.7);
-    --sweet-glow: rgba(255, 183, 197, 0.5);
-    --sweet-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    /* นำโทนสีเดิมกลับมา (ชมพู-เทาโปร่ง) ไม่เน้นขาว */
+    --sweet-pink: #ffb7c5;      
+    --sweet-pink-dark: #ea93a2;
+    --sweet-bg-glass: rgba(220, 220, 220, 0.45); /* พื้นหลังเทาอมชมพู โปร่งแสง */
+    --sweet-text: #5d5d5d;      
+    --sweet-border: rgba(255, 255, 255, 0.6);
+    --sweet-glow: rgba(255, 183, 197, 0.6);
 }
 
-/* --- 1. The Sugar Core (ลูกแก้ว) --- */
+/* --- 1. The Sugar Core (ลูกแก้วเดิม) --- */
 #x_floating_btn {
     position: fixed;
-    width: 36px; /* ปรับขนาดให้พอดีนิ้ว */
-    height: 36px;
-    background: rgba(255, 255, 255, 0.9);
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.85);
     border-radius: 50%;
     cursor: pointer;
     z-index: 20000;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 15px var(--sweet-glow);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 10px var(--sweet-glow);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s ease;
-    border: 2px solid white;
+    border: 1px solid var(--sweet-pink);
+    transition: transform 0.2s;
 }
 
 #x_floating_btn .x-core-gem {
-    width: 14px; height: 14px;
-    background: linear-gradient(135deg, var(--sweet-pink), var(--sweet-pink-dark));
-    border-radius: 50%; /* ทรงกลมมน */
-    box-shadow: 0 0 8px var(--sweet-pink);
-    animation: sweet-pulse 2.5s infinite ease-in-out;
+    width: 12px; height: 12px;
+    background: var(--sweet-pink);
+    border-radius: 50% 50% 0 50%; /* ทรงหยดน้ำ */
+    transform: rotate(45deg);
+    box-shadow: 0 0 5px var(--sweet-pink);
+    animation: sweet-pulse 3s infinite;
 }
 
 #x_floating_btn::before {
     content: ''; position: absolute;
-    width: 44px; height: 44px;
+    width: 40px; height: 40px;
     border: 1px dashed var(--sweet-pink);
     border-radius: 50%;
     opacity: 0.4;
     animation: sweet-spin 10s linear infinite;
 }
 
-/* --- 2. Main Window (หน้าต่างหลัก) --- */
+/* --- 2. Main Window (แก้ขนาดและการล้น) --- */
 #x_main_modal {
     display: none;
     position: fixed;
     top: 15vh; left: 5vw;
     width: 90vw;
-    height: 60vh; /* เพิ่มความสูงเล็กน้อย */
-    max-height: 500px;
+    height: 55vh;
+    max-height: 480px;
     
+    /* พื้นหลังแบบเดิมที่ชอบ */
     background: var(--sweet-bg-glass);
-    backdrop-filter: blur(30px) saturate(160%);
-    -webkit-backdrop-filter: blur(30px) saturate(160%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     
     border: 1px solid var(--sweet-border);
-    border-radius: 24px; /* มุมมนขึ้น */
-    box-shadow: var(--sweet-shadow);
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     z-index: 20001;
     flex-direction: column;
     overflow: hidden;
     font-family: 'Mitr', sans-serif;
-    animation: sweet-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* --- 3. Header Area (ส่วนหัวและปุ่มควบคุม) --- */
-.x-header-top {
-    height: 50px;
+/* --- 3. Header Compact (จัดระเบียบไม่ให้ล้น) --- */
+.x-header {
+    height: 40px; /* ลดความสูงลงนิดหน่อย */
+    background: rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid var(--sweet-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 15px 0 20px; /* จัดระยะห่าง */
-    background: linear-gradient(to right, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-    border-bottom: 1px solid rgba(255,255,255,0.5);
+    padding: 0 10px;
 }
 
 .x-title {
     font-family: 'Comfortaa', cursive;
     font-weight: 700;
-    color: var(--sweet-pink-dark);
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+    color: var(--sweet-text);
+    font-size: 12px;
+    white-space: nowrap; /* ห้ามขึ้นบรรทัดใหม่ */
 }
 
-.x-controls {
+/* กลุ่มปุ่มควบคุม (ชิดขวา) */
+.x-controls-group {
     display: flex;
     align-items: center;
-    gap: 8px; /* ระยะห่างระหว่างปุ่ม */
+    gap: 6px; 
 }
 
-.x-switch-btn {
-    background: rgba(255, 255, 255, 0.6);
+/* ปุ่ม Move แบบย่อ (icon only หรือ text สั้นๆ) */
+.x-mini-btn {
+    height: 24px;
+    padding: 0 8px;
+    background: rgba(255,255,255,0.5);
     border: 1px solid white;
+    border-radius: 12px;
+    font-size: 10px;
     color: var(--sweet-text);
-    height: 28px;
-    padding: 0 12px;
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 500; border-radius: 14px;
-    cursor: pointer; transition: 0.3s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.x-switch-btn.active {
-    background: linear-gradient(135deg, var(--sweet-pink), var(--sweet-pink-dark));
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 2px 8px var(--sweet-glow);
-}
-
-.x-led { width: 6px; height: 6px; background: rgba(0,0,0,0.2); border-radius: 50%; transition: 0.3s; }
-.x-switch-btn.active .x-led { background: white; box-shadow: 0 0 4px white; }
-
-.x-close-btn {
-    width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.6);
-    border-radius: 50%;
-    color: #ff8b94;
-    cursor: pointer; opacity: 0.9;
-    font-size: 16px;
-    transition: 0.2s;
-    border: 1px solid white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-.x-close-btn:hover { background: white; color: #ff6b74; }
-.x-close-btn.disabled { opacity: 0.3 !important; pointer-events: none; filter: grayscale(1); }
-
-/* --- 4. Tab Navigation (เมนูใหม่ด้านบน) --- */
-.x-tab-bar {
-    display: flex;
-    padding: 10px 15px 0;
-    background: rgba(255,255,255,0.1);
-    overflow-x: auto; /* เผื่อ Tab เยอะเกิน */
-    scrollbar-width: none; /* ซ่อน Scrollbar */
-    -webkit-overflow-scrolling: touch;
-    border-bottom: 1px solid rgba(255,255,255,0.5);
-}
-.x-tab-bar::-webkit-scrollbar { display: none; }
-
-.x-tab-btn {
-    padding: 8px 16px;
-    margin-right: 5px;
-    background: rgba(255,255,255,0.4);
-    border-radius: 12px 12px 0 0;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--sweet-text-light);
+    display: flex; align-items: center; gap: 4px;
     cursor: pointer;
     transition: 0.2s;
-    white-space: nowrap;
-    border: 1px solid transparent;
+}
+
+.x-mini-btn.active {
+    background: var(--sweet-pink);
+    color: white;
+    border-color: var(--sweet-pink);
+    box-shadow: 0 0 8px var(--sweet-glow);
+}
+
+.x-close-icon {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    color: #ff8b94;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 5px;
+}
+.x-close-icon.disabled { opacity: 0.2; pointer-events: none; }
+
+/* --- 4. Bookmark Navigation (เมนูที่คั่นหนังสือด้านขวา) --- */
+.x-bookmark-container {
+    display: flex;
+    justify-content: flex-end; /* ชิดขวา */
+    padding: 8px 10px 0 0; /* เว้นระยะจากขอบขวา */
+    background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+}
+
+.x-bookmark {
+    width: 32px;
+    height: 28px;
+    margin-left: 4px;
+    background: rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.6);
     border-bottom: none;
+    border-radius: 6px 6px 0 0; /* มนเฉพาะด้านบน */
+    
+    display: flex; justify-content: center; align-items: center;
+    color: var(--sweet-text);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    top: 0;
 }
 
-.x-tab-btn.active {
-    background: var(--sweet-bg-glass); /* สีเดียวกับพื้นหลัง Content */
-    color: var(--sweet-pink-dark);
-    font-weight: 600;
-    border-color: rgba(255,255,255,0.8);
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.03);
+.x-bookmark:hover {
+    background: rgba(255,255,255,0.6);
 }
 
-/* --- 5. Content Area (พื้นที่เนื้อหา) --- */
-.x-content-container {
+.x-bookmark.active {
+    background: var(--sweet-pink); /* สีชมพูเมื่อเลือก */
+    color: white;
+    height: 32px; /* สูงขึ้นนิดนึงให้เด่น */
+    top: -2px; /* เด้งขึ้นมา */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    border-color: var(--sweet-pink);
+}
+
+/* --- 5. Content --- */
+.x-content-box {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
-    background: var(--sweet-bg-glass); /* พื้นหลังต่อเนื่องจาก Tab */
+    padding: 15px;
+    position: relative;
 }
 
-.x-page { display: none; animation: fade-in 0.3s ease-out; }
+.x-page { display: none; animation: fade-up 0.3s; }
 .x-page.active { display: block; }
 
-.x-content-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--sweet-text-light);
-    font-size: 13px;
-    text-align: center;
-    padding: 30px 0;
-}
-.x-content-placeholder i {
-    font-size: 32px;
-    color: var(--sweet-pink);
-    opacity: 0.5;
-    margin-bottom: 15px;
+.x-page-header {
+    font-size: 14px;
+    color: var(--sweet-pink-dark);
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed var(--sweet-pink);
+    padding-bottom: 5px;
 }
 
-/* --- Animations --- */
-@keyframes sweet-pulse { 0%, 100% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
-@keyframes sweet-spin { 100% { transform: rotate(360deg); } }
-@keyframes sweet-pop { from { opacity: 0; transform: scale(0.95) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* Animations & States */
+@keyframes sweet-pulse { 0%,100% {transform: rotate(45deg) scale(0.9);} 50% {transform: rotate(45deg) scale(1.1);} }
+@keyframes sweet-spin { 100% {transform: rotate(360deg);} }
+@keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+@keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
 
-/* Dragging State */
-.x-dragging { transform: scale(1.1); }
-.x-dragging .x-core-gem { background: #ff6b74; box-shadow: 0 0 12px #ff6b74; }
-.x-dragging::before { border-color: #ff6b74; animation-duration: 1.5s; }
-#x_drag_handle.x-dragging-win { cursor: grabbing; background: rgba(255, 183, 197, 0.2); }
+.x-dragging { transform: scale(1.1); border-color: #ff6b74 !important; }
+.x-dragging .x-core-gem { background: #ff6b74; }
+.x-head-drag { cursor: grab; }
+.x-head-drag:active { cursor: grabbing; background: rgba(255,255,255,0.5); }
