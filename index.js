@@ -1,19 +1,5 @@
-
-// --- Imports: (สำคัญมาก ห้ามลบ) ---
-import {
-    eventSource,
-    event_types,
-    saveSettingsDebounced,
-    chat_metadata,
-} from "../../../../script.js";
-
-import {
-    world_info,        
-    saveWorldInfo,     
-    loadWorldInfo,
-} from "../../../world-info.js";
-
-const STORAGE_KEY = "rabbit_blue_restore_v1";
+// --- RABBIT BLUE: Full Edition (Lorebook Connected) ---
+const STORAGE_KEY = "rabbit_blue_full_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -31,31 +17,9 @@ let state = {
     lockWin: true
 };
 
-// --- Initialization ---
-const init = async () => {
-    // รอจนกว่า SillyTavern จะพร้อม
-    let attempts = 0;
-    while (!window.chat_metadata && attempts < 20) {
-        await new Promise(r => setTimeout(r, 500));
-        attempts++;
-    }
-    
+jQuery(async () => {
     loadSettings();
     injectUI();
-    
-    // Auto Refresh เมื่อเปลี่ยนแชท
-    if (eventSource) {
-        eventSource.on(event_types.CHAT_CHANGED, () => setTimeout(refreshLoreData, 500));
-        eventSource.on(event_types.LOREBOOK_SELECTED, refreshLoreData);
-    }
-};
-
-$(document).ready(() => {
-    if (eventSource && event_types.APP_READY) {
-        eventSource.on(event_types.APP_READY, init);
-    } else {
-        setTimeout(init, 2000);
-    }
 });
 
 function loadSettings() {
@@ -70,17 +34,17 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. ลูกแก้ว (กลับมาใช้ GIF แมงกะพรุน + พื้นหลัง CSS)
-    // * ไม่ใช้วิดีโอแล้ว เพราะมันดำ *
+    // สร้างลูกแก้ววีดีโอ
     $('body').append(`
         <div id="x_floating_btn">
-            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img">
+            <video class="x-core-video" autoplay loop muted playsinline>
+                <source src="https://files.catbox.moe/89qxpt.mp4" type="video/mp4">
+            </video>
         </div>
     `);
-    
-    if (state.btnPos) $('#x_floating_btn').css(state.btnPos);
+    $('#x_floating_btn').css(state.btnPos);
 
-    // 2. หน้าต่างหลัก
+    // หน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -107,136 +71,146 @@ function injectUI() {
         
         <div class="x-content-box">
             <div id="page_lore" class="x-page ${state.curPage === 'lore' ? 'active' : ''}">
-                <div class="x-page-header">
-                    <i class="fa-solid fa-book"></i> Diary
-                    <span id="x_book_name" style="float:right; font-size:10px; opacity:0.7;">Loading...</span>
+                <div class="x-page-header"><i class="fa-solid fa-book"></i> Active Lorebook</div>
+                
+                <div class="x-diary-controls">
+                    <select id="x_diary_book" class="x-compact-select" title="Current Book">
+                        <option value="" disabled selected>No Book</option>
+                    </select>
+                    <select id="x_diary_entry" class="x-compact-select" title="Select Entry">
+                        <option value="" disabled selected>Select Entry...</option>
+                    </select>
+                    <button id="x_diary_add" class="x-add-btn" title="Add New Entry">+</button>
                 </div>
                 
-                <div class="x-diary-container">
-                    <div class="x-entry-bar">
-                        <select id="x_diary_entry" class="x-entry-select" title="Select Topic">
-                            <option value="" disabled selected>Waiting for Lorebook...</option>
-                        </select>
-                        <button id="x_diary_add" class="x-add-btn" title="Add Entry">+</button>
-                    </div>
-
-                    <div>
-                        <span class="x-label">Trigger Keywords</span>
-                        <input type="text" id="x_diary_keys" class="x-keys-input" placeholder="Keywords...">
-                    </div>
-
-                    <textarea id="x_diary_content" class="x-content-area" placeholder="Content..."></textarea>
-                    
-                    <button id="x_diary_save" class="x-save-btn">Update Lorebook</button>
-                </div>
+                <span class="x-label-small">Trigger Keys (คำกระตุ้น - คั่นด้วยจุลภาค)</span>
+                <input type="text" id="x_diary_keys" class="x-diary-input" placeholder="e.g. apple, fruit, red">
+                
+                <span class="x-label-small">Content (รายละเอียด)</span>
+                <textarea id="x_diary_content" class="x-diary-input x-diary-textarea" placeholder="Content here..."></textarea>
+                
+                <button id="x_diary_save" class="x-save-btn">Update Entry</button>
             </div>
 
             ${PAGES.filter(p => p.id !== 'lore').map(p => `
                 <div id="page_${p.id}" class="x-page ${p.id === state.curPage ? 'active' : ''}">
                     <div class="x-page-header"><i class="fa-solid ${p.icon}"></i> ${p.title}</div>
-                    <div id="content_${p.id}">Feature coming soon...</div>
+                    <div id="content_${p.id}">Waiting for feature...</div>
                 </div>
             `).join('')}
         </div>
     </div>`;
 
     $('body').append(html);
-    if (state.winPos) $('#x_main_modal').css(state.winPos);
+    $('#x_main_modal').css(state.winPos);
 
     bindEvents();
     updateSafety();
-    
-    setTimeout(refreshLoreData, 1000);
+    initDiarySystem(); // เริ่มระบบ Lorebook
 }
 
 // --- Lorebook Logic ---
-function refreshLoreData() {
+function initDiarySystem() {
+    const bookSelect = $('#x_diary_book');
     const entrySelect = $('#x_diary_entry');
-    const bookLabel = $('#x_book_name');
+    const keyInput = $('#x_diary_keys');
     const contentInput = $('#x_diary_content');
+    const addBtn = $('#x_diary_add');
+    const saveBtn = $('#x_diary_save');
 
-    if (typeof world_info === 'undefined' || !world_info || !world_info.entries) {
-        bookLabel.text("No Active Book");
-        entrySelect.html('<option>No Active Lorebook</option>');
-        contentInput.val("กรุณาเลือก Lorebook ในเมนูขวาของ SillyTavern ก่อนครับ");
-        return;
-    }
+    // โหลดข้อมูลสมุดปัจจุบัน
+    const refreshData = () => {
+        // เช็คตัวแปร global world_info ของ ST
+        if (typeof world_info === 'undefined' || !world_info.entries) {
+            bookSelect.html('<option>No Active Book</option>');
+            entrySelect.html('<option>No Entries</option>');
+            return;
+        }
 
-    bookLabel.text(world_info.name || "Untitled");
-    
-    const currentUid = entrySelect.val();
-    entrySelect.empty().append('<option value="" disabled selected>Select Topic...</option>');
-    
-    const entries = Object.entries(world_info.entries);
-    entries.sort((a, b) => (a[1].order || 100) - (b[1].order || 100));
-    
-    entries.forEach(([uid, entry]) => {
-        let label = entry.comment || (entry.key && entry.key.length ? entry.key[0] : `ID: ${uid}`);
-        entrySelect.append(`<option value="${uid}">${label}</option>`);
+        const bookName = world_info.name || "Untitled Book";
+        bookSelect.html(`<option value="current" selected>${bookName}</option>`);
+
+        const currentUid = entrySelect.val();
+        entrySelect.empty().append('<option value="" disabled selected>Select Entry...</option>');
+        
+        Object.entries(world_info.entries).forEach(([uid, entry]) => {
+            let label = entry.comment || (entry.key && entry.key.length ? entry.key[0] : `ID: ${uid}`);
+            entrySelect.append(`<option value="${uid}">${label}</option>`);
+        });
+
+        if (currentUid && world_info.entries[currentUid]) {
+            entrySelect.val(currentUid);
+        }
+    };
+
+    // เลือก Entry
+    entrySelect.on('change', function() {
+        const uid = $(this).val();
+        if (uid && world_info.entries[uid]) {
+            const entry = world_info.entries[uid];
+            keyInput.val(entry.key ? entry.key.join(', ') : '');
+            contentInput.val(entry.content || '');
+        }
     });
 
-    if (currentUid && world_info.entries[currentUid]) {
-        entrySelect.val(currentUid);
-    }
+    // ปุ่ม (+) เพิ่ม
+    addBtn.on('click', function() {
+        if (typeof world_info === 'undefined') {
+            alert("No Lorebook loaded in this chat!"); return;
+        }
+        const newUid = Date.now().toString();
+        world_info.entries[newUid] = {
+            key: ["new_key"],
+            content: "New Description",
+            comment: "New Entry",
+            enabled: true
+        };
+        refreshData();
+        entrySelect.val(newUid).trigger('change');
+        if (typeof saveWorldInfo === 'function') saveWorldInfo();
+    });
+
+    // ปุ่ม Save
+    saveBtn.on('click', function() {
+        const uid = entrySelect.val();
+        if (!uid || !world_info.entries[uid]) return;
+
+        world_info.entries[uid].content = contentInput.val();
+        
+        const keysStr = keyInput.val();
+        const keysArr = keysStr.split(',').map(k => k.trim()).filter(k => k !== "");
+        world_info.entries[uid].key = keysArr;
+        
+        if (keysArr.length > 0) world_info.entries[uid].comment = keysArr[0];
+
+        if (typeof saveWorldInfo === 'function') {
+            saveWorldInfo();
+            refreshData();
+            const oldText = $(this).text();
+            $(this).text("Saved!").css('background', '#a2d2ff');
+            setTimeout(() => { $(this).text(oldText).css('background', ''); }, 1000);
+        }
+    });
+
+    refreshData();
+    // รีเฟรชเมื่อเปิดหน้า Diary
+    $('.x-nav-icon[data-id="lore"]').on('click', refreshData);
 }
 
+// --- Core Functions ---
 function bindEvents() {
     const orb = $('#x_floating_btn');
     const modal = $('#x_main_modal');
-    
-    orb.on('click', () => { 
-        if (!state.lockOrb) return; 
-        modal.fadeToggle(200).css('display', 'flex'); 
-        if (state.curPage === 'lore') refreshLoreData();
-    });
-    
+    orb.on('click', () => { if (!state.lockOrb) return; modal.fadeToggle(200).css('display', 'flex'); });
     $('#btn_close').on('click', () => { if (!state.lockOrb || !state.lockWin) return; modal.fadeOut(200); });
-
     $('.x-nav-icon').on('click', function() {
         const id = $(this).data('id'); state.curPage = id;
         $('.x-nav-icon').removeClass('active'); $(this).addClass('active');
         $('.x-page').removeClass('active'); $(`#page_${id}`).addClass('active');
-        if (id === 'lore') refreshLoreData();
         saveSettings();
     });
-
     $('#btn_mv_orb').on('click', () => { state.lockOrb = !state.lockOrb; updateSafety(); saveSettings(); });
     $('#btn_mv_win').on('click', () => { state.lockWin = !state.lockWin; updateSafety(); saveSettings(); });
-
-    // Lorebook Controls
-    $('#x_diary_entry').on('change', function() {
-        const uid = $(this).val();
-        if (uid && world_info.entries[uid]) {
-            const entry = world_info.entries[uid];
-            $('#x_diary_keys').val(entry.key ? entry.key.join(', ') : '');
-            $('#x_diary_content').val(entry.content || '');
-        }
-    });
-
-    $('#x_diary_add').on('click', () => {
-        if (!world_info) return;
-        const newUid = Date.now().toString();
-        world_info.entries[newUid] = { key: ["new"], content: "...", comment: "New Entry", enabled: true, selective: true };
-        refreshLoreData();
-        $('#x_diary_entry').val(newUid).trigger('change');
-        saveWorldInfo();
-    });
-
-    $('#x_diary_save').on('click', function() {
-        const uid = $('#x_diary_entry').val();
-        if (!uid || !world_info.entries[uid]) return;
-        world_info.entries[uid].content = $('#x_diary_content').val();
-        const keysArr = $('#x_diary_keys').val().split(',').map(k => k.trim()).filter(Boolean);
-        world_info.entries[uid].key = keysArr;
-        if (keysArr.length > 0) world_info.entries[uid].comment = keysArr[0];
-        saveWorldInfo();
-        refreshLoreData();
-        const btn = $(this);
-        const old = btn.text();
-        btn.text("Saved!").css('background', '#a2d2ff');
-        setTimeout(() => btn.text(old).css('background', ''), 1000);
-    });
-
     makeDraggable(orb[0], 'orb');
     makeDraggable(modal[0], 'win', $('#x_drag_zone')[0]);
 }
@@ -250,6 +224,7 @@ function updateSafety() {
     $('#x_drag_zone').css('cursor', !state.lockWin ? 'move' : 'default');
 }
 
+// ระบบลาก Classic (Stable)
 function makeDraggable(el, type, handle) {
     const trigger = handle || el;
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
