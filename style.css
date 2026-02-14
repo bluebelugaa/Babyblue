@@ -1,4 +1,4 @@
-/* --- Sweet Heart HUD: Ultimate Clear Edition --- */
+/* --- Sweet Heart HUD: Background & GIF Fix --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
@@ -13,8 +13,15 @@
 /* --- 1. The Floating Button (ลูกแก้ว) --- */
 #x_floating_btn {
     position: fixed !important;
-    width: 36px !important;
-    height: 36px !important;
+    width: 34px !important;
+    height: 34px !important;
+    
+    /* ดึงภาพพื้นหลังมาใส่ที่นี่ตรงๆ */
+    background-image: url('https://files.catbox.moe/0fd3gy.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    
     border-radius: 50% !important;
     cursor: pointer;
     z-index: 20000;
@@ -25,21 +32,21 @@
     border: 2px solid white !important;
     transition: transform 0.2s;
     overflow: visible !important; 
-    /* ถอด background-color: white ออก เพื่อไม่ให้ขาววอก */
+    
+    /* ลบพื้นหลังสีขาวออก */
     background-color: transparent !important;
 }
 
-/* น้องแมงกะพรุน GIF */
+/* น้องแมงกะพรุน GIF (ให้ลอยทับพื้นหลัง) */
 .x-core-img {
-    width: 100% !important; 
-    height: 100% !important;
+    width: 85% !important; 
+    height: 85% !important;
     object-fit: contain !important;
     z-index: 5 !important;
-    border-radius: 50%;
-    position: relative;
+    pointer-events: none;
 }
 
-/* เอฟเฟคดาววิบวับรอบนอก */
+/* เอฟเฟคดาววิบวับรอบนอก (คงเดิม) */
 #x_floating_btn::after {
     content: '';
     position: absolute;
@@ -58,7 +65,7 @@
     z-index: -1;
 }
 
-/* วงแหวนหมุนรอบ */
+/* วงแหวนหมุนรอบ (คงเดิม) */
 #x_floating_btn::before {
     content: ''; position: absolute;
     width: 44px; height: 44px;
@@ -70,7 +77,7 @@
     z-index: -2;
 }
 
-/* --- ส่วนหน้าต่างเมนู (คงเดิม) --- */
+/* --- 2. Main Window & Header (คงเดิมตามที่คุณชอบ) --- */
 #x_main_modal {
     display: none;
     position: fixed;
@@ -91,22 +98,31 @@
     animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.x-header { height: 44px; background: rgba(255, 255, 255, 0.4); border-bottom: 1px solid var(--sweet-border); display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+.x-header {
+    height: 44px;
+    background: rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid var(--sweet-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+}
+
+.x-title { font-family: 'Comfortaa', cursive; font-weight: 700; color: var(--sweet-text); font-size: 11px; }
 .x-nav-container { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; padding: 0 5px; }
-.x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; transition: 0.2s; background: rgba(255,255,255,0.3); border: 1px solid transparent; }
-.x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 0 5px var(--sweet-glow); transform: translateY(-1px); }
+.x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; background: rgba(255,255,255,0.3); }
+.x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 0 5px var(--sweet-glow); }
 .x-controls-group { display: flex; align-items: center; gap: 4px; }
 .x-mini-btn { height: 22px; padding: 0 6px; background: rgba(255,255,255,0.5); border: 1px solid white; border-radius: 10px; font-size: 9px; color: var(--sweet-text); display: flex; align-items: center; gap: 3px; cursor: pointer; }
-.x-mini-btn.active { background: var(--sweet-pink); color: white; border-color: var(--sweet-pink); }
-.x-close-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: #ff8b94; cursor: pointer; font-size: 14px; margin-left: 2px; background: rgba(255,255,255,0.5); border-radius: 50%; }
-.x-content-box { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
+.x-mini-btn.active { background: var(--sweet-pink); color: white; }
+.x-close-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: #ff8b94; cursor: pointer; font-size: 14px; background: rgba(255,255,255,0.5); border-radius: 50%; }
+
+.x-content-box { flex: 1; overflow-y: auto; padding: 15px; }
 .x-page { display: none; animation: fade-up 0.3s; }
 .x-page.active { display: block; }
-.x-page-header { font-size: 13px; color: var(--sweet-pink-dark); font-weight: bold; margin-bottom: 8px; border-bottom: 1px dashed var(--sweet-pink); padding-bottom: 4px; }
 
 /* Animations */
 @keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
-@keyframes sweet-twinkle { 0%, 100% { opacity: 0.5; transform: scale(0.9) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(15deg); } }
-.x-dragging { transform: scale(1.1); border-color: #ff6b74 !important; }
+@keyframes sweet-twinkle { 0%, 100% { opacity: 0.5; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
