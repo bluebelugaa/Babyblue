@@ -1,4 +1,4 @@
-/* --- RABBIT BLUE: Final Fix Style --- */
+/* --- RABBIT BLUE: Original Visuals (Fixed) --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
@@ -10,36 +10,44 @@
     --sweet-drag-glow: rgba(255, 105, 180, 0.4);
 }
 
-/* --- ลูกแก้ว (34px ตามที่เคยขอ) --- */
+/* --- ลูกแก้ว (กลับไปใช้พื้นหลังรูปภาพ) --- */
 #x_floating_btn {
     position: fixed !important;
     width: 34px !important;
     height: 34px !important;
-    background: #000 !important; /* พื้นหลังดำกันภาพหาย */
+    
+    /* [แก้ตรงนี้] ใส่รูปพื้นหลังกลับมา (ไม่เอาสีดำแล้ว) */
+    background-image: url('https://files.catbox.moe/0fd3gy.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    
     border-radius: 50% !important;
     cursor: pointer;
     z-index: 20000;
     border: 2px solid white !important;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 0 12px var(--sweet-glow);
     display: flex; justify-content: center; align-items: center;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s;
     overflow: visible !important; 
 }
 
-/* เอฟเฟคตอนลาก */
 #x_floating_btn.x-dragging {
     border-color: #ff8fa3 !important; 
     transform: scale(1.1);
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 15px var(--sweet-drag-glow) !important;
 }
 
-/* วีดีโอ (บังคับเต็มกรอบ) */
-.x-core-video {
-    width: 100% !important; height: 100% !important;
-    object-fit: cover !important; border-radius: 50% !important;
-    z-index: 5 !important; pointer-events: none; 
-    display: block !important; /* บังคับโชว์ */
-    filter: brightness(1.1);
+.no-transition { transition: none !important; }
+
+/* [แก้ตรงนี้] กลับมาใช้ IMG (GIF) */
+.x-core-img {
+    width: 85% !important; 
+    height: 85% !important;
+    object-fit: contain !important;
+    z-index: 5 !important;
+    pointer-events: none;
+    border-radius: 50%;
 }
 
 /* ดาววิบวับ */
@@ -57,7 +65,7 @@
     animation: sweet-spin 12s linear infinite; pointer-events: none; z-index: -2;
 }
 
-/* --- หน้าต่าง Lorebook (Sweet Glass) --- */
+/* --- หน้าต่างหลัก (เหมือนเดิม) --- */
 #x_main_modal {
     display: none; position: fixed; top: 15vh; left: 5vw; width: 90vw; height: 55vh; max-height: 480px;
     background: var(--sweet-grey-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -100,4 +108,3 @@
 @keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes sweet-twinkle { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9) rotate(0deg); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(15deg); } }
-.no-transition { transition: none !important; }
