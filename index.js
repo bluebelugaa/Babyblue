@@ -1,13 +1,13 @@
-// --- Sweet Heart HUD: Final Cute Edition ---
-const STORAGE_KEY = "sweet_hud_final_v1";
+// --- Sweet Heart HUD: Cloud GIF Edition ---
+const STORAGE_KEY = "sweet_hud_gif_v1";
 
-// แก้ไขไอคอนตรงนี้ (เปลี่ยน fa-book-heart เป็น fa-book ธรรมดา)
+// แก้ไขไอคอนให้แสดงผลได้จริง (ใช้ไอคอนฟรีจาก FontAwesome)
 const PAGES = [
-    { id: 'lore', title: 'Diary', icon: 'fa-book' },   // แก้แล้ว! ขึ้นแน่นอน
-    { id: 'inspect', title: 'Check', icon: 'fa-magnifying-glass' },
-    { id: 'ooc', title: 'Chat', icon: 'fa-comments' },
-    { id: 'world', title: 'World', icon: 'fa-globe' },
-    { id: 'helper', title: 'Help', icon: 'fa-wand-magic-sparkles' }
+    { id: 'lore', title: 'Diary', icon: 'fa-book' },           // สมุดบันทึก
+    { id: 'inspect', title: 'Check', icon: 'fa-magnifying-glass' }, // แว่นขยาย
+    { id: 'ooc', title: 'Chat', icon: 'fa-comments' },         // กล่องข้อความ
+    { id: 'world', title: 'World', icon: 'fa-earth-americas' }, // ลูกโลก
+    { id: 'helper', title: 'Help', icon: 'fa-circle-question' } // เครื่องหมายคำถาม
 ];
 
 let state = {
@@ -35,15 +35,15 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. ลูกแก้วหัวใจ (Cute Heart)
+    // 1. ลูกแก้วภาพ GIF (ใช้ URL ที่คุณให้มา)
     $('body').append(`
         <div id="x_floating_btn">
-            <div class="x-core-heart"></div>
+            <img src="https://files.catbox.moe/n3eohs.gif" alt="Cloud GIF" class="x-gif-img">
         </div>
     `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // 2. หน้าต่างหลัก
+    // 2. หน้าต่างหลัก (โครงสร้างเดิม)
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -61,10 +61,10 @@ function injectUI() {
 
             <div class="x-controls-group">
                 <div id="btn_mv_orb" class="x-mini-btn ${!state.lockOrb?'active':''}">
-                    <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                    <span style="font-size: 10px;">Move Orb</span>
                 </div>
                 <div id="btn_mv_win" class="x-mini-btn ${!state.lockWin?'active':''}">
-                    <i class="fa-solid fa-expand"></i>
+                    <span style="font-size: 10px;">Move Win</span>
                 </div>
                 <div id="btn_close" class="x-close-icon"><i class="fa-solid fa-xmark"></i></div>
             </div>
@@ -103,7 +103,6 @@ function bindEvents() {
         modal.fadeOut(200);
     });
 
-    // เปลี่ยนหน้า
     $('.x-nav-icon').on('click', function() {
         const id = $(this).data('id');
         state.curPage = id;
