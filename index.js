@@ -1,5 +1,5 @@
-// --- Sweet Heart HUD: GIF Core Edition (Full Fixed) ---
-const STORAGE_KEY = "sweet_hud_final_v2";
+// --- Sweet Heart HUD: GIF & Background Full Edition ---
+const STORAGE_KEY = "sweet_hud_final_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -34,15 +34,18 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. สร้างลูกแก้ว (ภาพพื้นหลังจะถูกโหลดจาก CSS เอง)
-    $('body').append(`
+    // บังคับสร้างลูกแก้วแบบแบ่ง Layer: พื้นหลัง (div) และ แมงกะพรุน (img)
+    const orbHtml = `
         <div id="x_floating_btn">
-            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="jellyfish">
+            <div class="x-orb-bg-layer"></div>
+            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="core">
         </div>
-    `);
+    `;
+    
+    $('body').append(orbHtml);
     $('#x_floating_btn').css(state.btnPos);
 
-    // 2. หน้าต่างหลัก
+    // สร้างหน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -66,7 +69,6 @@ function injectUI() {
                 <div id="btn_close" class="x-close-icon"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
-
         <div class="x-content-box">
             ${PAGES.map(p => `
                 <div id="page_${p.id}" class="x-page ${p.id === state.curPage ? 'active' : ''}">
@@ -138,7 +140,6 @@ function updateSafety() {
 function makeDraggable(el, type, handle) {
     let p1=0, p2=0, p3=0, p4=0;
     const trigger = handle || el;
-
     const start = (e) => {
         if (type==='orb' && state.lockOrb) return;
         if (type==='win' && state.lockWin) return;
@@ -147,7 +148,6 @@ function makeDraggable(el, type, handle) {
         document.ontouchend = stop; document.onmouseup = stop;
         document.ontouchmove = move; document.onmousemove = move;
     };
-
     const move = (e) => {
         const evt = e.type === 'touchmove' ? e.touches[0] : e;
         if(e.cancelable) e.preventDefault();
@@ -157,7 +157,6 @@ function makeDraggable(el, type, handle) {
         el.style.left = (el.offsetLeft - p1) + "px";
         el.style.right = 'auto';
     };
-
     const stop = () => {
         document.ontouchend = null; document.onmouseup = null;
         document.ontouchmove = null; document.onmousemove = null;
@@ -165,6 +164,5 @@ function makeDraggable(el, type, handle) {
         else state.winPos = {top:el.style.top, left:el.style.left};
         saveSettings();
     };
-
     trigger.onmousedown = start; trigger.ontouchstart = start;
 }
