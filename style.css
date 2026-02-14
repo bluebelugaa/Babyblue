@@ -1,202 +1,129 @@
-/* =========================================
-   CHRONOS V80 STYLE (Purple/Green Neon)
-   ========================================= */
+/* --- Sweet Heart HUD: Soft & Transparent Edition --- */
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
-/* --- ORB (ลูกแก้ว) --- */
-#chronos-orb {
+:root {
+    /* โทนสีหวานแบบเบาๆ */
+    --sweet-pink: #ffb7c5;      /* ชมพูซากุระเบาๆ */
+    --sweet-peach: #ffe5d9;     /* พีชอ่อน */
+    --sweet-grey-bg: rgba(220, 220, 220, 0.4); /* เทาโปร่งแสง */
+    --sweet-text: #5d5d5d;      /* สีตัวอักษรเทาเข้ม (อ่านง่ายกว่าสีขาวบนพื้นอ่อน) */
+    --sweet-border: rgba(255, 255, 255, 0.5);
+    --sweet-glow: rgba(255, 183, 197, 0.4);
+}
+
+/* --- 1. The Sugar Core (ลูกแก้วจิ๋ว 32px) --- */
+#x_floating_btn {
     position: fixed;
-    top: 15vh;
-    right: 20px;
-    width: 45px;
-    height: 45px;
-    
-    /* ไล่สีม่วง-ดำ (V80 Signature) */
-    background: radial-gradient(circle, rgba(40,0,60,0.95) 0%, rgba(0,0,0,1) 100%);
-    border: 2px solid #D500F9;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
-    
-    z-index: 200000; 
     cursor: pointer;
+    z-index: 20000;
+    /* เงาแบบฟุ้งกระจายเหมือนขนม */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05), 0 0 10px var(--sweet-glow);
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 20px;
-    color: #E040FB;
-    
-    /* เงาสีม่วงฟุ้งๆ */
-    box-shadow: 0 0 15px rgba(213, 0, 249, 0.6);
-    animation: spin-slow 8s linear infinite;
-    
-    user-select: none;
+    align-items: center;
     transition: all 0.3s ease;
+    border: 1px solid var(--sweet-border);
 }
 
-#chronos-orb:hover {
-    box-shadow: 0 0 25px #D500F9;
-    transform: scale(1.1);
-    color: #fff;
+/* แกนกลางเป็นรูปหัวใจจิ๋วหรือหยดน้ำ */
+#x_floating_btn .x-core-gem {
+    width: 10px; height: 10px;
+    background: var(--sweet-pink);
+    border-radius: 2px 10px 10px 10px; /* ทรงหยดน้ำ */
+    transform: rotate(45deg);
+    box-shadow: 0 0 8px var(--sweet-pink);
+    animation: sweet-pulse 3s infinite ease-in-out;
 }
 
-/* สถานะปลดล็อค: เปลี่ยนเป็นสีเขียว */
-#chronos-orb.unlocked {
-    border-color: #00E676;
-    color: #00E676;
-    box-shadow: 0 0 15px #00E676;
-    cursor: move;
-    animation-play-state: paused;
+#x_floating_btn::before {
+    content: ''; position: absolute;
+    width: 38px; height: 38px;
+    border: 1px solid var(--sweet-pink);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: sweet-spin 12s linear infinite;
 }
 
-@keyframes spin-slow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* --- MAIN PANEL (หน้าต่าง) --- */
-#chronos-panel {
+/* --- 2. Main Window (โปร่งแสง เทาเบลอ) --- */
+#x_main_modal {
     display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 340px;
+    top: 15vh; left: 5vw;
+    width: 90vw; height: 50vh;
+    max-height: 420px;
     
-    /* พื้นหลังกระจกมัวแบบ Cyberpunk */
-    background: rgba(10, 10, 15, 0.95);
-    border: 1px solid #D500F9;
-    border-top: 3px solid #D500F9;
-    color: #E1BEE7;
+    /* พื้นหลังเทาโปร่งแสง และ Blur จัดๆ */
+    background: var(--sweet-grey-bg);
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
     
-    font-family: 'Consolas', monospace;
-    font-size: 12px;
-    z-index: 200001;
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
-    backdrop-filter: blur(10px);
+    border: 1.5px solid var(--sweet-border);
+    border-radius: 20px; /* มนๆ น่ารัก */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    z-index: 20001;
     flex-direction: column;
     overflow: hidden;
+    font-family: 'Mitr', sans-serif;
+    animation: sweet-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Header ไล่สี */
-.c-header {
-    background: linear-gradient(90deg, #4A0072, #2a0040);
-    color: #fff;
-    padding: 12px 15px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #D500F9;
-    cursor: default; /* จะเปลี่ยนเป็น move ผ่าน JS */
-    user-select: none;
+/* --- 3. Header & Soft Controls --- */
+.x-header {
+    height: 45px;
+    background: rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid var(--sweet-border);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 15px;
 }
 
-/* พื้นที่ควบคุมสวิตช์ (ด้านบน) */
-.c-controls {
-    display: flex;
-    gap: 20px;
-    padding: 12px 15px;
-    background: #150518; /* ม่วงมืด */
-    border-bottom: 1px solid #330044;
-    align-items: center;
-    justify-content: center;
+.x-title {
+    font-family: 'Comfortaa', cursive;
+    font-weight: 700;
+    color: var(--sweet-text);
+    font-size: 13px;
+    letter-spacing: 1px;
 }
 
-/* --- NEON SWITCHES --- */
-.switch-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.neon-switch {
-    position: relative;
-    display: inline-block;
-    width: 34px;
-    height: 18px;
-}
-.neon-switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #333;
-    transition: .4s;
-    border-radius: 34px;
-    border: 1px solid #555;
-}
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 12px; width: 12px;
-    left: 2px; bottom: 2px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-input:checked + .slider { background-color: #2a0040; border-color: #00E676; }
-input:checked + .slider:before {
-    transform: translateX(16px);
-    background-color: #00E676;
-    box-shadow: 0 0 8px #00E676;
-}
-.switch-label { font-size: 10px; color: #aaa; text-transform: uppercase; }
-
-/* --- BODY & DASHBOARD --- */
-.c-body {
-    padding: 15px;
-    background: #050505;
+.x-switch-btn {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--sweet-border);
+    color: var(--sweet-text);
+    height: 26px; padding: 0 10px;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 500; border-radius: 13px;
+    cursor: pointer; transition: 0.3s;
 }
 
-.dash-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed #333;
+.x-switch-btn.active {
+    background: var(--sweet-pink);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 2px 8px var(--sweet-glow);
 }
 
-.dash-val { font-weight: bold; font-size: 13px; color: #E040FB; }
-.dash-val.green { color: #00E676; }
+.x-led { width: 6px; height: 6px; background: rgba(0,0,0,0.1); border-radius: 50%; }
+.x-switch-btn.active .x-led { background: white; }
 
-/* ปุ่มกดสไตล์ Cyber */
-.c-btn {
-    background: linear-gradient(180deg, #330044, #1a0022);
-    border: 1px solid #D500F9;
-    color: #E040FB;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 10px;
-    font-weight: bold;
-    border-radius: 4px;
-    transition: 0.2s;
-    text-transform: uppercase;
-    width: 100%;
-    margin-top: 5px;
-}
-.c-btn:hover {
-    background: #D500F9;
-    color: #000;
-    box-shadow: 0 0 10px rgba(213, 0, 249, 0.4);
-}
+.x-close-btn { color: #ff8b94; cursor: pointer; opacity: 0.8; font-size: 18px; }
+.x-close-btn.disabled { opacity: 0.1 !important; pointer-events: none; }
 
-/* Console Logs */
-.c-logs {
-    height: 120px;
-    overflow-y: auto;
-    background: #080808;
-    border: 1px solid #333;
-    padding: 8px;
-    font-size: 10px;
-    color: #888;
-    margin-top: 15px;
-    border-radius: 4px;
-    font-family: 'Consolas', monospace;
+/* --- 4. Navigation --- */
+.x-nav-bar {
+    height: 45px;
+    background: rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--sweet-border);
+    display: flex; justify-content: space-between; align-items: center;
 }
-.log-item { border-bottom: 1px solid #151515; margin-bottom: 3px; padding-bottom: 2px; }
-.log-item span { color: #00E676; margin-right: 5px; }
+.x-nav-btn { background: none; border: none; color: var(--sweet-pink); width: 50px; font-size: 18px; }
+.x-page-title { font-size: 12px; color: var(--sweet-text); font-weight: 500; text-transform: uppercase; }
 
-/* Scrollbar สวยๆ */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #111; }
-::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #D500F9; }
+/* --- Animations --- */
+@keyframes sweet-pulse { 0%, 100% { transform: rotate(45deg) scale(0.9); } 50% { transform: rotate(45deg) scale(1.1); } }
+@keyframes sweet-spin { 100% { transform: rotate(360deg); } }
+@keyframes sweet-pop { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.x-page { display: none; padding: 18px; height: 100%; overflow-y: auto; color: var(--sweet-text); }
+.x-page.active { display: block; }
