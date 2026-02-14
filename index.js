@@ -1,13 +1,13 @@
-// --- Sweet Heart HUD: Cloud GIF Edition ---
+
+// --- Sweet Heart HUD: GIF Core Edition ---
 const STORAGE_KEY = "sweet_hud_gif_v1";
 
-// แก้ไขไอคอนให้แสดงผลได้จริง (ใช้ไอคอนฟรีจาก FontAwesome)
 const PAGES = [
-    { id: 'lore', title: 'Diary', icon: 'fa-book' },           // สมุดบันทึก
-    { id: 'inspect', title: 'Check', icon: 'fa-magnifying-glass' }, // แว่นขยาย
-    { id: 'ooc', title: 'Chat', icon: 'fa-comments' },         // กล่องข้อความ
-    { id: 'world', title: 'World', icon: 'fa-earth-americas' }, // ลูกโลก
-    { id: 'helper', title: 'Help', icon: 'fa-circle-question' } // เครื่องหมายคำถาม
+    { id: 'lore', title: 'Diary', icon: 'fa-book' },
+    { id: 'inspect', title: 'Check', icon: 'fa-magnifying-glass' },
+    { id: 'ooc', title: 'Chat', icon: 'fa-comments' },
+    { id: 'world', title: 'World', icon: 'fa-globe' },
+    { id: 'helper', title: 'Help', icon: 'fa-wand-magic-sparkles' }
 ];
 
 let state = {
@@ -35,20 +35,19 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. ลูกแก้วภาพ GIF (ใช้ URL ที่คุณให้มา)
+    // 1. ลูกแก้ว (ใส่รูป GIF แทนหัวใจ)
     $('body').append(`
         <div id="x_floating_btn">
-            <img src="https://files.catbox.moe/n3eohs.gif" alt="Cloud GIF" class="x-gif-img">
+            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="core">
         </div>
     `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // 2. หน้าต่างหลัก (โครงสร้างเดิม)
+    // 2. หน้าต่างหลัก (คงเดิม)
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
             <div class="x-title">SWEET HUD</div>
-            
             <div class="x-nav-container">
                 ${PAGES.map(p => `
                     <div class="x-nav-icon ${p.id === state.curPage ? 'active' : ''}" 
@@ -58,13 +57,12 @@ function injectUI() {
                     </div>
                 `).join('')}
             </div>
-
             <div class="x-controls-group">
                 <div id="btn_mv_orb" class="x-mini-btn ${!state.lockOrb?'active':''}">
-                    <span style="font-size: 10px;">Move Orb</span>
+                    <i class="fa-solid fa-arrows-up-down-left-right"></i>
                 </div>
                 <div id="btn_mv_win" class="x-mini-btn ${!state.lockWin?'active':''}">
-                    <span style="font-size: 10px;">Move Win</span>
+                    <i class="fa-solid fa-expand"></i>
                 </div>
                 <div id="btn_close" class="x-close-icon"><i class="fa-solid fa-xmark"></i></div>
             </div>
@@ -106,13 +104,10 @@ function bindEvents() {
     $('.x-nav-icon').on('click', function() {
         const id = $(this).data('id');
         state.curPage = id;
-        
         $('.x-nav-icon').removeClass('active');
         $(this).addClass('active');
-        
         $('.x-page').removeClass('active');
         $(`#page_${id}`).addClass('active');
-        
         saveSettings();
     });
 
@@ -134,10 +129,8 @@ function bindEvents() {
 
 function updateSafety() {
     const moving = (!state.lockOrb || !state.lockWin);
-    
     $('#btn_mv_orb').toggleClass('active', !state.lockOrb);
     $('#btn_mv_win').toggleClass('active', !state.lockWin);
-    
     $('#x_floating_btn').toggleClass('x-dragging', !state.lockOrb);
     $('#btn_close').toggleClass('disabled', moving);
     $('#x_drag_zone').toggleClass('x-head-drag', !state.lockWin);
@@ -150,7 +143,6 @@ function makeDraggable(el, type, handle) {
     const start = (e) => {
         if (type==='orb' && state.lockOrb) return;
         if (type==='win' && state.lockWin) return;
-        
         const evt = e.type === 'touchstart' ? e.touches[0] : e;
         p3 = evt.clientX; p4 = evt.clientY;
         document.ontouchend = stop; document.onmouseup = stop;
