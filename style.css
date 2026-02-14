@@ -1,4 +1,4 @@
-/* --- RABBIT BLUE HUD: Cute Pink Edge Edition --- */
+/* --- RABBIT BLUE HUD: Sweet Glow Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
@@ -8,13 +8,14 @@
     --sweet-text: #5d5d5d;      
     --sweet-border: rgba(255, 255, 255, 0.6);
     --sweet-glow: rgba(255, 183, 197, 0.6);
-    --sweet-active: #ff6b74; /* สีชมพูเข้มสำหรับตอนขยับ */
+    
+    /* สีใหม่: ชมพูอ่อนจางๆ สำหรับตอนลาก */
+    --sweet-drag-glow: rgba(255, 192, 203, 0.5); 
 }
 
-/* --- 1. The Floating Button (ลูกแก้ว) --- */
+/* --- 1. The Floating Button (ลูกแก้ว 30px) --- */
 #x_floating_btn {
     position: fixed !important;
-    /* [ลดขนาด] เหลือ 30px ตามคำขอ */
     width: 30px !important;
     height: 30px !important;
     
@@ -23,33 +24,33 @@
     cursor: pointer;
     z-index: 20000;
     
-    /* ขอบปกติเป็นสีขาว */
+    /* ขอบปกติสีขาว */
     border: 2px solid white !important;
     
     /* เงาปกติ */
     box-shadow: 
-        0 4px 10px rgba(0,0,0,0.2), 
+        0 4px 10px rgba(0,0,0,0.15), 
         0 0 10px var(--sweet-glow);
         
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* ปรับให้นุ่มขึ้น */
     overflow: visible !important; 
 }
 
-/* [ไฮไลท์สำคัญ] เอฟเฟคตอนกดย้าย (Active State) */
+/* [แก้ตรงนี้] เอฟเฟคตอนกดย้าย (แบบหวานๆ จางๆ) */
 #x_floating_btn.x-dragging {
-    /* เปลี่ยนขอบเป็นสีชมพู */
-    border-color: var(--sweet-active) !important;
+    /* เปลี่ยนขอบเป็นสีชมพูอ่อนมากๆ */
+    border-color: #ffe0e6 !important;
     
-    /* เพิ่มเงาวิ๊งๆ สีชมพู */
+    /* แสงฟุ้งกระจายแบบนุ่มนวล (Soft Glow) */
     box-shadow: 
-        0 0 0 4px rgba(255, 107, 116, 0.3), /* เงาชั้นนอก */
-        0 0 15px var(--sweet-active) !important;
+        0 0 0 4px rgba(255, 255, 255, 0.4), /* วงแหวนขาวจางๆ ชั้นนอก */
+        0 0 20px var(--sweet-drag-glow) !important; /* แสงฟุ้งสีชมพู */
         
-    /* ขยายขนาดนิดนึงตอนจับ */
-    transform: scale(1.15);
+    /* ขยายแค่นิดเดียวพอ ให้ดูนุ่มนิ่ม */
+    transform: scale(1.05);
 }
 
 /* วีดีโอในลูกแก้ว */
@@ -86,10 +87,11 @@
     z-index: -1;
 }
 
-/* วงแหวนหมุนรอบ (ปรับขนาดให้พอดีกับลูกแก้ว 30px) */
+/* [แก้ตรงนี้] ปรับวงแหวนให้พอดีกับลูกแก้ว 30px */
 #x_floating_btn::before {
     content: ''; position: absolute;
-    width: 42px; height: 42px;
+    /* ลดขนาดลงให้กระชับ (จาก 42px เหลือ 36px) */
+    width: 36px; height: 36px;
     border: 1px dashed var(--sweet-pink);
     border-radius: 50%;
     opacity: 0.5;
@@ -98,14 +100,7 @@
     z-index: -2;
 }
 
-/* เปลี่ยนสีวงแหวนตอนลากด้วย */
-#x_floating_btn.x-dragging::before {
-    border-color: var(--sweet-active);
-    opacity: 0.8;
-    animation-duration: 4s; /* หมุนเร็วขึ้น */
-}
-
-/* --- 2. Main Window --- */
+/* --- 2. Main Window (คงเดิม) --- */
 #x_main_modal {
     display: none;
     position: fixed;
