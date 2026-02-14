@@ -1,5 +1,6 @@
-// --- RABBIT BLUE HUD: Classic Drag Edition ---
-const STORAGE_KEY = "rabbit_blue_classic_v1";
+
+// --- RABBIT BLUE: Original Sweet Logic ---
+const STORAGE_KEY = "rabbit_blue_sweet_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -34,7 +35,7 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // สร้างลูกแก้ว
+    // สร้างลูกแก้ววีดีโอ
     $('body').append(`
         <div id="x_floating_btn">
             <video class="x-core-video" autoplay loop muted playsinline>
@@ -44,7 +45,7 @@ function injectUI() {
     `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // หน้าต่างหลัก
+    // หน้าต่าง RABBIT BLUE (Sweet Theme)
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -74,7 +75,7 @@ function injectUI() {
                     <div class="x-page-header">
                         <i class="fa-solid ${p.icon}"></i> ${p.title}
                     </div>
-                    <div id="content_${p.id}">Waiting for sweetness...</div>
+                    <div id="content_${p.id}">Waiting for sweet memories...</div>
                 </div>
             `).join('')}
         </div>
@@ -136,7 +137,7 @@ function updateSafety() {
     $('#x_drag_zone').css('cursor', !state.lockWin ? 'move' : 'default');
 }
 
-// ใช้ระบบลากแบบ Classic (เหมือนหน้าต่าง) เพื่อความเสถียร
+// ใช้ระบบลากแบบ Classic เพื่อความเสถียร ไม่กระตุก
 function makeDraggable(el, type, handle) {
     const trigger = handle || el;
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -145,8 +146,7 @@ function makeDraggable(el, type, handle) {
         if (type === 'orb' && state.lockOrb) return;
         if (type === 'win' && state.lockWin) return;
 
-        // เพิ่ม class ปิด transition เพื่อให้ลากติดมือ
-        el.classList.add('no-transition');
+        el.classList.add('no-transition'); // ปิดอนิเมชั่นชั่วคราวเพื่อให้ลากลื่น
 
         const evt = e.type === 'touchstart' ? e.touches[0] : e;
         pos3 = evt.clientX;
@@ -160,24 +160,20 @@ function makeDraggable(el, type, handle) {
 
     const dragMove = (e) => {
         const evt = e.type === 'touchmove' ? e.touches[0] : e;
-        
-        // ป้องกันจอเลื่อนเฉพาะตอนลากลูกแก้ว
-        if (e.cancelable && type === 'orb') e.preventDefault();
+        if(e.cancelable && type === 'orb') e.preventDefault();
 
         pos1 = pos3 - evt.clientX;
         pos2 = pos4 - evt.clientY;
         pos3 = evt.clientX;
         pos4 = evt.clientY;
 
-        // คำนวณตำแหน่งและขยับทันที (Classic Way)
         el.style.top = (el.offsetTop - pos2) + "px";
         el.style.left = (el.offsetLeft - pos1) + "px";
-        el.style.right = 'auto'; // ยกเลิกค่า Right เพื่อไม่ให้ตีกัน
+        el.style.right = 'auto';
     };
 
     const dragEnd = () => {
-        // เอา class ปิด transition ออก
-        el.classList.remove('no-transition');
+        el.classList.remove('no-transition'); // เปิดอนิเมชั่นกลับ
         
         document.ontouchend = null;
         document.onmouseup = null;
@@ -194,4 +190,4 @@ function makeDraggable(el, type, handle) {
 
     trigger.onmousedown = dragStart;
     trigger.ontouchstart = dragStart;
-}
+    }
