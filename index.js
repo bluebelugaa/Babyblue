@@ -1,4 +1,5 @@
-// --- Imports: ใช้ Path ตามโครงสร้าง third-party/RabbitBlue ---
+
+// --- Imports: (สำคัญมาก ห้ามลบ) ---
 import {
     eventSource,
     event_types,
@@ -12,7 +13,7 @@ import {
     loadWorldInfo,
 } from "../../../world-info.js";
 
-const STORAGE_KEY = "rabbit_blue_final_fix";
+const STORAGE_KEY = "rabbit_blue_restore_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -30,28 +31,29 @@ let state = {
     lockWin: true
 };
 
-// --- Initialization: รอ APP_READY เหมือนไฟล์ตัวอย่าง ---
+// --- Initialization ---
 const init = async () => {
-    console.log("RABBIT BLUE: Initializing...");
+    // รอจนกว่า SillyTavern จะพร้อม
+    let attempts = 0;
+    while (!window.chat_metadata && attempts < 20) {
+        await new Promise(r => setTimeout(r, 500));
+        attempts++;
+    }
+    
     loadSettings();
     injectUI();
     
-    // ตั้งค่า Event Listeners สำหรับการเปลี่ยนแชท
+    // Auto Refresh เมื่อเปลี่ยนแชท
     if (eventSource) {
-        eventSource.on(event_types.CHAT_CHANGED, () => {
-            console.log("RABBIT BLUE: Chat changed, refreshing data...");
-            setTimeout(refreshLoreData, 500);
-        });
+        eventSource.on(event_types.CHAT_CHANGED, () => setTimeout(refreshLoreData, 500));
+        eventSource.on(event_types.LOREBOOK_SELECTED, refreshLoreData);
     }
 };
 
-// รอให้ jQuery และระบบพร้อม
 $(document).ready(() => {
-    // ถ้า Event Source พร้อมแล้ว ให้เริ่มเลย
     if (eventSource && event_types.APP_READY) {
         eventSource.on(event_types.APP_READY, init);
     } else {
-        // Fallback ถ้า Event ยังไม่มา
         setTimeout(init, 2000);
     }
 });
@@ -68,22 +70,17 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. สร้างลูกแก้ว (วีดีโอ)
-    // ใช้ playsinline และ muted เพื่อให้เล่นอัตโนมัติได้
+    // 1. ลูกแก้ว (กลับมาใช้ GIF แมงกะพรุน + พื้นหลัง CSS)
+    // * ไม่ใช้วิดีโอแล้ว เพราะมันดำ *
     $('body').append(`
         <div id="x_floating_btn">
-            <video class="x-core-video" autoplay loop muted playsinline>
-                <source src="https://files.catbox.moe/89qxpt.mp4" type="video/mp4">
-            </video>
+            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img">
         </div>
     `);
     
-    // ตั้งค่าตำแหน่ง
-    if (state.btnPos) {
-        $('#x_floating_btn').css(state.btnPos);
-    }
+    if (state.btnPos) $('#x_floating_btn').css(state.btnPos);
 
-    // 2. สร้างหน้าต่างหลัก
+    // 2. หน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -117,7 +114,7 @@ function injectUI() {
                 
                 <div class="x-diary-container">
                     <div class="x-entry-bar">
-                        <select id="x_diary_entry" class="x-entry-select" title="Select Entry">
+                        <select id="x_diary_entry" class="x-entry-select" title="Select Topic">
                             <option value="" disabled selected>Waiting for Lorebook...</option>
                         </select>
                         <button id="x_diary_add" class="x-add-btn" title="Add Entry">+</button>
@@ -144,25 +141,21 @@ function injectUI() {
     </div>`;
 
     $('body').append(html);
-    if (state.winPos) {
-        $('#x_main_modal').css(state.winPos);
-    }
+    if (state.winPos) $('#x_main_modal').css(state.winPos);
 
     bindEvents();
     updateSafety();
     
-    // โหลดข้อมูลครั้งแรก
     setTimeout(refreshLoreData, 1000);
 }
 
-// --- ฟังก์ชันดึงข้อมูล Lorebook (แยกออกมาเพื่อให้เรียกใช้ซ้ำได้) ---
+// --- Lorebook Logic ---
 function refreshLoreData() {
     const entrySelect = $('#x_diary_entry');
     const bookLabel = $('#x_book_name');
     const contentInput = $('#x_diary_content');
 
-    // เช็ค world_info ที่ Import มา
-    if (!world_info || !world_info.entries) {
+    if (typeof world_info === 'undefined' || !world_info || !world_info.entries) {
         bookLabel.text("No Active Book");
         entrySelect.html('<option>No Active Lorebook</option>');
         contentInput.val("กรุณาเลือก Lorebook ในเมนูขวาของ SillyTavern ก่อนครับ");
@@ -171,12 +164,9 @@ function refreshLoreData() {
 
     bookLabel.text(world_info.name || "Untitled");
     
-    // จำค่าเดิม
     const currentUid = entrySelect.val();
-    
     entrySelect.empty().append('<option value="" disabled selected>Select Topic...</option>');
     
-    // เรียงลำดับและใส่ข้อมูล
     const entries = Object.entries(world_info.entries);
     entries.sort((a, b) => (a[1].order || 100) - (b[1].order || 100));
     
@@ -194,31 +184,26 @@ function bindEvents() {
     const orb = $('#x_floating_btn');
     const modal = $('#x_main_modal');
     
-    // Orb Click
     orb.on('click', () => { 
         if (!state.lockOrb) return; 
         modal.fadeToggle(200).css('display', 'flex'); 
-        if (state.curPage === 'lore') refreshLoreData(); // รีเฟรชเมื่อเปิด
+        if (state.curPage === 'lore') refreshLoreData();
     });
     
     $('#btn_close').on('click', () => { if (!state.lockOrb || !state.lockWin) return; modal.fadeOut(200); });
 
-    // Nav Click
     $('.x-nav-icon').on('click', function() {
-        const id = $(this).data('id');
-        state.curPage = id;
+        const id = $(this).data('id'); state.curPage = id;
         $('.x-nav-icon').removeClass('active'); $(this).addClass('active');
         $('.x-page').removeClass('active'); $(`#page_${id}`).addClass('active');
-        
         if (id === 'lore') refreshLoreData();
         saveSettings();
     });
 
-    // Toggle Locks
     $('#btn_mv_orb').on('click', () => { state.lockOrb = !state.lockOrb; updateSafety(); saveSettings(); });
     $('#btn_mv_win').on('click', () => { state.lockWin = !state.lockWin; updateSafety(); saveSettings(); });
 
-    // Lorebook Events
+    // Lorebook Controls
     $('#x_diary_entry').on('change', function() {
         const uid = $(this).val();
         if (uid && world_info.entries[uid]) {
@@ -231,10 +216,7 @@ function bindEvents() {
     $('#x_diary_add').on('click', () => {
         if (!world_info) return;
         const newUid = Date.now().toString();
-        world_info.entries[newUid] = {
-            key: ["new_topic"], content: "Content...", comment: "New Entry",
-            enabled: true, selective: true
-        };
+        world_info.entries[newUid] = { key: ["new"], content: "...", comment: "New Entry", enabled: true, selective: true };
         refreshLoreData();
         $('#x_diary_entry').val(newUid).trigger('change');
         saveWorldInfo();
@@ -243,22 +225,18 @@ function bindEvents() {
     $('#x_diary_save').on('click', function() {
         const uid = $('#x_diary_entry').val();
         if (!uid || !world_info.entries[uid]) return;
-
         world_info.entries[uid].content = $('#x_diary_content').val();
         const keysArr = $('#x_diary_keys').val().split(',').map(k => k.trim()).filter(Boolean);
         world_info.entries[uid].key = keysArr;
         if (keysArr.length > 0) world_info.entries[uid].comment = keysArr[0];
-
         saveWorldInfo();
         refreshLoreData();
-        
         const btn = $(this);
-        const oldText = btn.text();
+        const old = btn.text();
         btn.text("Saved!").css('background', '#a2d2ff');
-        setTimeout(() => btn.text(oldText).css('background', ''), 1000);
+        setTimeout(() => btn.text(old).css('background', ''), 1000);
     });
 
-    // Draggable
     makeDraggable(orb[0], 'orb');
     makeDraggable(modal[0], 'win', $('#x_drag_zone')[0]);
 }
@@ -272,7 +250,6 @@ function updateSafety() {
     $('#x_drag_zone').css('cursor', !state.lockWin ? 'move' : 'default');
 }
 
-// Classic Drag (Stable)
 function makeDraggable(el, type, handle) {
     const trigger = handle || el;
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
