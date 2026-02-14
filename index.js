@@ -1,5 +1,5 @@
-// --- RABBIT BLUE HUD: Final Edition ---
-const STORAGE_KEY = "rabbit_blue_hud_v1";
+// --- RABBIT BLUE HUD: Compact Video Edition ---
+const STORAGE_KEY = "rabbit_blue_compact_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -44,12 +44,11 @@ function injectUI() {
     `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // หน้าต่างหลัก
+    // หน้าต่างหลัก RABBIT BLUE
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
             <div class="x-title">RABBIT BLUE</div>
-            
             <div class="x-nav-container">
                 ${PAGES.map(p => `
                     <div class="x-nav-icon ${p.id === state.curPage ? 'active' : ''}" 
