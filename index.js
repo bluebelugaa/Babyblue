@@ -1,5 +1,5 @@
-// --- Sweet Heart HUD: GIF & Background Full Edition ---
-const STORAGE_KEY = "sweet_hud_final_v1";
+// --- Sweet Heart HUD: MP4 Video Edition ---
+const STORAGE_KEY = "sweet_hud_mp4_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -34,18 +34,21 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // บังคับสร้างลูกแก้วแบบแบ่ง Layer: พื้นหลัง (div) และ แมงกะพรุน (img)
-    const orbHtml = `
+    // สร้างลูกแก้วโดยใช้ VIDEO tag
+    // autoplay: เล่นอัตโนมัติ
+    // loop: เล่นวนซ้ำ
+    // muted: ปิดเสียง (จำเป็นสำหรับ auto play บนมือถือ)
+    // playsinline: เล่นในกรอบไม่เด้งเต็มจอ (จำเป็นสำหรับ iPhone/Android)
+    $('body').append(`
         <div id="x_floating_btn">
-            <div class="x-orb-bg-layer"></div>
-            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="core">
+            <video class="x-core-video" autoplay loop muted playsinline>
+                <source src="https://files.catbox.moe/89qxpt.mp4" type="video/mp4">
+            </video>
         </div>
-    `;
-    
-    $('body').append(orbHtml);
+    `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // สร้างหน้าต่างหลัก
+    // หน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
