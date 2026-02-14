@@ -1,8 +1,23 @@
-// --- RABBIT BLUE: Diary Connected v3 ---
-const STORAGE_KEY = "rabbit_blue_diary_v3";
+// --- Imports: ดึงระบบของ SillyTavern เข้ามาใช้งาน (สำคัญมาก!) ---
+import {
+    eventSource,
+    event_types,
+    saveSettingsDebounced,
+    chat_metadata,
+    settings as st_settings,
+} from "../../../script.js";
+
+import {
+    world_info,        // ข้อมูลสมุดที่โหลดอยู่ปัจจุบัน
+    saveWorldInfo,     // ฟังก์ชันบันทึกสมุด
+    loadWorldInfo,     // ฟังก์ชันโหลดสมุด
+} from "../../world-info.js";
+
+// --- RABBIT BLUE HUD ---
+const STORAGE_KEY = "rabbit_blue_lore_v1";
 
 const PAGES = [
-    { id: 'lore', title: 'Diary', icon: 'fa-book' }, // ชื่อ Diary ตามสั่ง
+    { id: 'lore', title: 'Diary', icon: 'fa-book' },
     { id: 'inspect', title: 'Check', icon: 'fa-magnifying-glass' },
     { id: 'ooc', title: 'Chat', icon: 'fa-comments' },
     { id: 'world', title: 'World', icon: 'fa-globe' },
@@ -17,15 +32,15 @@ let state = {
     lockWin: true
 };
 
-jQuery(async () => {
-    loadSettings();
-    injectUI();
-});
-
-function loadSettings() {
+// เริ่มทำงานเมื่อ SillyTavern พร้อม
+$(document).ready(() => {
+    // โหลดการตั้งค่า
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) state = { ...state, ...JSON.parse(saved) };
-}
+
+    // สร้าง UI
+    injectUI();
+});
 
 function saveSettings() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -34,7 +49,7 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // ลูกแก้ว
+    // 1. สร้างลูกแก้ว (วีดีโอ)
     $('body').append(`
         <div id="x_floating_btn">
             <video class="x-core-video" autoplay loop muted playsinline>
@@ -44,7 +59,7 @@ function injectUI() {
     `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // หน้าต่างหลัก
+    // 2. หน้าต่างหลัก
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
@@ -79,19 +94,19 @@ function injectUI() {
                 <div class="x-diary-container">
                     <div class="x-entry-bar">
                         <select id="x_diary_entry" class="x-entry-select" title="Select Topic">
-                            <option value="" disabled selected>Loading Entries...</option>
+                            <option value="" disabled selected>Loading...</option>
                         </select>
                         <button id="x_diary_add" class="x-add-btn" title="Add New Topic">+</button>
                     </div>
 
                     <div>
-                        <span class="x-label">Trigger Keywords (คำกระตุ้นการทำงาน)</span>
+                        <span class="x-label">Trigger Keywords (คำจาก Lorebook)</span>
                         <input type="text" id="x_diary_keys" class="x-keys-input" placeholder="No triggers set...">
                     </div>
 
                     <textarea id="x_diary_content" class="x-content-area" placeholder="Select a topic to view details..."></textarea>
                     
-                    <button id="x_diary_save" class="x-save-btn">Update to Lorebook</button>
+                    <button id="x_diary_save" class="x-save-btn">Update Lorebook</button>
                 </div>
             </div>
 
@@ -110,11 +125,11 @@ function injectUI() {
     bindEvents();
     updateSafety();
     
-    // เริ่มระบบ Diary ทันที
+    // เริ่มระบบ Diary
     initDiarySystem();
 }
 
-// --- ระบบเชื่อมต่อ Lorebook ---
+// --- ระบบเชื่อมต่อ Lorebook (Core Logic) ---
 function initDiarySystem() {
     const entrySelect = $('#x_diary_entry');
     const keyInput = $('#x_diary_keys');
@@ -123,20 +138,20 @@ function initDiarySystem() {
     const saveBtn = $('#x_diary_save');
     const bookLabel = $('#x_book_name');
 
-    // ฟังก์ชันโหลดข้อมูล (สำคัญที่สุด)
+    // ฟังก์ชันโหลดข้อมูล (ดึงจาก world_info ตัวจริง)
     const refreshData = () => {
-        // ตรวจสอบว่า SillyTavern โหลด Lorebook (World Info) มาหรือยัง
+        // ตรวจสอบว่า world_info ถูกโหลดมาหรือยัง
         if (typeof world_info === 'undefined' || !world_info || !world_info.entries) {
             entrySelect.html('<option>No Active Lorebook</option>');
             bookLabel.text("No Connection");
-            contentInput.val("ไม่พบสมุด Lorebook ที่ใช้งานอยู่\nกรุณาเปิดใช้งาน Lorebook ในแชทก่อนครับ");
+            contentInput.val("ไม่พบ Lorebook ในแชทนี้\nกรุณาเลือก Lorebook ในเมนูขวาของ SillyTavern ก่อนครับ");
             return;
         }
 
-        // โชว์ชื่อสมุดที่มุมขวาบน
+        // โชว์ชื่อสมุด
         bookLabel.text(world_info.name || "Untitled Book");
 
-        // จำค่าที่เลือกอยู่ปัจจุบัน
+        // จำค่าที่เลือกอยู่
         const currentUid = entrySelect.val();
         
         // ล้างและเติมข้อมูลใหม่
@@ -147,29 +162,29 @@ function initDiarySystem() {
             entrySelect.append('<option disabled>Empty Book</option>');
         } else {
             entries.forEach(([uid, entry]) => {
-                // ชื่อหัวข้อ: ใช้ comment หรือ key ตัวแรก
+                // ชื่อหัวข้อ: ใช้ comment (ชื่อที่ตั้งไว้) หรือ key ตัวแรก
                 let label = entry.comment || (entry.key && entry.key.length ? entry.key[0] : `ID: ${uid}`);
                 entrySelect.append(`<option value="${uid}">${label}</option>`);
             });
         }
 
-        // คืนค่าที่เลือกไว้
+        // คืนค่าที่เลือกไว้ถ้ายังมีอยู่
         if (currentUid && world_info.entries[currentUid]) {
             entrySelect.val(currentUid);
         }
     };
 
-    // เมื่อเลือกหัวข้อ -> ดึงข้อมูลมาโชว์
+    // เมื่อเลือกหัวข้อ -> ดึงข้อมูลจริงมาโชว์
     entrySelect.on('change', function() {
         const uid = $(this).val();
         if (uid && world_info.entries[uid]) {
             const entry = world_info.entries[uid];
             
-            // 1. ดึง Trigger Keys มาโชว์
+            // 1. ดึง Trigger Keys ของจริงมาโชว์
             const keys = entry.key || [];
             keyInput.val(keys.join(', ')); // แปลง array เป็นข้อความ "a, b, c"
             
-            // 2. ดึงเนื้อหา
+            // 2. ดึงเนื้อหาจริง
             contentInput.val(entry.content || '');
         }
     });
@@ -179,22 +194,23 @@ function initDiarySystem() {
         if (typeof world_info === 'undefined') return;
 
         const newUid = Date.now().toString();
-        // สร้าง Entry เปล่าๆ ลงใน Lorebook
+        // สร้าง Entry เปล่าๆ ลงใน Lorebook จริง
         world_info.entries[newUid] = {
             key: ["new_topic"],
             content: "รายละเอียด...",
             comment: "New Topic",
-            enabled: true
+            enabled: true,
+            selective: true // เปิดใช้งาน Selective ตามมาตรฐาน
         };
         
         refreshData();
         entrySelect.val(newUid).trigger('change'); // เลือกตัวใหม่ทันที
         
-        // บันทึกไฟล์ทันทีเพื่อกันหาย
-        if (typeof saveWorldInfo === 'function') saveWorldInfo();
+        // บันทึกไฟล์ทันที
+        saveWorldInfo();
     });
 
-    // ปุ่ม Update (บันทึกกลับ)
+    // ปุ่ม Update (บันทึกกลับลง Lorebook)
     saveBtn.on('click', function() {
         const uid = entrySelect.val();
         if (!uid || !world_info.entries[uid]) return;
@@ -204,31 +220,37 @@ function initDiarySystem() {
 
         // 2. อัปเดต Trigger Keys
         const keysStr = keyInput.val();
-        // แปลง "a, b, c" กลับเป็น Array ["a", "b", "c"]
+        // แปลงข้อความกลับเป็น Array ["a", "b", "c"]
         const keysArr = keysStr.split(',').map(k => k.trim()).filter(k => k !== "");
         world_info.entries[uid].key = keysArr;
         
         // อัปเดตชื่อใน Dropdown ด้วย (ใช้คีย์แรกเป็นชื่อ)
         if (keysArr.length > 0) world_info.entries[uid].comment = keysArr[0];
 
-        // 3. สั่ง SillyTavern บันทึกไฟล์
-        if (typeof saveWorldInfo === 'function') {
-            saveWorldInfo();
-            refreshData(); // รีเฟรชชื่อใน List
-            
-            const btn = $(this);
-            const oldText = btn.text();
-            btn.text("Saved!").css('background', '#a2d2ff');
-            setTimeout(() => { btn.text(oldText).css('background', ''); }, 1000);
-        }
+        // 3. สั่ง SillyTavern บันทึกไฟล์จริงๆ
+        saveWorldInfo();
+        
+        // รีเฟรช UI และแจ้งเตือน
+        refreshData();
+        const btn = $(this);
+        const oldText = btn.text();
+        btn.text("Saved!").css('background', '#a2d2ff');
+        setTimeout(() => { btn.text(oldText).css('background', ''); }, 1000);
     });
 
-    // เรียกทำงานทันที และทุกครั้งที่กดเข้าหน้า Diary
+    // เรียกทำงานทันที และทุกครั้งที่เปลี่ยนแชท
     refreshData();
+    
+    // ฟัง event เมื่อแชทเปลี่ยน (เพื่อให้รีโหลดสมุดใหม่)
+    if (eventSource) {
+        eventSource.on(event_types.CHAT_CHANGED, refreshData);
+        eventSource.on(event_types.LOREBOOK_SELECTED, refreshData); // ถ้ามีการเลือกสมุดใหม่
+    }
+    
     $('.x-nav-icon[data-id="lore"]').on('click', refreshData);
 }
 
-// ... Core Functions (เหมือนเดิม) ...
+// ... (ฟังก์ชัน bindEvents, updateSafety, makeDraggable เหมือนเดิม ใช้ของรอบที่แล้วได้เลยครับ) ...
 function bindEvents() {
     const orb = $('#x_floating_btn');
     const modal = $('#x_main_modal');
