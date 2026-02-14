@@ -1,6 +1,5 @@
-
-// --- Sweet Heart HUD: GIF Core Edition ---
-const STORAGE_KEY = "sweet_hud_gif_v1";
+// --- Sweet Heart HUD: Galaxy Orbit Edition ---
+const STORAGE_KEY = "sweet_hud_galaxy_v1";
 
 const PAGES = [
     { id: 'lore', title: 'Diary', icon: 'fa-book' },
@@ -35,15 +34,15 @@ function saveSettings() {
 function injectUI() {
     $('#x_floating_btn, #x_main_modal').remove();
 
-    // 1. ลูกแก้ว (ใส่รูป GIF แทนหัวใจ)
+    // [แก้ไข] โครงสร้างลูกแก้วแบบ Layer
+    // ผมใส่ลิงก์ GIF น้องแมงกะพรุนอันเดิมให้นะครับ (n3eohs.gif)
     $('body').append(`
         <div id="x_floating_btn">
-            <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="core">
-        </div>
+            <div class="x-orb-bg"></div> <img src="https://files.catbox.moe/n3eohs.gif" class="x-core-img" alt="core"> </div>
     `);
     $('#x_floating_btn').css(state.btnPos);
 
-    // 2. หน้าต่างหลัก (คงเดิม)
+    // หน้าต่างหลัก (คงเดิม)
     const html = `
     <div id="x_main_modal">
         <div class="x-header" id="x_drag_zone">
