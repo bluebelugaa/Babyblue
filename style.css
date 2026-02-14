@@ -1,4 +1,4 @@
-/* --- Sweet Heart HUD: Jellyfish & Stars Edition --- */
+/* --- Sweet Heart HUD: Galaxy Orbit Edition --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
@@ -13,64 +13,74 @@
 /* --- 1. The Floating Button (ลูกแก้ว) --- */
 #x_floating_btn {
     position: fixed;
-    width: 34px; /* ขยายขนาดนิดนึงให้เห็นฉากหลังชัดขึ้น */
-    height: 34px;
-    
-    /* [แก้ตรงนี้] ใส่ภาพพื้นหลังแทนสีขาวเดิม */
-    background-image: url('https://files.catbox.moe/0fd3gy.jpg');
-    background-size: cover; /* จัดภาพให้เต็มกรอบ */
-    background-position: center;
-    
+    width: 36px; /* ขยายอีกนิดให้เห็นรายละเอียดชัดๆ */
+    height: 36px;
+    /* ลบ background-image ออกจากตรงนี้ (ย้ายไปทำ Layer แยก) */
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     cursor: pointer;
     z-index: 20000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 12px var(--sweet-glow);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 15px var(--sweet-glow);
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid white; /* เพิ่มขอบขาวให้ดูเด่นขึ้นจากพื้นหลัง */
+    border: 2px solid white;
     transition: transform 0.2s;
-    overflow: visible; /* [แก้ตรงนี้] เปลี่ยนเป็น visible เพื่อให้ดาวแสดงนอกกรอบได้ */
+    overflow: visible; /* ให้ดาวหมุนออกนอกกรอบได้ */
+    position: relative; /* สำคัญมาก สำหรับการจัด Layer */
 }
 
-/* คลาสสำหรับรูปภาพ GIF น้องแมงกะพรุน */
+/* [ใหม่] Layer ภาพพื้นหลัง (ท้องฟ้า/ทะเล) */
+.x-orb-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('https://files.catbox.moe/0fd3gy.jpg'); /* ลิงก์ภาพพื้นหลัง */
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    z-index: 1; /* Layer ล่างสุดในลูกแก้ว */
+    opacity: 0.85; /* ปรับให้จางนิดนึงให้ดูละมุน */
+}
+
+/* Layer ภาพน้องแมงกะพรุน GIF */
 .x-core-img {
-    width: 90%; /* ลดขนาด GIF ลงนิดหน่อย ไม่ให้บังฉากหลังมิด */
-    height: 90%;
+    width: 85%; height: 85%;
     object-fit: contain;
     border-radius: 50%;
-    z-index: 2; /* ให้อยู่บนสุด */
+    z-index: 2; /* Layer บน (ทับพื้นหลัง) */
+    position: relative;
 }
 
-/* [ใหม่] เอฟเฟคดาวน่ารักๆ รอบนอกลูกแก้ว */
+/* [แก้ไข] เอฟเฟคดาวหมุนวนแบบกาแล็คซี่ */
 #x_floating_btn::after {
     content: '';
     position: absolute;
-    /* สร้างจุดศูนย์กลาง */
     width: 2px; height: 2px;
     background: transparent;
     border-radius: 50%;
-    /* ใช้ box-shadow สร้างดาวหลายๆ ดวงรอบๆ */
+    /* จุดดาวต่างๆ รอบลูกแก้ว */
     box-shadow: 
-        -18px -15px 0 1px #fff,        /* ซ้ายบน สีขาว */
-         16px -18px 0 0px var(--sweet-pink), /* ขวาบน สีชมพู */
-        -16px  16px 0 0px var(--sweet-pink), /* ซ้ายล่าง สีชมพู */
-         18px  14px 0 1px #fff,        /* ขวาล่าง สีขาว */
-         0px -24px 0 -1px #fff,        /* บนสุด จิ๋ว */
-         0px  24px 0 -1px #fff;        /* ล่างสุด จิ๋ว */
-    animation: sweet-twinkle 3s infinite ease-in-out;
-    pointer-events: none; /* ไม่ให้บังการกด */
-    z-index: -1; /* ให้อยู่หลังลูกแก้ว */
+        -20px -12px 0 1px #fff,        
+         18px -20px 0 0px var(--sweet-pink), 
+        -14px  22px 0 1px var(--sweet-pink), 
+         22px  10px 0 0px #fff,        
+         0px -26px 0 -1px #fff,        
+         0px  28px 0 -1px var(--sweet-pink-dark);
+    /* เปลี่ยน Animation เป็นการหมุนวนช้าๆ */
+    animation: galaxy-spin 25s linear infinite; 
+    pointer-events: none; 
+    z-index: 0; /* อยู่หลังสุด (นอกลูกแก้ว) */
+    opacity: 0.8;
 }
 
-/* วงแหวนหมุนรอบ (ของเดิม) */
+/* วงแหวนชั้นใน (ของเดิม) */
 #x_floating_btn::before {
     content: ''; position: absolute;
-    width: 42px; height: 42px;
-    border: 1px dashed var(--sweet-pink);
+    width: 44px; height: 44px;
+    border: 1px dashed rgba(255, 255, 255, 0.5);
     border-radius: 50%;
     opacity: 0.4;
-    animation: sweet-spin 12s linear infinite;
+    animation: sweet-spin 15s linear infinite; /* หมุนสวนทางหรือความเร็วต่างกันได้ */
     pointer-events: none;
     z-index: 0;
 }
@@ -186,33 +196,19 @@
 .x-close-icon.disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
 
 /* --- 5. Content (คงเดิม) --- */
-.x-content-box {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    position: relative;
-}
-
 .x-page { display: none; animation: fade-up 0.3s; }
 .x-page.active { display: block; }
-
-.x-page-header {
-    font-size: 13px;
-    color: var(--sweet-pink-dark);
-    font-weight: bold;
-    margin-bottom: 8px;
-    border-bottom: 1px dashed var(--sweet-pink);
-    padding-bottom: 4px;
-}
+.x-content-box { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
+.x-page-header { font-size: 13px; color: var(--sweet-pink-dark); font-weight: bold; margin-bottom: 8px; border-bottom: 1px dashed var(--sweet-pink); padding-bottom: 4px; }
 
 /* Animations */
 @keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
-/* [ใหม่] อนิเมชั่นดาววิบวับ */
-@keyframes sweet-twinkle {
-    0%, 100% { opacity: 0.5; transform: scale(0.9) rotate(0deg); }
-    50% { opacity: 1; transform: scale(1.1) rotate(15deg); }
+/* [ใหม่] อนิเมชั่นหมุนวนกาแล็คซี่ */
+@keyframes galaxy-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .x-dragging { transform: scale(1.1); border-color: #ff6b74 !important; }
