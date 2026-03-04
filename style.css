@@ -163,3 +163,45 @@
 
 /* คลาสช่วยเรื่องลาก */
 .no-transition { transition: none !important; }
+
+/* เพิ่มเติมต่อจาก CSS เดิม */
+.x-code-item {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--sweet-pink);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.x-code-item:hover {
+    background: var(--sweet-peach);
+    transform: translateX(5px);
+}
+
+.x-code-tag {
+    display: inline-block;
+    background: var(--sweet-pink);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 9px;
+    margin-bottom: 5px;
+}
+
+.x-code-content {
+    white-space: pre-wrap;
+    font-family: monospace;
+    color: #444;
+}
+
+/* สไตล์สำหรับข้อความที่ถูกย่อในหน้าแชท */
+.shortened-code-trigger {
+    color: var(--sweet-pink);
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
