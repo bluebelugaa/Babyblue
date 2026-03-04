@@ -190,3 +190,87 @@ function makeDraggable(el, type, handle) {
     trigger.onmousedown = dragStart;
     trigger.ontouchstart = dragStart;
 }
+
+// --- เพิ่มในส่วน State ---
+let extractedCodes = []; 
+
+// --- Function สำหรับจัดการข้อความ (Core Logic) ---
+function processMessageForCodes(text) {
+    // Regex สำหรับตรวจจับ <Code:Type>Content</Code> หรือ <Code>Content</Code>
+    const codeRegex = /<Code(?::(\w+))?>([\s\S]*?)<\/Code>/g;
+    let match;
+    
+    // ล้างข้อมูลเก่าหรืออัปเดต (ขึ้นอยู่กับว่าอยากให้เก็บรวมหรือแยก)
+    // extractedCodes = []; 
+
+    let processedText = text.replace(codeRegex, (match, type, content) => {
+        const codeId = `code_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+        const category = type || "General";
+        
+        // เก็บข้อมูลลงใน Array
+        extractedCodes.push({
+            id: codeId,
+            category: category,
+            content: content.trim()
+        });
+
+        // ส่งคืนข้อความที่จะแสดงในหน้าแชทแทนที่โค้ดเดิม
+        return `<span class="shortened-code-trigger" data-code-id="${codeId}">[ <Code:${category}> ]</span>`;
+    });
+
+    updateCodeUI(); // สั่งให้หน้าต่าง Extension อัปเดตรายการ
+    return processedText;
+}
+
+// --- Function อัปเดตรายการในหน้าต่าง Inspect ---
+function updateCodeUI() {
+    const container = $('#content_inspect');
+    if (extractedCodes.length === 0) {
+        container.html("No codes detected yet...");
+        return;
+    }
+
+    let html = '';
+    // แบ่งหมวดหมู่ (Group by category)
+    const groups = {};
+    extractedCodes.forEach(item => {
+        if (!groups[item.category]) groups[item.category] = [];
+        groups[item.category].push(item);
+    });
+
+    for (const cat in groups) {
+        html += `<div style="font-weight:bold; color:var(--sweet-pink); margin:10px 0 5px 0;">📂 ${cat}</div>`;
+        groups[cat].forEach(item => {
+            html += `
+                <div class="x-code-item" onclick="copyToClipboard('${encodeURIComponent(item.content)}')">
+                    <div class="x-code-content">${item.content.substring(0, 50)}${item.content.length > 50 ? '...' : ''}</div>
+                    <div style="font-size:8px; opacity:0.6; text-align:right;">Click to copy content</div>
+                </div>
+            `;
+        });
+    }
+    container.html(html);
+}
+
+// ฟังก์ชันเสริมสำหรับ Copy โค้ด
+window.copyToClipboard = (encodedContent) => {
+    const content = decodeURIComponent(encodedContent);
+    navigator.clipboard.writeText(content);
+    toastr.success('Code copied to clipboard!'); // ใช้ Toast ของ SillyTavern
+};
+
+// --- การเชื่อมต่อกับ SillyTavern ---
+// ใช้ Hook 'message_updated' หรือ 'character_message_rendered'
+jQuery(async () => {
+    // ... logic เดิม ...
+
+    // ดักจับเหตุการณ์เมื่อมีการแสดงข้อความใหม่
+    $(document).on('character_message_rendered', (event, messageId) => {
+        const messageElement = $(`.message[message_id="${messageId}"] .mes_text`);
+        const originalHtml = messageElement.html();
+        
+        // นำข้อความมา Process
+        const newHtml = processMessageForCodes(originalHtml);
+        messageElement.html(newHtml);
+    });
+});
