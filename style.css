@@ -1,182 +1,72 @@
-/* --- RABBIT BLUE: CORE VARIABLES --- */
+/* --- RABBIT BLUE: Original Sweet Theme --- */
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
+
 :root {
-    --sweet-pink: #ffafcc;
-    --sweet-pink-dark: #fb6f92;
-    --sweet-peach: #ffcad4;
-    --sweet-blue: #a2d2ff;
-    --sweet-bg: rgba(255, 255, 255, 0.85);
-    --sweet-text: #5e548e;
-    --sweet-grey-bg: #f8f9fa;
-    --glass-blur: blur(10px);
+    --sweet-pink: #ffb7c5;      
+    --sweet-peach: #ffe5d9;
+    --sweet-grey-bg: rgba(220, 220, 220, 0.45);
+    --sweet-text: #5d5d5d;
+    --sweet-border: rgba(255, 255, 255, 0.6);
+    --sweet-glow: rgba(255, 183, 197, 0.6);
+    --sweet-drag-glow: rgba(255, 105, 180, 0.4);
 }
 
-/* --- FLOATING ORB (The Video) --- */
+/* --- Floating Button & Modal (เดิมที่คุณส่งมา) --- */
 #x_floating_btn {
-    position: fixed;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    overflow: hidden;
-    cursor: pointer;
-    z-index: 10001;
-    box-shadow: 0 4px 15px rgba(255, 175, 204, 0.5);
-    border: 3px solid white;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    background: white;
+    position: fixed !important; width: 30px !important; height: 30px !important;
+    background: transparent !important; border-radius: 50% !important; cursor: pointer;
+    z-index: 20000; border: 2px solid white !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 12px var(--sweet-glow);
+    display: flex; justify-content: center; align-items: center; transition: all 0.2s ease-out;
 }
+.x-core-video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 50% !important; }
 
-#x_floating_btn:hover {
-    transform: scale(1.1);
-}
-
-#x_floating_btn.x-dragging {
-    opacity: 0.7;
-    cursor: move;
-}
-
-.x-core-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* --- MAIN MODAL WINDOW --- */
 #x_main_modal {
-    position: fixed;
-    width: 380px;
-    height: 550px;
-    background: var(--sweet-bg);
-    backdrop-filter: var(--glass-blur);
-    border-radius: 25px;
-    display: none; /* Hidden by default */
-    flex-direction: column;
-    z-index: 10000;
-    border: 2px solid white;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    font-family: 'Inter', sans-serif;
+    display: none; position: fixed; top: 15vh; left: 5vw; width: 90vw; height: 55vh; max-height: 480px;
+    background: var(--sweet-grey-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--sweet-border); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    z-index: 20001; flex-direction: column; overflow: hidden; font-family: 'Mitr', sans-serif;
 }
 
-/* --- HEADER & NAVIGATION --- */
-.x-header {
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.5);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-}
+/* --- Header & Nav --- */
+.x-header { height: 45px; background: rgba(255, 255, 255, 0.3); border-bottom: 1px solid var(--sweet-border); display: flex; align-items: center; justify-content: space-between; padding: 0 10px; }
+.x-title { font-family: 'Comfortaa', cursive; font-weight: 700; color: var(--sweet-text); font-size: 11px; }
+.x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; background: rgba(255,255,255,0.4); }
+.x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 2px 8px var(--sweet-glow); }
 
-.x-title {
-    font-weight: 800;
-    color: var(--sweet-pink-dark);
-    letter-spacing: 1px;
-    font-size: 14px;
-}
-
-.x-nav-container {
-    display: flex;
-    gap: 12px;
-}
-
-.x-nav-icon {
-    font-size: 16px;
-    color: #ccc;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.x-nav-icon:hover, .x-nav-icon.active {
-    color: var(--sweet-pink-dark);
-    transform: translateY(-2px);
-}
-
-.x-controls-group {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.x-mini-btn {
-    font-size: 12px;
-    color: #bbb;
-    cursor: pointer;
-}
-
-.x-mini-btn.active { color: var(--sweet-blue); }
-
-.x-close-icon {
-    font-size: 18px;
-    color: #ff85a1;
-    cursor: pointer;
-    margin-left: 5px;
-}
-
-/* --- CONTENT AREA --- */
-.x-content-box {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
-
+/* --- Content & Diary Items (ส่วนที่เพิ่มใหม่) --- */
+.x-content-box { flex: 1; overflow-y: auto; padding: 15px; }
 .x-page { display: none; }
-.x-page.active { display: block; animation: fadeIn 0.3s ease; }
+.x-page.active { display: block; }
 
-.x-page-header {
-    font-weight: bold;
-    color: var(--sweet-text);
-    margin-bottom: 15px;
-    font-size: 16px;
-}
+.x-diary-container { display: flex; flex-direction: column; gap: 10px; }
 
-/* --- CODE ITEM (Inside Extension) --- */
-.x-code-item {
-    background: white;
-    border-radius: 15px;
+.x-diary-item {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--sweet-pink);
+    border-radius: 12px;
     padding: 12px;
-    margin-bottom: 12px;
-    border: 1px solid var(--sweet-peach);
     transition: 0.2s;
     cursor: pointer;
 }
+.x-diary-item:hover { background: white; transform: translateY(-2px); box-shadow: 0 5px 15px var(--sweet-glow); }
 
-.x-code-item:hover {
-    box-shadow: 0 5px 15px rgba(255, 175, 204, 0.2);
-    border-color: var(--sweet-pink);
+.x-diary-category {
+    font-size: 10px; font-weight: bold; color: white; background: var(--sweet-pink);
+    padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 6px;
 }
 
-.x-code-content {
-    background: var(--sweet-grey-bg);
-    border-radius: 10px;
-    padding: 10px;
-    font-family: 'Consolas', monospace;
-    font-size: 11px;
-    color: #444;
-    white-space: pre-wrap;
-    overflow-x: auto;
+.x-diary-code-preview {
+    font-family: monospace; font-size: 11px; color: #666;
+    background: rgba(0,0,0,0.03); padding: 8px; border-radius: 8px;
+    max-height: 100px; overflow-y: auto; white-space: pre-wrap;
 }
 
-/* --- CHAT DISPLAY BOX (The Fake Look) --- */
-.x-code-item-chat {
-    border: 2px dashed var(--sweet-pink) !important;
-    background: rgba(255, 175, 204, 0.05) !important;
-    transition: 0.3s;
+.shortened-code-trigger {
+    display: inline-block; background: var(--sweet-pink); color: white;
+    font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px;
+    cursor: pointer; margin: 4px 0; transition: 0.2s; border: 1px solid white;
 }
+.shortened-code-trigger:hover { background: #ff8fa3; box-shadow: 0 0 10px var(--sweet-glow); }
 
-.x-code-item-chat:hover {
-    background: rgba(255, 175, 204, 0.15) !important;
-    transform: scale(0.99);
-}
-
-/* --- UTILS --- */
 .no-transition { transition: none !important; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Scrollbar Customization */
-.x-content-box::-webkit-scrollbar { width: 6px; }
-.x-content-box::-webkit-scrollbar-track { background: transparent; }
-.x-content-box::-webkit-scrollbar-thumb { background: var(--sweet-peach); border-radius: 10px; }
