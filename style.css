@@ -5,8 +5,8 @@
     /* ชุดสีหวานอันแรก (Original Palette) */
     --sweet-pink: #ffb7c5;      
     --sweet-peach: #ffe5d9;
-    --sweet-grey-bg: rgba(220, 220, 220, 0.45); /* พื้นหลังเทาโปร่งแสงแบบเดิม */
-    --sweet-text: #5d5d5d;      /* ตัวหนังสือสีเทาเข้ม อ่านง่าย */
+    --sweet-grey-bg: rgba(220, 220, 220, 0.45);
+    --sweet-text: #5d5d5d;
     --sweet-border: rgba(255, 255, 255, 0.6);
     --sweet-glow: rgba(255, 183, 197, 0.6);
     --sweet-drag-glow: rgba(255, 105, 180, 0.4);
@@ -17,20 +17,14 @@
     position: fixed !important;
     width: 30px !important;
     height: 30px !important;
-    
     background: transparent !important;
     border-radius: 50% !important;
     cursor: pointer;
     z-index: 20000;
-    
-    /* ขอบขาวแบบเดิม */
     border: 2px solid white !important;
-    
-    /* เงานุ่มๆ แบบเดิม */
     box-shadow: 
         0 4px 10px rgba(0,0,0,0.1), 
         0 0 12px var(--sweet-glow);
-        
     display: flex;
     justify-content: center;
     align-items: center;
@@ -38,16 +32,14 @@
     overflow: visible !important; 
 }
 
-/* เอฟเฟคตอนกดย้าย (ขอบสีชมพูหวาน + เรืองแสง) */
 #x_floating_btn.x-dragging {
-    border-color: #ff8fa3 !important; /* ชมพูเข้มขึ้นนิดนึงตอนลาก */
+    border-color: #ff8fa3 !important;
     transform: scale(1.1);
     box-shadow: 
         0 0 0 4px rgba(255, 255, 255, 0.5), 
         0 0 15px var(--sweet-drag-glow) !important;
 }
 
-/* วีดีโอในลูกแก้ว */
 .x-core-video {
     width: 100% !important;
     height: 100% !important;
@@ -55,11 +47,9 @@
     border-radius: 50% !important;
     z-index: 5 !important;
     pointer-events: none;
-    /* ปรับแสงให้เข้ากับธีมหวาน */
     filter: brightness(1.05) contrast(1.05);
 }
 
-/* เอฟเฟคดาววิบวับ (แบบจุดเล็ก 2px) */
 #x_floating_btn::after {
     content: '';
     position: absolute;
@@ -80,7 +70,6 @@
     z-index: -1;
 }
 
-/* วงแหวนหมุนรอบ (ปรับขนาด 38px ให้พอดีลูกแก้ว 30px) */
 #x_floating_btn::before {
     content: ''; position: absolute;
     width: 38px; height: 38px;
@@ -92,7 +81,7 @@
     z-index: -2;
 }
 
-/* --- 2. Main Window (ธีมเดิม: เทาโปร่งแสง เบลอสวยๆ) --- */
+/* --- 2. Main Window --- */
 #x_main_modal {
     display: none;
     position: fixed;
@@ -100,14 +89,11 @@
     width: 90vw;
     height: 55vh;
     max-height: 480px;
-    
-    /* พื้นหลังแบบเดิมที่คิดถึง */
     background: var(--sweet-grey-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    
     border: 1px solid var(--sweet-border);
-    border-radius: 20px; /* มุมมนเยอะๆ แบบเดิม */
+    border-radius: 20px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     z-index: 20001;
     flex-direction: column;
@@ -116,10 +102,9 @@
     animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Header แบบเดิม (สีอ่อนๆ) */
 .x-header {
     height: 45px;
-    background: rgba(255, 255, 255, 0.3); /* สีขาวจางๆ */
+    background: rgba(255, 255, 255, 0.3);
     border-bottom: 1px solid var(--sweet-border);
     display: flex;
     align-items: center;
@@ -135,7 +120,6 @@
     letter-spacing: 1px;
 }
 
-/* Controls */
 .x-nav-container { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; padding: 0 5px; }
 .x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; transition: 0.2s; background: rgba(255,255,255,0.4); border: 1px solid transparent; }
 .x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 2px 8px var(--sweet-glow); transform: translateY(-1px); }
@@ -146,13 +130,11 @@
 .x-close-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #ff8b94; cursor: pointer; font-size: 16px; margin-left: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; }
 .x-close-icon.disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
 
-/* Content */
 .x-content-box { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
 .x-page { display: none; animation: fade-up 0.3s; }
 .x-page.active { display: block; }
 .x-page-header { font-size: 14px; color: #ea93a2; font-weight: bold; margin-bottom: 10px; border-bottom: 1px dashed var(--sweet-pink); padding-bottom: 5px; }
 
-/* Animations */
 @keyframes sweet-spin { 100% {transform: rotate(360deg);} }
 @keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
 @keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
@@ -161,12 +143,11 @@
     50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(15deg); } 
 }
 
-/* คลาสช่วยเรื่องลาก */
 .no-transition { transition: none !important; }
 
-/* เพิ่มเติมต่อจาก CSS เดิม */
+/* --- 3. Code Item & Triggers --- */
 .x-code-item {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.6);
     border: 1px solid var(--sweet-pink);
     border-radius: 10px;
     padding: 10px;
@@ -174,33 +155,38 @@
     font-size: 11px;
     cursor: pointer;
     transition: 0.2s;
+    position: relative;
 }
 
 .x-code-item:hover {
-    background: var(--sweet-peach);
+    background: white;
     transform: translateX(5px);
-}
-
-.x-code-tag {
-    display: inline-block;
-    background: var(--sweet-pink);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 9px;
-    margin-bottom: 5px;
+    box-shadow: 0 4px 10px var(--sweet-glow);
 }
 
 .x-code-content {
     white-space: pre-wrap;
     font-family: monospace;
     color: #444;
+    max-height: 80px;
+    overflow-y: auto;
 }
 
-/* สไตล์สำหรับข้อความที่ถูกย่อในหน้าแชท */
 .shortened-code-trigger {
-    color: var(--sweet-pink);
+    display: inline-block;
+    background: var(--sweet-pink);
+    color: white;
+    font-size: 11px;
     font-weight: bold;
-    text-decoration: underline;
+    padding: 4px 10px;
+    border-radius: 12px;
     cursor: pointer;
+    margin: 4px 0;
+    transition: 0.2s;
+    box-shadow: 0 2px 5px var(--sweet-glow);
+}
+
+.shortened-code-trigger:hover {
+    background: #ff8fa3;
+    transform: translateY(-2px);
 }
