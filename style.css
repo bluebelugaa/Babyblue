@@ -1,4 +1,4 @@
-/* --- RABBIT BLUE: Original Sweet Theme --- */
+/* --- RABBIT BLUE: Original Sweet Theme (Full Version) --- */
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Comfortaa:wght@400;700&display=swap');
 
 :root {
@@ -11,62 +11,95 @@
     --sweet-drag-glow: rgba(255, 105, 180, 0.4);
 }
 
-/* --- Floating Button & Modal (เดิมที่คุณส่งมา) --- */
+/* --- 1. The Floating Button (ลูกแก้ว 30px) --- */
 #x_floating_btn {
     position: fixed !important; width: 30px !important; height: 30px !important;
     background: transparent !important; border-radius: 50% !important; cursor: pointer;
     z-index: 20000; border: 2px solid white !important;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 0 12px var(--sweet-glow);
     display: flex; justify-content: center; align-items: center; transition: all 0.2s ease-out;
+    overflow: visible !important; 
 }
-.x-core-video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 50% !important; }
 
+#x_floating_btn.x-dragging {
+    border-color: #ff8fa3 !important; transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 15px var(--sweet-drag-glow) !important;
+}
+
+.x-core-video {
+    width: 100% !important; height: 100% !important; object-fit: cover !important;
+    border-radius: 50% !important; z-index: 5 !important; pointer-events: none;
+}
+
+#x_floating_btn::after {
+    content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 2px; height: 2px; border-radius: 50%;
+    box-shadow: -16px -14px 0 1px #fff, 14px -16px 0 0px var(--sweet-pink), -14px 14px 0 0px var(--sweet-pink), 16px 12px 0 1px #fff;
+    animation: sweet-twinkle 3s infinite ease-in-out; pointer-events: none; z-index: -1;
+}
+
+/* --- 2. Main Window --- */
 #x_main_modal {
     display: none; position: fixed; top: 15vh; left: 5vw; width: 90vw; height: 55vh; max-height: 480px;
     background: var(--sweet-grey-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--sweet-border); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     z-index: 20001; flex-direction: column; overflow: hidden; font-family: 'Mitr', sans-serif;
+    animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* --- Header & Nav --- */
-.x-header { height: 45px; background: rgba(255, 255, 255, 0.3); border-bottom: 1px solid var(--sweet-border); display: flex; align-items: center; justify-content: space-between; padding: 0 10px; }
-.x-title { font-family: 'Comfortaa', cursive; font-weight: 700; color: var(--sweet-text); font-size: 11px; }
-.x-nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 6px; cursor: pointer; font-size: 11px; background: rgba(255,255,255,0.4); }
+.x-header {
+    height: 45px; background: rgba(255, 255, 255, 0.3); border-bottom: 1px solid var(--sweet-border);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 10px;
+}
+
+.x-title { font-family: 'Comfortaa', cursive; font-weight: 700; color: var(--sweet-text); font-size: 11px; letter-spacing: 1px; }
+
+.x-nav-container { display: flex; align-items: center; justify-content: center; gap: 4px; flex: 1; }
+.x-nav-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--sweet-text); border-radius: 8px; cursor: pointer; font-size: 11px; transition: 0.2s; background: rgba(255,255,255,0.4); }
 .x-nav-icon.active { background: var(--sweet-pink); color: white; box-shadow: 0 2px 8px var(--sweet-glow); }
 
-/* --- Content & Diary Items (ส่วนที่เพิ่มใหม่) --- */
+.x-controls-group { display: flex; align-items: center; gap: 4px; }
+.x-mini-btn { height: 24px; padding: 0 8px; background: rgba(255,255,255,0.5); border: 1px solid white; border-radius: 12px; font-size: 10px; color: var(--sweet-text); cursor: pointer; display: flex; align-items: center; }
+.x-mini-btn.active { background: var(--sweet-pink); color: white; border-color: var(--sweet-pink); }
+.x-close-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #ff8b94; cursor: pointer; background: rgba(255,255,255,0.5); border-radius: 50%; font-size: 14px; }
+
+/* --- 3. Diary Page System --- */
 .x-content-box { flex: 1; overflow-y: auto; padding: 15px; }
-.x-page { display: none; }
+.x-page { display: none; animation: fade-up 0.3s; }
 .x-page.active { display: block; }
 
-.x-diary-container { display: flex; flex-direction: column; gap: 10px; }
-
-.x-diary-item {
+.x-diary-list { display: flex; flex-direction: column; gap: 12px; }
+.x-diary-card {
     background: rgba(255, 255, 255, 0.7);
     border: 1px solid var(--sweet-pink);
-    border-radius: 12px;
-    padding: 12px;
-    transition: 0.2s;
-    cursor: pointer;
+    border-radius: 15px; padding: 12px;
+    transition: 0.2s; cursor: pointer;
+    position: relative; overflow: hidden;
 }
-.x-diary-item:hover { background: white; transform: translateY(-2px); box-shadow: 0 5px 15px var(--sweet-glow); }
+.x-diary-card:hover { transform: scale(1.02); background: white; box-shadow: 0 5px 15px var(--sweet-glow); }
 
-.x-diary-category {
-    font-size: 10px; font-weight: bold; color: white; background: var(--sweet-pink);
-    padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 6px;
-}
-
-.x-diary-code-preview {
-    font-family: monospace; font-size: 11px; color: #666;
-    background: rgba(0,0,0,0.03); padding: 8px; border-radius: 8px;
-    max-height: 100px; overflow-y: auto; white-space: pre-wrap;
+.x-diary-cat-label {
+    display: inline-block; background: var(--sweet-pink); color: white;
+    font-size: 10px; font-weight: bold; padding: 2px 10px; border-radius: 20px; margin-bottom: 8px;
 }
 
+.x-diary-code-box {
+    background: #fdfdfd; border: 1px inset #eee; border-radius: 8px;
+    padding: 10px; font-family: monospace; font-size: 10px; color: #666;
+    max-height: 120px; overflow-y: auto; white-space: pre-wrap;
+}
+
+/* --- 4. Chat Triggers (ปุ่มย่อในหน้าแชท) --- */
 .shortened-code-trigger {
     display: inline-block; background: var(--sweet-pink); color: white;
-    font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px;
-    cursor: pointer; margin: 4px 0; transition: 0.2s; border: 1px solid white;
+    font-size: 11px; font-weight: bold; padding: 3px 12px; border-radius: 20px;
+    cursor: pointer; margin: 4px 0; border: 1px solid white;
+    transition: 0.2s; box-shadow: 0 2px 5px var(--sweet-glow);
 }
-.shortened-code-trigger:hover { background: #ff8fa3; box-shadow: 0 0 10px var(--sweet-glow); }
+.shortened-code-trigger:hover { background: #ff8fa3; transform: translateY(-2px); }
 
+/* --- Animations --- */
+@keyframes pop-in { from {transform: scale(0.95); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+@keyframes fade-up { from {transform: translateY(5px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
+@keyframes sweet-twinkle { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 .no-transition { transition: none !important; }
